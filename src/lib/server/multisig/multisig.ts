@@ -9,13 +9,13 @@ import type { EIP12UnsignedTransaction } from '@fleet-sdk/common';
 import { toBigNumber } from '../tx-chaining/utils/bigNumbers';
 import { BOB_MNEMONIC, SHADOW_MNEMONIC } from '../constants/mnemonics';
 import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
-import { BOB_ADDRESS } from '../addresses';
+import { BOB_ADDRESS } from '../constants/addresses';
 
 export async function signMultisig(unsignedTx, userMnemonic: string, userAddress: string) {
 	await wasmModule.loadAsync();
 
-	//const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
-	const shadow = { mnemonic: BOB_MNEMONIC, address: BOB_ADDRESS };
+	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
+	//const shadow = { mnemonic: BOB_MNEMONIC, address: BOB_ADDRESS };
 	const user = { mnemonic: userMnemonic, address: userAddress };
 
 	const proverAlice = await getProver(user.mnemonic);

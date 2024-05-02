@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOB_ADDRESS } from '../addresses';
+import { BOB_ADDRESS } from '../constants/addresses';
 import { signTx } from '../multisig/multisig';
 import { BOB_MNEMONIC } from '../constants/mnemonics';
 import { createTx } from './common';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALICE_ADDRESS, BOB_ADDRESS, SHADOWPOOL_ADDRESS } from '../addresses';
+import { ALICE_ADDRESS, BOB_ADDRESS, SHADOWPOOL_ADDRESS } from '../constants/addresses';
 import { signMultisig, signTx, submitTx, txHasErrors } from '../multisig/multisig';
 import { ALICE_MNEMONIC, BOB_MNEMONIC } from '../constants/mnemonics';
 import { createDeposit, createTx, createUnsignedMultisigTx, createWithdraw } from './common';
@@ -21,7 +21,7 @@ describe('BOB', async () => {
 
 	he('can withdraw', async () => {
 		//old
-		let unsignedTx = createUnsignedMultisigTx();
+		//let unsignedTx = createUnsignedMultisigTx();
 		// let user = {
 		// 	mnemonic: mnemonicAlice, //|mnemonicAlice
 		// 	address: ALICE_ADDRESS // 1 address   //| ALICE_ADDRESS
@@ -32,7 +32,7 @@ describe('BOB', async () => {
 		// };
 
 		//no money - no honey
-		//const unsignedTx = await createWithdraw();
+		const unsignedTx = await createWithdraw();
 
 		const signedTx = (
 			await signMultisig(unsignedTx, ALICE_MNEMONIC, ALICE_ADDRESS)

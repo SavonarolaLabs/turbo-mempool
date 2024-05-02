@@ -4,7 +4,7 @@ import {
 	TransactionBuilder,
 	ErgoAddress
 } from '@fleet-sdk/core';
-import { BOB_ADDRESS, DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from '../addresses';
+import { BOB_ADDRESS, DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from '../constants/addresses';
 import { utxos } from '../utxo/unspent';
 import { fetchHeight } from './fetchHeight';
 import { first, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
@@ -64,6 +64,7 @@ export async function createWithdraw() {
 	//input-output+config
 	const currentHeight = await fetchHeight();
 	//const utxosBob = utxos[BOB_ADDRESS];
+	//const utxosDeposit = [utxos[BOB_ADDRESS][0]];
 	const utxosDeposit = [utxos[DEPOSIT_ADDRESS][0]];
 	const mandatoryBoxes = utxosDeposit;
 	//mandatoryBoxes
