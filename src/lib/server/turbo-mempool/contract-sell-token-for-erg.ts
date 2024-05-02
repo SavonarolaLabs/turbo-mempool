@@ -1,5 +1,5 @@
-import { Network } from "@fleet-sdk/common";
-import { compile } from "@fleet-sdk/compiler";
+import { Network } from '@fleet-sdk/common';
+import { compile } from '@fleet-sdk/compiler';
 
 export const sellTokenForErg = `
 {
@@ -18,16 +18,16 @@ export const sellTokenForErg = `
 //SELF.tokens(0)._1 == sellTokenId,
 
 function compileContract() {
-    const tree = compile(sellTokenForErg, {
-        // map: {
-        //     AlicePK: SSigmaProp(SGroupElement(first(aliceAddr.getPublicKeys()))).toHex(),
-        //     BobPK: SSigmaProp(SGroupElement(first(bobAddr.getPublicKeys()))).toHex()
-        // },
-        version: 0,
-        includeSize: false
-    });
-    return tree.toAddress(Network.Mainnet).toString();
+	const tree = compile(sellTokenForErg, {
+		// map: {
+		//     AlicePK: SSigmaProp(SGroupElement(first(aliceAddr.getPublicKeys()))).toHex(),
+		//     BobPK: SSigmaProp(SGroupElement(first(bobAddr.getPublicKeys()))).toHex()
+		// },
+		version: 0,
+		includeSize: false
+	});
+	return tree.toAddress(Network.Mainnet).toString();
 }
 
-console.log(`export const contractAddress = "${compileContract()}"`);
+console.log(`export const sellOrderAddress = "${compileContract()}"`);
 // "YUgzXAHbU5PBQVZ17sAx9BM5ibamq2umSnk1hPTZ4MBEHy1BPmfWK7oD5kXiu25r6hSMFHWGuqPPXRYEd"
