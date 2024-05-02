@@ -1,39 +1,39 @@
-import { Network } from "@fleet-sdk/common";
-import { compile } from "@fleet-sdk/compiler";
+import { Network } from '@fleet-sdk/common';
+import { compile } from '@fleet-sdk/compiler';
+import { BOB_ADDRESS, SHADOWPOOL_ADDRESS } from '../addresses';
+import { first, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
 
-export const userAndShadowPoolMultisig = `
-{
-    val maxLockHeight : Int       = SELF.R4[Int].get
-    val shadowPoolPK : SigmaProp    = SELF.R5[SigmaProp].get
-    val userPK : SigmaProp        = SELF.R6[SigmaProp].get
-    
-    // ensure maxLockHeight is not more than 3 month, using box creation height.
-    // what registers do we need to set when oder if filled/canceled -> goes back to multisig deposit
+import { SGroupElement, SInt, SLong, SSigmaProp } from '@fleet-sdk/serializer';
+import { ErgoAddress } from '@fleet-sdk/core';
 
-    val maxHeightReached : Boolean = {
-        maxLockHeight <= HEIGHT
-    }
-  
-    if(maxHeightReached){
-      userPK
-    }else{
-      shadowPoolPK && userPK
-    }
-}`;
+export const userAndShadowPoolMultisig = `{
+
+val maxHeightReached : Boolean = {
+    100000 <= HEIGHT
+}
+
+if(maxHeightReached){
+  userPK
+}else{
+  shadowPoolPK && userPK
+}}`;
 
 //SELF.tokens(0)._1 == sellTokenId,
 
 function compileContract() {
-    const tree = compile(userAndShadowPoolMultisig, {
-        // map: {
-        //     AlicePK: SSigmaProp(SGroupElement(first(aliceAddr.getPublicKeys()))).toHex(),
-        //     BobPK: SSigmaProp(SGroupElement(first(bobAddr.getPublicKeys()))).toHex()
-        // },
-        version: 0,
-        includeSize: false
-    });
-    return tree.toAddress(Network.Mainnet).toString();
+	const bobAddr = ErgoAddress.fromBase58(BOB_ADDRESS);
+	const shadowPoolPK = ErgoAddress.fromBase58(SHADOWPOOL_ADDRESS);
+
+	const tree = compile(userAndShadowPoolMultisig, {
+		map: {
+			shadowPoolPK: SSigmaProp(SGroupElement(first(shadowPoolPK.getPublicKeys()))).toHex(),
+			userPK: SSigmaProp(SGroupElement(first(bobAddr.getPublicKeys()))).toHex()
+		},
+		version: 0,
+		includeSize: false
+	});
+	return tree.toAddress(Network.Mainnet).toString();
 }
 
-console.log(`export const userAndShadowPoolMultisig = "${compileContract()}"`);
+console.log(`export const depositAddress = "${compileContract()}"`);
 // "YUgzXAHbU5PBQVZ17sAx9BM5ibamq2umSnk1hPTZ4MBEHy1BPmfWK7oD5kXiu25r6hSMFHWGuqPPXRYEd"

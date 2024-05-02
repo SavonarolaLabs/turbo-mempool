@@ -1,0 +1,1 @@
+export const depositAddress = "7uPt4d4sKyf8ALJ1ctvf2fG7MEvFkKxDSFyCMb5K2EFs1p8fiS3jdbVHfGW2FJfzQDUCp9hezQupVMQ1qzXtJh4DcUnRjuCQHvUzi8RiLF4xGr41n96p1B8RG2MbP6wQ7XYDHYCV"
