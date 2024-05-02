@@ -24,6 +24,7 @@ import {
 } from '../constants/addresses';
 import { BOB_MNEMONIC } from '../constants/mnemonics';
 import { getProver, signTx } from '../multisig/multisig';
+import { addBoxToContract } from './common';
 
 const allboxes = []; // table for utxos and spent Tx
 
@@ -241,30 +242,6 @@ function depositShadowBobToOrder(outputs: any) {
 }
 
 //--------------------------------------
-const addBoxToContract = (
-	contract: ErgoAddress | string,
-	sender: ErgoAddress | string,
-	utxos: Array<any>,
-	value: bigint,
-	assets: Array<any>,
-	registers: { R4?; R5?; R6?; R7?; R8? },
-	currentHeight: number
-) => {
-	const output = new OutputBuilder(value, contract)
-		.addTokens(assets)
-		.setAdditionalRegisters(registers);
-
-	const unsignedMintTransaction = new TransactionBuilder(currentHeight)
-		.from(utxos)
-		.to(output)
-		.sendChangeTo(sender)
-		.payFee(RECOMMENDED_MIN_FEE_VALUE)
-		.build()
-		.toEIP12Object();
-
-	return unsignedMintTransaction;
-};
-
 const withdrawBoxToContract = (
 	contract: ErgoAddress | string,
 	sender: ErgoAddress | string,
