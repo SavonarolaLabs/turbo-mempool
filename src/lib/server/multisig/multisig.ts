@@ -5,17 +5,29 @@ import { ErgoAddress } from '@fleet-sdk/core';
 import { mnemonicToSeedSync } from 'bip39';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import { bip32 } from './functions';
-import { EIP12UnsignedTransaction } from '@fleet-sdk/common';
+import type { EIP12UnsignedTransaction } from '@fleet-sdk/common';
 import { toBigNumber } from '../tx-chaining/utils/bigNumbers';
+import { BOB_MNEMONIC, SHADOW_MNEMONIC } from '../constants/mnemonics';
+import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
+import { BOB_ADDRESS } from '../addresses';
 
-export async function signMultisig(unsignedTx, user, shadow) {
+export async function signMultisig(unsignedTx, userMnemonic: string, userAddress: string) {
 	await wasmModule.loadAsync();
-	const proverAlice = await getProver(shadow.mnemonic);
-	const proverBob = await getProver(user.mnemonic);
+
+	//const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
+	const shadow = { mnemonic: BOB_MNEMONIC, address: BOB_ADDRESS };
+	const user = { mnemonic: userMnemonic, address: userAddress };
+
+	const proverAlice = await getProver(user.mnemonic);
+	const proverBob = await getProver(shadow.mnemonic);
+
+	const hAlice = ErgoAddress.fromBase58(user.address).ergoTree.slice(6);
+	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
 
 	const wasmUnsignedTx = wasmModule.SigmaRust.UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
+
 	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
 
 	let context = fakeContext();
@@ -38,9 +50,6 @@ export async function signMultisig(unsignedTx, user, shadow) {
 	}
 
 	const hintsForAliceSign = JSON.parse(JSON.stringify(hintsAll.to_json())); // make copy
-
-	const hAlice = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
-	const hBob = ErgoAddress.fromBase58(user.address).ergoTree.slice(6);
 
 	for (var row in hintsForAliceSign.publicHints) {
 		hintsForAliceSign.publicHints[row] = hintsForAliceSign.publicHints[row].filter(
@@ -127,6 +136,41 @@ export async function txHasErrors(signedTransaction: string): Promise<false | st
 		return false;
 	} else {
 		return jsonResp.errors;
+	}
+}
+
+export async function submitTx(signedTransaction: string): Promise<false | string> {
+	const endpoint = 'https://gql.ergoplatform.com/';
+	const query = `
+      mutation SubmitTransaction($signedTransaction: SignedTransaction!) {
+        submitTransaction(signedTransaction: $signedTransaction)
+      }
+    `;
+
+	const variables = {
+		signedTransaction: signedTransaction
+	};
+
+	const response = await fetch(endpoint, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			query: query,
+			variables: variables
+		})
+	});
+
+	if (!response.ok) {
+		throw new Error('Network response was not ok: ' + response.statusText);
+	}
+
+	const jsonResp = await response.json();
+	if (jsonResp.data?.submitTransaction) {
+		return jsonResp.data.submitTransaction;
+	} else {
+		return false;
 	}
 }
 
