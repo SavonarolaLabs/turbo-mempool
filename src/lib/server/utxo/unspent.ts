@@ -6,7 +6,7 @@ export const utxos = {
 			blockId: '20578b15c08d09a4289881f729b6300ea714793791d90fe75f17423e8a415d31',
 			value: '997800000',
 			index: 1,
-			globalIndex: 4910611,
+			globalIndex: 4914287,
 			creationHeight: 1246984,
 			settlementHeight: 1246986,
 			ergoTree: '0008cd02eb083423041003740c9e791b2fea5ecf6e273669630a25b7ecabf9145395e447',
@@ -21,14 +21,14 @@ export const utxos = {
 	],
 	'9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU': [
 		{
-			boxId: 'e05911b7d339550597e08aea58ad26f5004cbc8341abcb639c7639e90e2a65c1',
-			transactionId: '9d5f023ceb155c8bed2049f5af162d73ec8ddc6f27965d6339ee793e8219b0af',
-			blockId: '75f10f7202bf1646d7926b90e78cc7bcf0de29dbc92f2d49df3f564b69feb828',
-			value: '1825200000',
+			boxId: 'da67a7bee87ea3860ad7b120d306de2036c2cff91e631dde6ee21bca7323931a',
+			transactionId: '4843e14a5bc37b1032f6ace58c03f0a7db65e76ae7594f4d4f8d97c318af44eb',
+			blockId: '013483321e97651446a05fd48d7cb18d1d8771d9ce2de62944d9b2d685369b1c',
+			value: '1814800000',
 			index: 2,
-			globalIndex: 5288379,
-			creationHeight: 1255768,
-			settlementHeight: 1255772,
+			globalIndex: 5310699,
+			creationHeight: 1255856,
+			settlementHeight: 1256341,
 			ergoTree: '0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
 			ergoTreeConstants: '',
 			ergoTreeScript: '{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
@@ -93,7 +93,7 @@ export const utxos = {
 			blockId: '01b07cded9dd8480f9fa2e3f6e20a480a335b5b48f02030e6f81dcf801a6c6fa',
 			value: '1000000',
 			index: 1,
-			globalIndex: 5281990,
+			globalIndex: 5285666,
 			creationHeight: 1255566,
 			settlementHeight: 1255568,
 			ergoTree: '0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
@@ -127,7 +127,7 @@ export const utxos = {
 			blockId: 'd9b7142bd03e3b580205eb7d154612b76326d142768302453d2203c2d1303336',
 			value: '100000000',
 			index: 0,
-			globalIndex: 5083853,
+			globalIndex: 5087529,
 			creationHeight: 1251583,
 			settlementHeight: 1251587,
 			ergoTree: '0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
@@ -140,58 +140,26 @@ export const utxos = {
 			mainChain: true
 		}
 	],
-	JixnxAz48B1XvSZBQZXfwdY3Qb5dbqzYqVPDSPYDfT4Q6M4: [
+	JixnxAz48B1XvS9qoad8H4amt9JcQQPQPE4uURGUWNWnN1D: [
 		{
-			boxId: 'd8cfbb7e264d4b8a3c73f9137f1ee44181ad8309a5c853d9b22382015fa90814',
-			transactionId: '9d5f023ceb155c8bed2049f5af162d73ec8ddc6f27965d6339ee793e8219b0af',
-			blockId: '75f10f7202bf1646d7926b90e78cc7bcf0de29dbc92f2d49df3f564b69feb828',
-			value: '30000000',
+			boxId: '5d278960fc6042e87e5dc69ba7211a98b249f89045fde04bea5330cc3ef9c7ac',
+			transactionId: '4843e14a5bc37b1032f6ace58c03f0a7db65e76ae7594f4d4f8d97c318af44eb',
+			blockId: '013483321e97651446a05fd48d7cb18d1d8771d9ce2de62944d9b2d685369b1c',
+			value: '3000000',
 			index: 0,
-			globalIndex: 5292053,
-			creationHeight: 1255768,
-			settlementHeight: 1255772,
-			ergoTree: '1000d801d601e4c6a706089590e4c6a70404a37201ea02e4c6a705087201',
+			globalIndex: 5310697,
+			creationHeight: 1255856,
+			settlementHeight: 1256341,
+			ergoTree: '1000d801d601e4c6a705089591a3e4c6a704047201ea027201e4c6a70608',
 			ergoTreeConstants: '',
 			ergoTreeScript:
-				'{\n  val prop1 = SELF.R6[SigmaProp].get\n  if (SELF.R4[Int].get <= HEIGHT) { prop1 } else { SELF.R5[SigmaProp].get && prop1 }\n}',
-			address: 'JixnxAz48B1XvSZBQZXfwdY3Qb5dbqzYqVPDSPYDfT4Q6M4',
+				'{\n  val prop1 = SELF.R5[SigmaProp].get\n  if (HEIGHT > SELF.R4[Int].get) { prop1 } else { prop1 && SELF.R6[SigmaProp].get }\n}',
+			address: 'JixnxAz48B1XvS9qoad8H4amt9JcQQPQPE4uURGUWNWnN1D',
 			assets: [],
 			additionalRegisters: {
-				R4: '04c4a59901',
-				R5: '08cd025d163103d491a5193c7b18182442877ce8fcf3ffb9ae9c295d9c98a16dcb0551',
-				R6: '08cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c'
-			},
-			spentTransactionId: null,
-			mainChain: true
-		},
-		{
-			boxId: 'afbb15dd2bb6c3e781770c547c22726406848323ac1239d96c65a69d50ab1761',
-			transactionId: 'ec19db8d88ea8e6e37ec8c9cee22d55a4d9df73dd01ddf6becefe8e36c3fa8f4',
-			blockId: 'e93fb99afc6d9ace863dd258fd9d15e9b41e4cd2daf751e3c0d510b1a955a531',
-			value: '1000000',
-			index: 0,
-			globalIndex: 5265144,
-			creationHeight: 1255030,
-			settlementHeight: 1255045,
-			ergoTree: '1000d801d601e4c6a706089590e4c6a70404a37201ea02e4c6a705087201',
-			ergoTreeConstants: '',
-			ergoTreeScript:
-				'{\n  val prop1 = SELF.R6[SigmaProp].get\n  if (SELF.R4[Int].get <= HEIGHT) { prop1 } else { SELF.R5[SigmaProp].get && prop1 }\n}',
-			address: 'JixnxAz48B1XvSZBQZXfwdY3Qb5dbqzYqVPDSPYDfT4Q6M4',
-			assets: [
-				{
-					tokenId: '69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8',
-					index: 0,
-					amount: '1000000000000',
-					name: 'HoldErgDoge Test1',
-					decimals: 9,
-					type: 'EIP-004'
-				}
-			],
-			additionalRegisters: {
-				R4: '04b49b9901',
-				R5: '08cd025d163103d491a5193c7b18182442877ce8fcf3ffb9ae9c295d9c98a16dcb0551',
-				R6: '08cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c'
+				R4: '0492b19901',
+				R5: '08cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
+				R6: '08cd025d163103d491a5193c7b18182442877ce8fcf3ffb9ae9c295d9c98a16dcb0551'
 			},
 			spentTransactionId: null,
 			mainChain: true

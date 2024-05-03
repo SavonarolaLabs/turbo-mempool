@@ -1,6 +1,8 @@
-export const BOB_ADDRESS = "9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU";
-export const SHADOWPOOL_ADDRESS = "9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8";
-export const ALICE_ADDRESS = "9gJa6Mict6TVu9yipUX5aRUW87Yv8J62bbPEtkTje28sh5i3Lz8";
+import { depositAddress } from './depositAddress';
+
+export const BOB_ADDRESS = '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU';
+export const SHADOWPOOL_ADDRESS = '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8';
+export const ALICE_ADDRESS = '9gJa6Mict6TVu9yipUX5aRUW87Yv8J62bbPEtkTje28sh5i3Lz8';
 export const ALICE_AND_BOB_ADDRESS =
-    "7Jpc1Fq4K8BSi4CNq5V8AsfSYUNW15LNJauE5ZRKZ52HaJ9u8ZBhK3MNXsBJ38f7JMhAYAdQzJnfzNQiyU5ixfKacwzk5KdXCpccwZVhyamQSjEJsssMxvYkF";
-export const DEPOSIT_ADDRESS = "JixnxAz48B1XvSZBQZXfwdY3Qb5dbqzYqVPDSPYDfT4Q6M4";
+	'7Jpc1Fq4K8BSi4CNq5V8AsfSYUNW15LNJauE5ZRKZ52HaJ9u8ZBhK3MNXsBJ38f7JMhAYAdQzJnfzNQiyU5ixfKacwzk5KdXCpccwZVhyamQSjEJsssMxvYkF';
+export const DEPOSIT_ADDRESS = depositAddress;

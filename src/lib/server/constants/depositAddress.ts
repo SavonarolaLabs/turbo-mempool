@@ -1,1 +1,1 @@
-export const depositAddress = "ZX4117M3UsySxxvWNqUaNKZCb"
+export const depositAddress = "JixnxAz48B1XvS9qoad8H4amt9JcQQPQPE4uURGUWNWnN1D"

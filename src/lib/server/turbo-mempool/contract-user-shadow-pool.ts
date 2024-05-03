@@ -6,11 +6,17 @@ import { first, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
 import { SGroupElement, SInt, SLong, SSigmaProp } from '@fleet-sdk/serializer';
 import { ErgoAddress } from '@fleet-sdk/core';
 
+//1255856
 export const userAndShadowPoolMultisig = `{
-	val userPK      = SELF.R4[SigmaProp].get
-	val poolPK      = SELF.R5[SigmaProp].get
-
+	val userPK      = SELF.R5[SigmaProp].get
+	val poolPK      = SELF.R6[SigmaProp].get
+	
+	if(HEIGHT>SELF.R4[Int].get){
+	userPK
+	}else
+	{
 	userPK && poolPK
+	}
 }`;
 
 //SELF.tokens(0)._1 == sellTokenId,

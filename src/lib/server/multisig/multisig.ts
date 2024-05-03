@@ -251,6 +251,29 @@ export async function signTx(
 	return signedTx;
 }
 
+export async function signTxAllInputs(
+	mnemonic: string,
+	address: string,
+	tx: EIP12UnsignedTransaction
+): Promise<wasm.Transaction> {
+	const prover = await getProver(mnemonic);
+
+	// filtet  == address
+	const boxesToSign = tx.inputs;
+	const boxes_to_spend = ErgoBoxes.empty();
+	boxesToSign.forEach((box) => {
+		boxes_to_spend.add(ErgoBox.from_json(JSON.stringify(box)));
+	});
+
+	const signedTx = prover.sign_transaction(
+		fakeContext(),
+		wasm.UnsignedTransaction.from_json(JSON.stringify(tx)),
+		boxes_to_spend,
+		ErgoBoxes.empty()
+	);
+	return signedTx;
+}
+
 const getWalletAddressSecret = (mnemonic: string, idx: number = 0) => {
 	let seed = mnemonicToSeedSync(mnemonic);
 	const path = calcPathFromIndex(idx);
