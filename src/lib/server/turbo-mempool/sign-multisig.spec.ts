@@ -130,7 +130,7 @@ describe.only('boxes from depositAddress', () => {
 		expect(hasError).toBe(false);
 	});
 
-	it('Bob can withdraw real box from deposit ', async () => {
+	it('Bob can NOT withdraw real box from deposit ', async () => {
 		const newInput = utxos[DEPOSIT_ADDRESS];
 
 		const unsignedTx2 = new TransactionBuilder(1255856)
@@ -140,14 +140,8 @@ describe.only('boxes from depositAddress', () => {
 			.build()
 			.toEIP12Object();
 
-		const signedTx2 = (
-			await signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx2)
-		).to_js_eip12();
-		expect(signedTx2.inputs.length).toBe(1);
-
-		//console.dir(signedTx2, { depth: null });
-		const hasError = await txHasErrors(signedTx2);
-		expect(hasError).toBe(false);
+			await expect(signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx2)
+		).rejects.toThrowError();
 	}); //find
 
 	it.skip('Alice+Shadow cant withdraw real box from deposit ', async () => {
