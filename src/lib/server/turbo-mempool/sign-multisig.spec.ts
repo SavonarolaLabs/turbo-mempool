@@ -30,64 +30,31 @@ import {
 import { depositAddress } from '../constants/depositAddress';
 import { utxos } from '../utxo/unspent';
 import { first, type Amount, type Box, type EIP12UnsignedTransaction, type OneOrMore } from '@fleet-sdk/common';
-import { createDepositTx } from './account';
+import { createDepositTx, createWithdrawTx } from './account';
 
 describe.only('boxes from depositAddress', () => {
 	it('can spent a deposit', async () => {
-		const unsignedTransaction = createDepositTx(BOB_ADDRESS, utxos[BOB_ADDRESS], 1290000 + 100, 1255856)
+		const unsignedDepositTx = createDepositTx(BOB_ADDRESS, utxos[BOB_ADDRESS], 1290000 + 100, 1255856)
 
 		const signedTx = (
-			await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTransaction)
+			await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedDepositTx)
 		).to_js_eip12();
 
-		const newInput = signedTx.outputs[0];
-		//const output = new OutputBuilder(2n * SAFE_MIN_BOX_VALUE, depositAddress);
-
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = signedTx.outputs[0];
+		const unsignedTx2 = createWithdrawTx(BOB_ADDRESS, withdrawBoxes, 1255856);
 
 		const signed = await signMultisig(unsignedTx2, BOB_MNEMONIC, BOB_ADDRESS);
 		expect(signed.to_js_eip12().inputs.length).toBe(1);
 	});
 
 	it.skip('can sign solo', async () => {
-		const output = new OutputBuilder(
-			3n * SAFE_MIN_BOX_VALUE,
-			depositAddress
-		).setAdditionalRegisters({
-			R4: SInt(2229000 + 100).toHex(),
-			R5: SSigmaProp(
-				SGroupElement(first(ErgoAddress.fromBase58(BOB_ADDRESS).getPublicKeys()))
-			).toHex(),
-			R6: SSigmaProp(
-				SGroupElement(first(ErgoAddress.fromBase58(SHADOWPOOL_ADDRESS).getPublicKeys()))
-			).toHex()
-		});
-		const unsignedTransaction = new TransactionBuilder(1255856)
-			.from(utxos[BOB_ADDRESS])
-			.to(output)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const unsignedDepositTx = createDepositTx(BOB_ADDRESS, utxos[BOB_ADDRESS], 2229000 + 100, 1255856)
 
 		const signedTx = (
-			await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTransaction)
+			await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedDepositTx)
 		).to_js_eip12();
 
-		const newInput = signedTx.outputs[0];
-		//const output = new OutputBuilder(2n * SAFE_MIN_BOX_VALUE, depositAddress);
-
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = signedTx.outputs[0];
 
 		const signedTx2 = (
 			await signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx2)
@@ -96,14 +63,8 @@ describe.only('boxes from depositAddress', () => {
 	});
 
 	it('Bob+Shadow can withdraw real box from deposit ', async () => {
-		const newInput = utxos[DEPOSIT_ADDRESS]; //find
-
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = utxos[DEPOSIT_ADDRESS]; //find
+		const unsignedTx2 = createWithdrawTx(BOB_ADDRESS, withdrawBoxes, 1255856);
 
 		const signed = await signMultisig(unsignedTx2, BOB_MNEMONIC, BOB_ADDRESS);
 		const signedTx2 = signed.to_js_eip12();
@@ -114,41 +75,23 @@ describe.only('boxes from depositAddress', () => {
 	});
 
 	it('Bob can NOT withdraw real box from deposit ', async () => {
-		const newInput = utxos[DEPOSIT_ADDRESS];
-
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = utxos[DEPOSIT_ADDRESS];
+		const unsignedTx2 = createWithdrawTx(BOB_ADDRESS, withdrawBoxes, 1255856);
 
 			await expect(signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx2)
 		).rejects.toThrowError();
 	}); //find
 
 	it.skip('Alice+Shadow cant withdraw real box from deposit ', async () => {
-		const newInput = utxos[DEPOSIT_ADDRESS];
-
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = utxos[DEPOSIT_ADDRESS];
+		const unsignedTx2 = createWithdrawTx(BOB_ADDRESS, withdrawBoxes, 1255856);
 		//await expect(signMultisig(unsignedTx2, ALICE_MNEMONIC, ALICE_ADDRESS)).toThrowError();
 		//expect().rejects()
 	});
 
 	it.skip('Bob can withdraw real box with height from deposit ', async () => {
-		const newInput = utxos[DEPOSIT_ADDRESS][0]; //find
-		console.dir(newInput, { depth: null });
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = utxos[DEPOSIT_ADDRESS][0]; //find
+		const unsignedTx2 = createWithdrawTx(BOB_ADDRESS, withdrawBoxes, 1255856);
 		//SHADOWPOOL_ADDRESS,SHADOW_MNEMONIC
 		const signedTx2 = (
 			await signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx2)
@@ -163,14 +106,8 @@ describe.only('boxes from depositAddress', () => {
 	}); //find
 
 	it.skip('SHADOW can withdraw real box with height from deposit ', async () => {
-		const newInput = utxos[DEPOSIT_ADDRESS][0]; //find
-		console.dir(newInput, { depth: null });
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = utxos[DEPOSIT_ADDRESS][0]; //find
+		const unsignedTx2 = createWithdrawTx(BOB_ADDRESS, withdrawBoxes, 1255856);
 		//SHADOWPOOL_ADDRESS,SHADOW_MNEMONIC
 		const signedTx2 = (
 			await signTxAllInputs(SHADOW_MNEMONIC, SHADOWPOOL_ADDRESS, unsignedTx2)
@@ -182,14 +119,8 @@ describe.only('boxes from depositAddress', () => {
 	}); //find
 
 	it.skip('Bob+Shadow can withdraw real with height box from deposit ', async () => {
-		const newInput = utxos[DEPOSIT_ADDRESS][0]; //find
-
-		const unsignedTx2 = new TransactionBuilder(1255856)
-			.from(newInput)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+		const withdrawBoxes = utxos[DEPOSIT_ADDRESS][0]; //find
+		const unsignedTx2 = createWithdrawTx(BOB_ADDRESS, withdrawBoxes, 1255856);
 
 		const signed = await signMultisig(unsignedTx2, BOB_MNEMONIC, BOB_ADDRESS);
 		const signedTx2 = signed.to_js_eip12();
