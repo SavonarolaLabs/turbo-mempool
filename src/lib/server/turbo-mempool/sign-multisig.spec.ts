@@ -29,29 +29,12 @@ import {
 } from '@fleet-sdk/core';
 import { depositAddress } from '../constants/depositAddress';
 import { utxos } from '../utxo/unspent';
-import { first } from '@fleet-sdk/common';
+import { first, type Amount, type Box, type EIP12UnsignedTransaction, type OneOrMore } from '@fleet-sdk/common';
+import { createDepositTx } from './account';
 
 describe.only('boxes from depositAddress', () => {
-	it('can be spent', async () => {
-		const output = new OutputBuilder(
-			3n * SAFE_MIN_BOX_VALUE,
-			depositAddress
-		).setAdditionalRegisters({
-			R4: SInt(1290000 + 100).toHex(),
-			R5: SSigmaProp(
-				SGroupElement(first(ErgoAddress.fromBase58(BOB_ADDRESS).getPublicKeys()))
-			).toHex(),
-			R6: SSigmaProp(
-				SGroupElement(first(ErgoAddress.fromBase58(SHADOWPOOL_ADDRESS).getPublicKeys()))
-			).toHex()
-		});
-		const unsignedTransaction = new TransactionBuilder(1255856)
-			.from(utxos[BOB_ADDRESS])
-			.to(output)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
+	it('can spent a deposit', async () => {
+		const unsignedTransaction = createDepositTx(BOB_ADDRESS, utxos[BOB_ADDRESS], 1290000 + 100, 1255856)
 
 		const signedTx = (
 			await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTransaction)

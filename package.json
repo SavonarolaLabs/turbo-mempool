@@ -38,6 +38,7 @@
 		"@ergo-graphql/types": "^0.5.1",
 		"@fleet-sdk/common": "^0.3.4",
 		"@fleet-sdk/compiler": "^0.3.4",
+		"@fleet-sdk/core": "^0.3.4",
 		"bip32": "^4.0.0",
 		"bip39": "^3.1.0",
 		"bs58": "^5.0.0",
