@@ -5,7 +5,7 @@ import { ErgoAddress } from '@fleet-sdk/core';
 import { mnemonicToSeedSync } from 'bip39';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import { bip32 } from './functions';
-import type { EIP12UnsignedTransaction } from '@fleet-sdk/common';
+import type { EIP12UnsignedTransaction, SignedTransaction } from '@fleet-sdk/common';
 import { toBigNumber } from '../tx-chaining/utils/bigNumbers';
 import { BOB_MNEMONIC, SHADOW_MNEMONIC } from '../constants/mnemonics';
 import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
@@ -104,7 +104,7 @@ export async function signMultisig(unsignedTx, userMnemonic: string, userAddress
 	return signedTx;
 }
 
-export async function txHasErrors(signedTransaction: string): Promise<false | string> {
+export async function txHasErrors(signedTransaction: SignedTransaction): Promise<false | string> {
 	const endpoint = 'https://gql.ergoplatform.com/';
 	const query = `
       mutation CheckTransaction($signedTransaction: SignedTransaction!) {
@@ -139,7 +139,7 @@ export async function txHasErrors(signedTransaction: string): Promise<false | st
 	}
 }
 
-export async function submitTx(signedTransaction: string): Promise<false | string> {
+export async function submitTx(signedTransaction: SignedTransaction): Promise<false | string> {
 	const endpoint = 'https://gql.ergoplatform.com/';
 	const query = `
       mutation SubmitTransaction($signedTransaction: SignedTransaction!) {
@@ -230,7 +230,7 @@ export async function signTx(
 	mnemonic: string,
 	address: string,
 	tx: EIP12UnsignedTransaction
-): Promise<wasm.Transaction> {
+): Promise<SignedTransaction> {
 	const prover = await getProver(mnemonic);
 
 	// filtet  == address
@@ -248,14 +248,14 @@ export async function signTx(
 		boxes_to_spend,
 		ErgoBoxes.empty()
 	);
-	return signedTx;
+	return signedTx.to_js_eip12();
 }
 
 export async function signTxAllInputs(
 	mnemonic: string,
 	address: string,
 	tx: EIP12UnsignedTransaction
-): Promise<wasm.Transaction> {
+): Promise<SignedTransaction> {
 	const prover = await getProver(mnemonic);
 
 	// filtet  == address
@@ -271,7 +271,7 @@ export async function signTxAllInputs(
 		boxes_to_spend,
 		ErgoBoxes.empty()
 	);
-	return signedTx;
+	return signedTx.to_js_eip12();
 }
 
 const getWalletAddressSecret = (mnemonic: string, idx: number = 0) => {
