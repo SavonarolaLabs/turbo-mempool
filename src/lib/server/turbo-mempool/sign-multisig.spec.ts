@@ -112,36 +112,6 @@ describe.only('boxes from depositAddress', () => {
 		expect(signedTx2.inputs.length).toBe(1);
 	});
 
-	it.skip('Bob deposit real box to deposit ', async () => {
-		const output = new OutputBuilder(
-			3n * SAFE_MIN_BOX_VALUE,
-			depositAddress
-		).setAdditionalRegisters({
-			R4: SInt(1256321 + 200).toHex(),
-			R5: SSigmaProp(
-				SGroupElement(first(ErgoAddress.fromBase58(BOB_ADDRESS).getPublicKeys()))
-			).toHex(),
-			R6: SSigmaProp(
-				SGroupElement(first(ErgoAddress.fromBase58(SHADOWPOOL_ADDRESS).getPublicKeys()))
-			).toHex()
-		});
-		const unsignedTransaction = new TransactionBuilder(1255856)
-			.from(utxos[BOB_ADDRESS])
-			.to(output)
-			.sendChangeTo(BOB_ADDRESS)
-			.payFee(RECOMMENDED_MIN_FEE_VALUE)
-			.build()
-			.toEIP12Object();
-
-		const signedTx = (
-			await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTransaction)
-		).to_js_eip12();
-
-		//console.dir(signedTx, { depth: null });
-		const sumbitedTx = await submitTx(signedTx);
-		expect(sumbitedTx).toBeTypeOf('string');
-	});
-
 	it('Bob+Shadow can withdraw real box from deposit ', async () => {
 		const newInput = utxos[DEPOSIT_ADDRESS]; //find
 
