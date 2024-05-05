@@ -3,11 +3,15 @@ import { compile } from '@fleet-sdk/compiler';
 
 export const sellTokenForErg = `
 {
+	def getTokenId(box: Box)               = box.R4[Coll[Byte]].getOrElse(Coll[Byte]()) 
+	def getSellRate(box: Box)              = box.R5[Long].get
+	def getSellerMultisigAddress(box: Box) = box.R6[SigmaProp].get.propBytes
+	def getSellerMultisigPk(box: Box)      = box.R6[SigmaProp].get
+	def getSellerPk(box: Box)              = box.R7[SigmaProp].get
+	def getPoolPk(box: Box)                = box.R8[SigmaProp].get
+	def unlockHeight(box: Box)             = box.R9[Int].get
+
 	def getTokenAmount(box: Box) = box.tokens(0)._2
-	def getTokenId(box: Box)  = box.R4[Coll[Byte]].getOrElse(Coll[Byte]()) 
-	def getSellRate(box: Box) = box.R5[Long].get
-	def getSellerAddress(box: Box) = box.R6[SigmaProp].get.propBytes
-	def getSellerPk(box: Box) = box.R6[SigmaProp].get
   
 	def isSameContract(box: Box) = 
 		blake2b256(box.propositionBytes) == blake2b256(SELF.propositionBytes)
@@ -17,14 +21,14 @@ export const sellTokenForErg = `
 		box.tokens(0)._1 == getTokenId(SELF)
   
 	def isSameSeller(box: Box)     = 
-		getSellerAddress(box) == getSellerAddress(SELF)
+		getSellerMultisigAddress(box) == getSellerMultisigAddress(SELF)
   
 	def legitBox(box: Box) = {
 		isSameContract(box) && isSameToken(box) && isSameSeller(box) 
 	}
   
 	def isPaymentBox(box:Box) = {
-		getSellerAddress(SELF) == box.propositionBytes &&
+		getSellerMultisigAddress(SELF) == box.propositionBytes &&
 		getTokenId(SELF) == getTokenId(box)
 	}
   
@@ -47,12 +51,12 @@ export const sellTokenForErg = `
 			.filter({(b: Box)=> getSellRate(b) == maxSellRate})
 			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2})
   
-	def maxRateChangeBox(box: Box) = 
+	def isMaxRateChangeBox(box: Box) = 
 		legitBox(box) && getSellRate(box) == maxSellRate 
   
 	def tokensRemaining(boxes: Coll[Box]): Long = 
 		boxes
-			.filter(maxRateChangeBox)
+			.filter(isMaxRateChangeBox)
 			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2}) 
 	
 	val tokensNewSellOrder: Long = tokensRemaining(OUTPUTS)
@@ -70,13 +74,12 @@ export const sellTokenForErg = `
   
 	val orderFilled = sellerPaid && sellOrderChangeBoxIsFine
   
-	if(HEIGHT>SELF.RX[Int].get){ <- add to register
-		userPk <- add to register
+	if(HEIGHT > unlockHeight(SELF)){
+		getSellerPk(SELF)
 	}else{
-		getSellerPk(SELF) || (sigmaProp(orderFilled) && poolPk) <- add to register
-		^ rename
+		getSellerMultisigPk(SELF) || (sigmaProp(orderFilled) && getPoolPk(SELF))
 	}
-  }`;
+}`;
 
 function compileContract() {
 	const tree = compile(sellTokenForErg, {
