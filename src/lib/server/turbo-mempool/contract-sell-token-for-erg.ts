@@ -3,17 +3,83 @@ import { compile } from '@fleet-sdk/compiler';
 
 export const sellTokenForErg = `
 {
-    val sellTokenId   : Long      = SELF.R4[Long].get
-    val ergTokenRate  : Int       = SELF.R5[Int].get
-    val sellerAddress : SigmaProp = SELF.R6[SigmaProp].get
-
-    val sellerPaid = allOf(Coll(
-        OUTPUTS(0).propositionBytes == sellerAddress.propBytes,
-        OUTPUTS(0).value == SELF.value + SELF.tokens(0)._2 * ergTokenRate //secure it vs token injection
-    ))
-
-    sigmaProp(sellerPaid)
-}`;
+	def getTokenAmount(box: Box) = box.tokens(0)._2
+	def getTokenId(box: Box)  = box.R4[Coll[Byte]].get 
+	def getSellRate(box: Box) = box.R5[Long].get
+	def getSellerAddress(box: Box)     = box.R6[Coll[Byte]].get
+  
+	def getSellerPk(box: Box) = box.R6[SigmaProp].get
+  
+	def isSameContract(box: Box) = 
+		blake2b256(box.propositionBytes) == blake2b256(SELF.propositionBytes)
+  
+	def isSameToken(box: Box)    = 
+		getTokenId(box) == getTokenId(SELF) &&
+		box.tokens(0)._1 == getTokenId(SELF)
+  
+	def isSameSeller(box: Box)     = 
+		getSellerAddress(box) == getSellerAddress(SELF)
+  
+	def legitBox(box: Box) = {
+		isSameContract(box) && isSameToken(box) && isSameSeller(box) 
+	}
+  
+	def isPaymentBox(box:Box) = {
+		getSellerAddress(SELF) == box.propositionBytes &&
+		getTokenId(SELF) == getTokenId(box)
+	}
+  
+	def sumTokensIn(boxes: Coll[Box]): Long = 
+		boxes
+			.filter(legitBox) 
+			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2})
+  
+	val tokensIn: Long           = sumTokensIn(INPUTS)
+  
+	val avgRateInputs: Long = INPUTS.filter(legitBox).fold(0L, {(a:Long, b: Box) => a + getSellRate(b)*getTokenAmount(b)}) / tokensIn 
+	
+	val maxSellRate = INPUTS.filter(legitBox).fold(0L, {(r:Long, box:Box) => {
+	  if(r > getSellRate(box)) r else getSellRate(box)
+	}})
+  
+	def sumTokensInAtMaxRate(boxes: Coll[Box]): Long = 
+		boxes
+			.filter(legitBox)
+			.filter({(b: Box)=> getSellRate(b) == maxSellRate})
+			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2})
+  
+	def maxRateChangeBox(box: Box) = 
+		legitBox(box) && getSellRate(box) == maxSellRate 
+  
+	def tokensRemaining(boxes: Coll[Box]): Long = 
+		boxes
+			.filter(maxRateChangeBox)
+			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2}) 
+	
+	val tokensNewSellOrder: Long = tokensRemaining(OUTPUTS)
+	val tokensSold: Long         = tokensIn - tokensNewSellOrder
+  
+	val nanoErgsPaid: Long = 
+		OUTPUTS
+		  .filter(isPaymentBox)
+		  .fold(0L, {(a:Long, b: Box) => a + b.value})
+  
+	val avgTokenPrice : Long = (tokensIn * avgRateInputs - tokensNewSellOrder * maxSellRate) / (tokensIn - tokensNewSellOrder);
+	val tokensInputAtMaxRate = sumTokensInAtMaxRate(INPUTS) 
+	val sellOrderChangeBoxIsFine = tokensInputAtMaxRate > tokensNewSellOrder 
+	val sellerPaid: Boolen = tokensSold * avgTokenPrice <= nanoErgsPaid
+  
+	val orderFilled = sellerPaid && sellOrderChangeBoxIsFine
+  
+	def isFullWithdrawal(box: Box): Boolean = {
+	  getSellerAddress(SELF) == box.propositionBytes &&
+	  getTokenId(SELF) == box.tokens(0)._1 &&
+	  tokensIn == box.tokens(0)._2
+	}
+	val orderCancelled = getSellerPk(SELF) && OUTPUTS.exists(isFullWithdrawal) 
+  
+	sigmaProp(orderCancelled || orderFilled)
+  }`;
 
 //SELF.tokens(0)._1 == sellTokenId,
 
