@@ -12,10 +12,10 @@ export const userAndShadowPoolMultisig = `{
 	val poolPK      = SELF.R6[SigmaProp].get
 	
 	if(HEIGHT>SELF.R4[Int].get){
-	userPK
+		userPK
 	}else
 	{
-	userPK && poolPK
+		userPK && poolPK
 	}
 }`;
 

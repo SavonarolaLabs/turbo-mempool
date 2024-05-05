@@ -70,14 +70,12 @@ export const sellTokenForErg = `
   
 	val orderFilled = sellerPaid && sellOrderChangeBoxIsFine
   
-	def isFullWithdrawal(box: Box): Boolean = {
-	  getSellerAddress(SELF) == box.propositionBytes &&
-	  getTokenId(SELF) == box.tokens(0)._1 &&
-	  tokensIn == box.tokens(0)._2
+	if(HEIGHT>SELF.RX[Int].get){ <- add to register
+		userPk <- add to register
+	}else{
+		getSellerPk(SELF) || (sigmaProp(orderFilled) && poolPk) <- add to register
+		^ rename
 	}
-	val orderCancelled = getSellerPk(SELF) && OUTPUTS.exists(isFullWithdrawal) 
-  
-	sigmaProp(orderCancelled || orderFilled)
   }`;
 
 function compileContract() {
