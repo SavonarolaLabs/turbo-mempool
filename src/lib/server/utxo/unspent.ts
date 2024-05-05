@@ -8,7 +8,7 @@ export const utxos = {
 				'20578b15c08d09a4289881f729b6300ea714793791d90fe75f17423e8a415d31',
 			value: '997800000',
 			index: 1,
-			globalIndex: 4910611,
+			globalIndex: 4914287,
 			creationHeight: 1246984,
 			settlementHeight: 1246986,
 			ergoTree:
@@ -25,16 +25,16 @@ export const utxos = {
 	],
 	'9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU': [
 		{
-			boxId: '2dd0b8e9bb2066e5360c7c890108a8d2a23b68b170cdc005872c18c6843f40b2',
+			boxId: '718e447bd1504b9f06b49a2a6d5a817514969c11ed151da75f9777050716f17e',
 			transactionId:
-				'e4550f8e3362dc61e4796cdb0d5111db5a5666bab61e90e66801f999a257a492',
+				'd41163440d1c7a4410ee7096ae52f45819f4813db08b1ed188a9f026da1cc7da',
 			blockId:
-				'0b3b252de6b4705459879ca874b9ec81becf30030317d66fcbd261b08ac69c7f',
-			value: '1808600000',
+				'5999c25e187bd8d14c0f50f3e8f5ef43c63d8e047b9aad3f57d642a840f2e5fa',
+			value: '1797000000',
 			index: 2,
-			globalIndex: 5361763,
+			globalIndex: 5368082,
 			creationHeight: 1255856,
-			settlementHeight: 1257829,
+			settlementHeight: 1257923,
 			ergoTree:
 				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
 			ergoTreeConstants: '',
@@ -44,20 +44,20 @@ export const utxos = {
 			assets: [
 				{
 					tokenId:
-						'471eec389bebd266b5be1163451775d15c22df12af911e8ff0b919b60c862bae',
+						'69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8',
 					index: 0,
-					amount: '1',
-					name: '5,000.00 ERG Holdbox',
-					decimals: 0,
+					amount: '47997989999998590',
+					name: 'HoldErgDoge Test1',
+					decimals: 9,
 					type: 'EIP-004'
 				},
 				{
 					tokenId:
-						'69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8',
+						'471eec389bebd266b5be1163451775d15c22df12af911e8ff0b919b60c862bae',
 					index: 1,
-					amount: '47997989999998890',
-					name: 'HoldErgDoge Test1',
-					decimals: 9,
+					amount: '1',
+					name: '5,000.00 ERG Holdbox',
+					decimals: 0,
 					type: 'EIP-004'
 				},
 				{
@@ -102,6 +102,88 @@ export const utxos = {
 			mainChain: true
 		},
 		{
+			boxId: '1ba81e712cb2da0406c53dd917bd341e7e31ba45182d9dfa9d67ec4c3e037e4c',
+			transactionId:
+				'24b14876b7313bdc5d8e001ad0dd9809f422bcb4b94a65c0520d74c878a88492',
+			blockId:
+				'e4a70ae6edb5adb015c2861835d96bac22d327e6ca1933dc94b876b23cceedd4',
+			value: '1000000',
+			index: 0,
+			globalIndex: 5367984,
+			creationHeight: 1255856,
+			settlementHeight: 1257919,
+			ergoTree:
+				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
+			ergoTreeConstants: '',
+			ergoTreeScript:
+				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
+			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+			assets: [],
+			additionalRegisters: {
+				R4: '0e2069feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8'
+			},
+			spentTransactionId: null,
+			mainChain: true
+		},
+		{
+			boxId: '5bf691fbf0c4b17f8f8cece83fa947f62f480bfbd242bd58946f85535125db4d',
+			transactionId:
+				'9e14d7af9149c263fd5d8b8d1ea9566da9cc8f8575988e51ea2ef30669528474',
+			blockId:
+				'a3ba4f78e64011297ba1fe21b766a8ec6e800e62aeada435afb2a67aa11ee851',
+			value: '1000000',
+			index: 0,
+			globalIndex: 5367873,
+			creationHeight: 1255856,
+			settlementHeight: 1257914,
+			ergoTree:
+				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
+			ergoTreeConstants: '',
+			ergoTreeScript:
+				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
+			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+			assets: [],
+			additionalRegisters: {
+				R4: '0e2069feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8'
+			},
+			spentTransactionId: null,
+			mainChain: true
+		},
+		{
+			boxId: 'abd587f350c19d352cf8aa9a21dd86f99d8bf849f91f02130053b986b9060ca3',
+			transactionId:
+				'f69451ad5030dea04a933c97b55f04f3b5ca5071d5128da1fd0a787eaf5934a1',
+			blockId:
+				'e08c56dd46e017c0d54bfcfe433b8821dede39147d89d3bdc1c8389a0cfa37d3',
+			value: '2000000',
+			index: 0,
+			globalIndex: 5367238,
+			creationHeight: 1255856,
+			settlementHeight: 1257895,
+			ergoTree:
+				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
+			ergoTreeConstants: '',
+			ergoTreeScript:
+				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
+			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+			assets: [
+				{
+					tokenId:
+						'69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8',
+					index: 0,
+					amount: '200',
+					name: 'HoldErgDoge Test1',
+					decimals: 9,
+					type: 'EIP-004'
+				}
+			],
+			additionalRegisters: {
+				R4: '0e2069feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8'
+			},
+			spentTransactionId: null,
+			mainChain: true
+		},
+		{
 			boxId: '0cff50cf00914fb243ed73d38ffb103e3ea0634988202aa1c9691ebeee0f496e',
 			transactionId:
 				'b34528840fbf61af64f5268d380e4466884a7e679ecf435deb9af4e8cb721790',
@@ -109,7 +191,7 @@ export const utxos = {
 				'01b07cded9dd8480f9fa2e3f6e20a480a335b5b48f02030e6f81dcf801a6c6fa',
 			value: '1000000',
 			index: 1,
-			globalIndex: 5281990,
+			globalIndex: 5285666,
 			creationHeight: 1255566,
 			settlementHeight: 1255568,
 			ergoTree:
@@ -148,7 +230,7 @@ export const utxos = {
 				'd9b7142bd03e3b580205eb7d154612b76326d142768302453d2203c2d1303336',
 			value: '100000000',
 			index: 0,
-			globalIndex: 5083853,
+			globalIndex: 5087529,
 			creationHeight: 1251583,
 			settlementHeight: 1251587,
 			ergoTree:
@@ -217,27 +299,27 @@ export const utxos = {
 			mainChain: true
 		}
 	],
-	'3yXgv1wMxDN2FsXBHVeY3ZNumf6iiNJbQLNc9hMnziUSzgLyYRroE59aH7PUdqeHXTVkgKe8s6FzWa6VghBtJCA8Ytd7gGqGZsvZmvFr9haSYm9iNPfEcYYu6SiJxw3hMdnPVfPPjanHbSVTGeWemEcscVYhXGaP6Nud5UY2JKTVjsGkeeCwYFWuodEgxwhvB2axqSRaDPrpR2MXd5LNF1sgiGwCGyV426sbQ9JLj35f35aBvQPy4nEmMYZNof6fBeYai28rtxYoSJdNoyfzFfaEggwKvxBZ9kviJ2A2XYKDLsfwhduMcbcxWy1QH8y9WygtsWJKq2z42nDzLhhKXsPukn7WjSHnpAL4eLdWZSGJWNgaRuwcG8JmLNRM5g5gazjuZQVD2sW5SbRhc6nhh7B7d6cZtov8CUuvQY6CQpVd8CGQ3g9oU2LAMATs8oaNbdpBEH9mbqmQqGNukUFrjSHngXdacswFkhbxpYTGpj8xoPTfopa8y6aE7QEofq8aZqLJdGiJ9ecCH9kiAHjDLdFKURF5eUaijx1Xv69ERyhZe1wGVCi4ZphSvY73HS5inui9UJyjGdjJRpJmb3EEr4gEUEeNGmmzAbhoms8QDXLfnoQwDrt5CgtFyMidbjfrm1NQStymtuM4PuBCdXgjEDQdKKELU4TV6eHK8XeFLFapWtHhJKfamvHWRPrTpkymWWz8tP71htbekyb4MWW8dQBtZyia2':
+	LTyEu6QZ8NSLiAAc29LV6LffsQgMnCRYkBS7bzdkc6vf2hfmVUqr9HLzrKhhfbw3LaAunASbyfoVHKcqdktxpBKrmDFi4n1DGGmka1xwi3X7513StT9Et5qSvpHr3YnCYZHUpqLKUAVjHfTyCCUGbG4xNQxdg5qdyFx9CjbEHaq3RRYLiab1LWu1bMKK8Pzr6qWpzFc4x3GUwNjq7ek5mVnVmEP1t5QvqesTwPWV2YqM5SkUZW1YYSUDx7SnJAaLqRCrNE8qoDzUaScmYtXCaxdPTvVAZg2sA79w1w7VGMFoLntVxDsVZKqNeaSd17rjPNcdX14X6M4xiSg1PRCWoiBKokg3SgwSuvWu1ox9xiXYdiWXhHYAdgKSgt6mRY7dvSLtprLCUvNQx6dFXMQU7bQPgshwthdr1BawgiRhLy2mZ9ogq548VX5KEgMHP2LK4Go8Fo9RokpapCgMJC9TNMimijLtR2CvMeFyiGJhLhignYamD1B7z2KhDDybU4kGAoZHt9fLoQWYX4UU5sgNZoytGxMDtWbJb8G5EBW8y9nJX5YvTky7c21V3BmYgbDCk3e4qjmBz5KUNqvoV2v8Nmm4EqTXJjFPfVF7D3JQ56r7PF88bvtb1LDnvA1yXJqev15m6TAmtMFsPc3RVYrFXvq8SiS67KPh1P5jFCZ3P2K5z5ZV2GYap512ry3T3xrRf4RWFSmNifeqwaCVBFUqreogGsppxM54Vc:
 		[
 			{
-				boxId: '9942756e6de3615179f69bb2f89a9eaeaf25b00234d13c6f33951e60c93c54b1',
+				boxId: 'adc54f3cce3aafadcf05aafdf9a7ec56e336c7d42b565eac286fac3c8e6a91b9',
 				transactionId:
-					'e4550f8e3362dc61e4796cdb0d5111db5a5666bab61e90e66801f999a257a492',
+					'd41163440d1c7a4410ee7096ae52f45819f4813db08b1ed188a9f026da1cc7da',
 				blockId:
-					'0b3b252de6b4705459879ca874b9ec81becf30030317d66fcbd261b08ac69c7f',
+					'5999c25e187bd8d14c0f50f3e8f5ef43c63d8e047b9aad3f57d642a840f2e5fa',
 				value: '1000000',
 				index: 0,
-				globalIndex: 5361761,
+				globalIndex: 5368080,
 				creationHeight: 1255856,
-				settlementHeight: 1257829,
+				settlementHeight: 1257923,
 				ergoTree:
-					'100d0400050004000500050004000400040005000400050005000400d80bd601d9010163e4c67201060ed602da720101a7d603d9010363e4c67203040ed604da720301a7d605d9010563ededdad901076393cbc27207cbc2a7017205dad9010763ed93da72030172077204938cb2db63087207730000017204017205dad901076393da72010172077202017205d606dad901060c63b0b5720672057301d9010841639a8c7208018cb2db63088c7208027302000201a4d607d9010763e4c672070505d608b5a47205d609b072087303d901094163d802d60b8c720901d60cda7207018c7209029591720b720c720b720cd60adad9010a0c63b0b5720ad9010c63edda720501720c93da720701720c72097304d9010c41639a8c720c018cb2db63088c720c027305000201a5d60b997206720aeb02ea02dad9010c63e4c6720c060801a7d1aea5d9010c63eded937202c2720c9372048cb2db6308720c730600019372068cb2db6308720c73070002d1ed909c720b9d999c72069db072087308d9010c4163d801d60e8c720c029a8c720c019cda720701720edad9010f638cb2db6308720f7309000201720e72069c720a7209720bb0b5a5d9010c63ed937202c2720c937204da720301720c730ad9010c41639a8c720c01c18c720c0291dad9010c0c63b0b5b5720c7205d9010e6393da720701720e7209730bd9010e41639a8c720e018cb2db63088c720e02730c000201a4720a',
+					'100d0400050004000500050004000400040005000400050005000400d80bd601d9010163d0e4c672010608d602da720101a7d603d9010363e5c67203040e830002d604da720301a7d605d9010563ededdad901076393cbc27207cbc2a7017205dad9010763ed93da72030172077204938cb2db63087207730000017204017205dad901076393da72010172077202017205d606dad901060c63b0b5720672057301d9010841639a8c7208018cb2db63088c7208027302000201a4d607d9010763e4c672070505d608b5a47205d609b072087303d901094163d802d60b8c720901d60cda7207018c7209029591720b720c720b720cd60adad9010a0c63b0b5720ad9010c63edda720501720c93da720701720c72097304d9010c41639a8c720c018cb2db63088c720c027305000201a5d60b997206720aeb02ea02dad9010c63e4c6720c060801a7d1aea5d9010c63eded937202c2720c9372048cb2db6308720c730600019372068cb2db6308720c73070002d1ed909c720b9d999c72069db072087308d9010c4163d801d60e8c720c029a8c720c019cda720701720edad9010f638cb2db6308720f7309000201720e72069c720a7209720bb0b5a5d9010c63ed937202c2720c937204da720301720c730ad9010c41639a8c720c01c18c720c0291dad9010c0c63b0b5b5720c7205d9010e6393da720701720e7209730bd9010e41639a8c720e018cb2db63088c720e02730c000201a4720a',
 				ergoTreeConstants:
 					'0: 0\n1: 0\n2: 0\n3: 0\n4: 0\n5: 0\n6: 0\n7: 0\n8: 0\n9: 0\n10: 0\n11: 0\n12: 0',
 				ergoTreeScript:
-					'{\n  val func1 = {(box1: Box) => box1.R6[Coll[Byte]].get }\n  val coll2 = func1(SELF)\n  val func3 = {(box3: Box) => box3.R4[Coll[Byte]].get }\n  val coll4 = func3(SELF)\n  val func5 = {(box5: Box) =>\n    (\n      {(box7: Box) => blake2b256(box7.propositionBytes) == blake2b256(SELF.propositionBytes) }(box5) && {(box7: Box) =>\n        (func3(box7) == coll4) && (box7.tokens(placeholder[Int](0))._1 == coll4)\n      }(box5)\n    ) && {(box7: Box) => func1(box7) == coll2 }(box5)\n  }\n  val l6 = {(coll6: Coll[Box]) =>\n    coll6.filter(func5).fold(placeholder[Long](1), {(tuple8: (Long, Box)) => tuple8._1 + tuple8._2.tokens(placeholder[Int](2))._2 })\n  }(INPUTS)\n  val func7 = {(box7: Box) => box7.R5[Long].get }\n  val coll8 = INPUTS.filter(func5)\n  val l9 = coll8.fold(placeholder[Long](3), {(tuple9: (Long, Box)) =>\n      val l11 = tuple9._1\n      val l12 = func7(tuple9._2)\n      if (l11 > l12) { l11 } else { l12 }\n    })\n  val l10 = {(coll10: Coll[Box]) =>\n    coll10.filter({(box12: Box) => func5(box12) && (func7(box12) == l9) }).fold(\n      placeholder[Long](4), {(tuple12: (Long, Box)) => tuple12._1 + tuple12._2.tokens(placeholder[Int](5))._2 }\n    )\n  }(OUTPUTS)\n  val l11 = l6 - l10\n  {(box12: Box) => box12.R6[SigmaProp].get }(SELF) && sigmaProp(\n    OUTPUTS.exists(\n      {(box12: Box) => ((coll2 == box12.propositionBytes) && (coll4 == box12.tokens(placeholder[Int](6))._1)) && (l6 == box12.tokens(placeholder[Int](7))._2) }\n    )\n  ) || sigmaProp((l11 * l6 * coll8.fold(placeholder[Long](8), {(tuple12: (Long, Box)) =>\n          val box14 = tuple12._2\n          tuple12._1 + func7(box14) * {(box15: Box) => box15.tokens(placeholder[Int](9))._2 }(box14)\n        }) / l6 - l10 * l9 / l11 <= OUTPUTS.filter({(box12: Box) => (coll2 == box12.propositionBytes) && (coll4 == func3(box12)) }).fold(placeholder[Long](10), {(tuple12: (Long, Box)) => tuple12._1 + tuple12._2.value })) && ({(coll12: Coll[Box]) => coll12.filter(func5).filter({(box14: Box) => func7(box14) == l9 }).fold(placeholder[Long](11), {(tuple14: (Long, Box)) => tuple14._1 + tuple14._2.tokens(placeholder[Int](12))._2 }) }(INPUTS) > l10))\n}',
+					'{\n  val func1 = {(box1: Box) => box1.R6[SigmaProp].get.propBytes }\n  val coll2 = func1(SELF)\n  val func3 = {(box3: Box) => box3.R4[Coll[Byte]].getOrElse(Coll[Byte]()) }\n  val coll4 = func3(SELF)\n  val func5 = {(box5: Box) =>\n    (\n      {(box7: Box) => blake2b256(box7.propositionBytes) == blake2b256(SELF.propositionBytes) }(box5) && {(box7: Box) =>\n        (func3(box7) == coll4) && (box7.tokens(placeholder[Int](0))._1 == coll4)\n      }(box5)\n    ) && {(box7: Box) => func1(box7) == coll2 }(box5)\n  }\n  val l6 = {(coll6: Coll[Box]) =>\n    coll6.filter(func5).fold(placeholder[Long](1), {(tuple8: (Long, Box)) => tuple8._1 + tuple8._2.tokens(placeholder[Int](2))._2 })\n  }(INPUTS)\n  val func7 = {(box7: Box) => box7.R5[Long].get }\n  val coll8 = INPUTS.filter(func5)\n  val l9 = coll8.fold(placeholder[Long](3), {(tuple9: (Long, Box)) =>\n      val l11 = tuple9._1\n      val l12 = func7(tuple9._2)\n      if (l11 > l12) { l11 } else { l12 }\n    })\n  val l10 = {(coll10: Coll[Box]) =>\n    coll10.filter({(box12: Box) => func5(box12) && (func7(box12) == l9) }).fold(\n      placeholder[Long](4), {(tuple12: (Long, Box)) => tuple12._1 + tuple12._2.tokens(placeholder[Int](5))._2 }\n    )\n  }(OUTPUTS)\n  val l11 = l6 - l10\n  {(box12: Box) => box12.R6[SigmaProp].get }(SELF) && sigmaProp(\n    OUTPUTS.exists(\n      {(box12: Box) => ((coll2 == box12.propositionBytes) && (coll4 == box12.tokens(placeholder[Int](6))._1)) && (l6 == box12.tokens(placeholder[Int](7))._2) }\n    )\n  ) || sigmaProp((l11 * l6 * coll8.fold(placeholder[Long](8), {(tuple12: (Long, Box)) =>\n          val box14 = tuple12._2\n          tuple12._1 + func7(box14) * {(box15: Box) => box15.tokens(placeholder[Int](9))._2 }(box14)\n        }) / l6 - l10 * l9 / l11 <= OUTPUTS.filter({(box12: Box) => (coll2 == box12.propositionBytes) && (coll4 == func3(box12)) }).fold(placeholder[Long](10), {(tuple12: (Long, Box)) => tuple12._1 + tuple12._2.value })) && ({(coll12: Coll[Box]) => coll12.filter(func5).filter({(box14: Box) => func7(box14) == l9 }).fold(placeholder[Long](11), {(tuple14: (Long, Box)) => tuple14._1 + tuple14._2.tokens(placeholder[Int](12))._2 }) }(INPUTS) > l10))\n}',
 				address:
-					'3yXgv1wMxDN2FsXBHVeY3ZNumf6iiNJbQLNc9hMnziUSzgLyYRroE59aH7PUdqeHXTVkgKe8s6FzWa6VghBtJCA8Ytd7gGqGZsvZmvFr9haSYm9iNPfEcYYu6SiJxw3hMdnPVfPPjanHbSVTGeWemEcscVYhXGaP6Nud5UY2JKTVjsGkeeCwYFWuodEgxwhvB2axqSRaDPrpR2MXd5LNF1sgiGwCGyV426sbQ9JLj35f35aBvQPy4nEmMYZNof6fBeYai28rtxYoSJdNoyfzFfaEggwKvxBZ9kviJ2A2XYKDLsfwhduMcbcxWy1QH8y9WygtsWJKq2z42nDzLhhKXsPukn7WjSHnpAL4eLdWZSGJWNgaRuwcG8JmLNRM5g5gazjuZQVD2sW5SbRhc6nhh7B7d6cZtov8CUuvQY6CQpVd8CGQ3g9oU2LAMATs8oaNbdpBEH9mbqmQqGNukUFrjSHngXdacswFkhbxpYTGpj8xoPTfopa8y6aE7QEofq8aZqLJdGiJ9ecCH9kiAHjDLdFKURF5eUaijx1Xv69ERyhZe1wGVCi4ZphSvY73HS5inui9UJyjGdjJRpJmb3EEr4gEUEeNGmmzAbhoms8QDXLfnoQwDrt5CgtFyMidbjfrm1NQStymtuM4PuBCdXgjEDQdKKELU4TV6eHK8XeFLFapWtHhJKfamvHWRPrTpkymWWz8tP71htbekyb4MWW8dQBtZyia2',
+					'LTyEu6QZ8NSLiAAc29LV6LffsQgMnCRYkBS7bzdkc6vf2hfmVUqr9HLzrKhhfbw3LaAunASbyfoVHKcqdktxpBKrmDFi4n1DGGmka1xwi3X7513StT9Et5qSvpHr3YnCYZHUpqLKUAVjHfTyCCUGbG4xNQxdg5qdyFx9CjbEHaq3RRYLiab1LWu1bMKK8Pzr6qWpzFc4x3GUwNjq7ek5mVnVmEP1t5QvqesTwPWV2YqM5SkUZW1YYSUDx7SnJAaLqRCrNE8qoDzUaScmYtXCaxdPTvVAZg2sA79w1w7VGMFoLntVxDsVZKqNeaSd17rjPNcdX14X6M4xiSg1PRCWoiBKokg3SgwSuvWu1ox9xiXYdiWXhHYAdgKSgt6mRY7dvSLtprLCUvNQx6dFXMQU7bQPgshwthdr1BawgiRhLy2mZ9ogq548VX5KEgMHP2LK4Go8Fo9RokpapCgMJC9TNMimijLtR2CvMeFyiGJhLhignYamD1B7z2KhDDybU4kGAoZHt9fLoQWYX4UU5sgNZoytGxMDtWbJb8G5EBW8y9nJX5YvTky7c21V3BmYgbDCk3e4qjmBz5KUNqvoV2v8Nmm4EqTXJjFPfVF7D3JQ56r7PF88bvtb1LDnvA1yXJqev15m6TAmtMFsPc3RVYrFXvq8SiS67KPh1P5jFCZ3P2K5z5ZV2GYap512ry3T3xrRf4RWFSmNifeqwaCVBFUqreogGsppxM54Vc',
 				assets: [
 					{
 						tokenId:

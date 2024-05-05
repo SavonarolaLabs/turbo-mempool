@@ -7,7 +7,6 @@ export const sellTokenForErg = `
 	def getTokenId(box: Box)  = box.R4[Coll[Byte]].getOrElse(Coll[Byte]()) 
 	def getSellRate(box: Box) = box.R5[Long].get
 	def getSellerAddress(box: Box) = box.R6[SigmaProp].get.propBytes
-  
 	def getSellerPk(box: Box) = box.R6[SigmaProp].get
   
 	def isSameContract(box: Box) = 
@@ -79,51 +78,6 @@ export const sellTokenForErg = `
 	val orderCancelled = getSellerPk(SELF) && OUTPUTS.exists(isFullWithdrawal) 
   
 	sigmaProp(orderCancelled || orderFilled)
-  }`;
-
-const x = `
-{
-	def getTokenAmount(box: Box) = box.tokens(0)._2
-	def getTokenId(box: Box)  = box.R4[Coll[Byte]].get 
-	def getSellRate(box: Box) = box.R5[Long].get
-	def getSellerAddress(box: Box)     = box.R6[SigmaProp].get.propBytes
-  
-	def getSellerPk(box: Box) = box.R6[SigmaProp].get
-  
-	def isSameContract(box: Box) = 
-		blake2b256(box.propositionBytes) == blake2b256(SELF.propositionBytes)
-  
-	def isSameToken(box: Box)    = 
-		getTokenId(box) == getTokenId(SELF) &&
-		box.tokens(0)._1 == getTokenId(SELF)
-  
-	def isSameSeller(box: Box)     = 
-		getSellerAddress(box) == getSellerAddress(SELF)
-  
-	def legitBox(box: Box) = {
-		isSameContract(box) && isSameToken(box) && isSameSeller(box) 
-	}
-  
-	def isPaymentBox(box:Box) = {
-		getSellerAddress(SELF) == box.propositionBytes &&
-		getTokenId(SELF) == getTokenId(box)
-	}
-  
-	def sumTokensIn(boxes: Coll[Box]): Long = 
-		boxes
-			.filter(legitBox) 
-			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2})
-  
-	val tokensIn: Long           = sumTokensIn(INPUTS)
-  
-	def isFullWithdrawal(box: Box): Boolean = {
-		getSellerAddress(SELF) == box.propositionBytes &&
-		getTokenId(SELF) == box.tokens(0)._1 &&
-		tokensIn == box.tokens(0)._2
-	  }
-	  val orderCancelled = sigmaProp(OUTPUTS.exists(isFullWithdrawal))
-
-	  orderCancelled
   }`;
 
 function compileContract() {
