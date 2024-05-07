@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"utxo": "bun src/lib/server/utxo/script_loadUnspetUtxo.ts > src/lib/server/utxo/unspent.ts",
-		"compile": "bun src/lib/server/turbo-mempool/contract-sell-token-for-erg.ts > src/lib/server/constants/sellOrder.ts",
+		"compile": "bun src/lib/server/turbo-mempool/sell-contract/contract-sell-token-for-erg.ts > src/lib/server/constants/sellOrder.ts",
 		"compile:deposit": "bun src/lib/server/turbo-mempool/contract-user-shadow-pool.ts > src/lib/server/constants/depositAddress.ts",
 		"dev": "vite dev",
 		"build": "vite build",

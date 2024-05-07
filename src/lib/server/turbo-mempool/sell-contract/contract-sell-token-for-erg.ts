@@ -1,57 +1,73 @@
 import { Network } from '@fleet-sdk/common';
 import { compile } from '@fleet-sdk/compiler';
 
-export const sellTokenForErg = `
-{
-	def getTokenId(box: Box)               = box.R4[Coll[Byte]].getOrElse(Coll[Byte]()) 
-	def getSellRate(box: Box)              = box.R5[Long].get
-	def getSellerMultisigAddress(box: Box) = box.R6[Coll[Byte]].get
-	def getSellerPk(box: Box)              = box.R7[Coll[SigmaProp]].get(0)
-	def getPoolPk(box: Box)                = box.R7[Coll[SigmaProp]].get(1)
-	def unlockHeight(box: Box)             = box.R8[Int].get
+export const sellTokenForErg = `{	
+	def getSellerPk(box: Box)              = box.R4[Coll[SigmaProp]].getOrElse(Coll[SigmaProp](sigmaProp(false),sigmaProp(false)))(0)
+	def getPoolPk(box: Box)                = box.R4[Coll[SigmaProp]].getOrElse(Coll[SigmaProp](sigmaProp(false),sigmaProp(false)))(1)
+	def unlockHeight(box: Box)             = box.R5[Int].get
+	def getTokenId(box: Box)               = box.R6[Coll[Byte]].getOrElse(Coll[Byte]()) 
+	def getSellRate(box: Box)              = box.R7[Long].get
+	def getSellerMultisigAddress(box: Box) = box.R8[Coll[Byte]].get
 
 	def getTokenAmount(box: Box) = box.tokens(0)._2
   
 	def isSameContract(box: Box) = 
-		blake2b256(box.propositionBytes) == blake2b256(SELF.propositionBytes)
+		  box.propositionBytes == SELF.propositionBytes
   
 	def isSameToken(box: Box)    = 
-		getTokenId(box) == getTokenId(SELF) &&
-		box.tokens(0)._1 == getTokenId(SELF)
+	  	getTokenId(SELF) == getTokenId(box) &&
+		  getTokenId(SELF) == box.tokens(0)._1 
   
-	def isSameSeller(box: Box)     = 
-		getSellerMultisigAddress(box) == getSellerMultisigAddress(SELF)
-  
-	def legitBox(box: Box) = {
-		isSameContract(box) && isSameToken(box) && isSameSeller(box) 
+	def isSameSeller(box: Box)   = 
+      getSellerPk(SELF) == getSellerPk(box) &&
+      getPoolPk(SELF) == getPoolPk(box)
+
+  def isSameUnlockHeight(box: Box)  = 
+      unlockHeight(SELF) == unlockHeight(box)
+
+  def isSameMultisig(box: Box)    =
+      getSellerMultisigAddress(SELF) == getSellerMultisigAddress(box)
+
+
+
+	def isLegitInputBox(box: Box) = {
+		isSameContract(box) && isSameToken(box) && isSameMultisig(box)
 	}
   
 	def isPaymentBox(box:Box) = {
-		getSellerMultisigAddress(SELF) == box.propositionBytes &&
-		getTokenId(SELF) == getTokenId(box)
+		isSameSeller(box) &&
+    isSameUnlockHeight(box) &&
+		getTokenId(SELF) == getTokenId(box) &&
+		getSellerMultisigAddress(SELF) == box.propositionBytes
 	}
   
 	def sumTokensIn(boxes: Coll[Box]): Long = 
 		boxes
-			.filter(legitBox) 
+			.filter(isLegitInputBox) 
 			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2})
   
 	val tokensIn: Long           = sumTokensIn(INPUTS)
   
-	val avgRateInputs: Long = INPUTS.filter(legitBox).fold(0L, {(a:Long, b: Box) => a + getSellRate(b)*getTokenAmount(b)}) / tokensIn 
+	val avgRateInputs: Long = INPUTS.filter(isLegitInputBox).fold(0L, {(a:Long, b: Box) => a + getSellRate(b)*getTokenAmount(b)}) / tokensIn 
 	
-	val maxSellRate = INPUTS.filter(legitBox).fold(0L, {(r:Long, box:Box) => {
+	val maxSellRate = INPUTS.filter(isLegitInputBox).fold(0L, {(r:Long, box:Box) => {
 	  if(r > getSellRate(box)) r else getSellRate(box)
 	}})
   
 	def sumTokensInAtMaxRate(boxes: Coll[Box]): Long = 
 		boxes
-			.filter(legitBox)
+			.filter(isLegitInputBox)
 			.filter({(b: Box)=> getSellRate(b) == maxSellRate})
 			.fold(0L, {(a:Long, b: Box) => a + b.tokens(0)._2})
   
-	def isMaxRateChangeBox(box: Box) = 
-		legitBox(box) && getSellRate(box) == maxSellRate 
+	def isMaxRateChangeBox(box: Box) = {
+		isSameSeller(box) &&
+		isSameUnlockHeight(box) &&
+		isSameToken(box) &&
+		maxSellRate == getSellRate(box) &&
+		isSameMultisig(box) &&
+		isSameContract(box)
+	}
   
 	def tokensRemaining(boxes: Coll[Box]): Long = 
 		boxes

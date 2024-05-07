@@ -8,14 +8,14 @@ import { ErgoAddress } from '@fleet-sdk/core';
 
 //1255856
 export const userAndShadowPoolMultisig = `{
-	val userPK      = SELF.R5[SigmaProp].get
-	val poolPK      = SELF.R6[SigmaProp].get
+	def getSellerPk(box: Box)              = box.R4[Coll[SigmaProp]].get(0)
+	def getPoolPk(box: Box)                = box.R4[Coll[SigmaProp]].get(1)
+	def unlockHeight(box: Box)             = box.R5[Int].get
 	
-	if(HEIGHT>SELF.R4[Int].get){
-		userPK
-	}else
-	{
-		userPK && poolPK
+	if(HEIGHT > unlockHeight(SELF)){
+		getSellerPk(SELF)
+	}else{
+		getSellerPk(SELF) && getPoolPk(SELF)
 	}
 }`;
 
