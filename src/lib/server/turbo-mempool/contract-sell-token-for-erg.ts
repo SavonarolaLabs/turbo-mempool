@@ -5,11 +5,10 @@ export const sellTokenForErg = `
 {
 	def getTokenId(box: Box)               = box.R4[Coll[Byte]].getOrElse(Coll[Byte]()) 
 	def getSellRate(box: Box)              = box.R5[Long].get
-	def getSellerMultisigAddress(box: Box) = box.R6[SigmaProp].get.propBytes
-	def getSellerMultisigPk(box: Box)      = box.R6[SigmaProp].get
-	def getSellerPk(box: Box)              = box.R7[SigmaProp].get
-	def getPoolPk(box: Box)                = box.R8[SigmaProp].get
-	def unlockHeight(box: Box)             = box.R9[Int].get
+	def getSellerMultisigAddress(box: Box) = box.R6[Coll[Byte]].get
+	def getSellerPk(box: Box)              = box.R7[Coll[SigmaProp]].get(0)
+	def getPoolPk(box: Box)                = box.R7[Coll[SigmaProp]].get(1)
+	def unlockHeight(box: Box)             = box.R8[Int].get
 
 	def getTokenAmount(box: Box) = box.tokens(0)._2
   
@@ -77,16 +76,12 @@ export const sellTokenForErg = `
 	if(HEIGHT > unlockHeight(SELF)){
 		getSellerPk(SELF)
 	}else{
-		getSellerMultisigPk(SELF) || (sigmaProp(orderFilled) && getPoolPk(SELF))
+		getSellerPk(SELF) && getPoolPk(SELF) || sigmaProp(orderFilled) && getPoolPk(SELF)
 	}
 }`;
 
 function compileContract() {
 	const tree = compile(sellTokenForErg, {
-		// map: {
-		//     AlicePK: SSigmaProp(SGroupElement(first(aliceAddr.getPublicKeys()))).toHex(),
-		//     BobPK: SSigmaProp(SGroupElement(first(bobAddr.getPublicKeys()))).toHex()
-		// },
 		version: 0,
 		includeSize: false
 	});
@@ -94,4 +89,4 @@ function compileContract() {
 }
 
 console.log(`export const sellOrderAddress = "${compileContract()}"`);
-// "YUgzXAHbU5PBQVZ17sAx9BM5ibamq2umSnk1hPTZ4MBEHy1BPmfWK7oD5kXiu25r6hSMFHWGuqPPXRYEd"
+// "YyLFSBN184GYjBv4aH3q4tfwa7xdicpviowAM4MVVyWgbLKfpzWWXH4BPf5B3xepMb562S1R8UxBMtF4ZMp2FP3QVvQKDijPmNeiE3cbKXxTYDeE1EvwwB3paxQnQrnRjxtH9hjugjScENTHUwkCJVrr7muMnNVkXno1KboB73vWF4ujfnNCyooF4p72LMHsHUsFrps5vfQPaQm8Z2AHV3aXRtK14jTs2nTnZ7SoQsJZnyW9dXD9XSMP1KDEf2GdpgkzUhE5njFkW7XLg3E5CuxahW8LMY5e5F49ad5tNiBViCan2uUVMucrscgSYAX6YpWtiKuVYxVzm3oUZSwUTZpKWHfM9AtQ45yijrsmVmtkBQx6QT2EV394Ng3vNcM69SiS4rxUWaCKAsKWxF2VhiB17sy5M3CffpJqLGLnLpzGrYd6VyLLtMZn37rRi7ujGo2acgbcQ1iwTfuepFFNwCnAxUexWnkTS1NejRdRf4Yirie16i2rZKkpFMaC61SS8YS4P9qZcjLiHTc1Wn4Edn52qbTsyeWCrSQCcw5mZijoTXdEjkRJyvn3rngKn1h5gQNMd5FpmvAZthLVxJpCNtcAuYvXRsBSL79Eo1d5j331LUtknawqxVWDe3puZke9PR74z9h2kmfknM7Dq7BQTxFXN2nxHww8KLskRWNrMNHykt4xfiv3knayoNcvXbyDJLhYK653dwVymLnpH2LEqoAC7sunSCfShrqJQdB76NGUGZKqBRGpB"
