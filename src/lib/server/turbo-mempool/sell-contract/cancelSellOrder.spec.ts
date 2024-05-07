@@ -1,5 +1,4 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { createDepositTx } from '../account';
 import {
 	ALICE_ADDRESS,
 	BOB_ADDRESS,
@@ -28,19 +27,12 @@ import {
 	SSigmaProp,
 	TransactionBuilder
 } from '@fleet-sdk/core';
-import type { AssetStandard } from '$lib/types/internal';
 import {
-	getProver,
 	signMultisig,
 	signTx,
 	signTxAllInputs,
-	submitTx,
-	txHasErrors
 } from '$lib/server/multisig/multisig';
 import { ALICE_MNEMONIC, BOB_MNEMONIC } from '$lib/server/constants/mnemonics';
-import { fakeContext } from '$lib/server/multisig/fakeContext';
-import { wasmModule } from '$lib/server/tx-chaining/utils/wasm-module';
-import JSONBig from 'json-bigint';
 
 //global
 let utxoSell: OneOrMore<Box<Amount>> = [];
@@ -226,7 +218,7 @@ export function createSellOrderTx(
 			R5: SInt(unlockHeight).toHex(),
 			R6: SColl(SByte, token.tokenId).toHex(),
 			R7: SLong(sellRate).toHex(),
-			R8: SColl(SByte, ErgoAddress.fromBase58(sellerPK).ergoTree).toHex()
+			R8: SColl(SByte, ErgoAddress.fromBase58(sellerMultisigAddress).ergoTree).toHex()
 		});
 
 	const unsignedTransaction = new TransactionBuilder(currentHeight)
