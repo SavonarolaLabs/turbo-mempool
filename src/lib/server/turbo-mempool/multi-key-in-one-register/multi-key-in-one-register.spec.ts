@@ -67,7 +67,6 @@ describe.only('Multiple Keys in one register', () => {
 
 		const signed = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned
 		);
 
@@ -97,7 +96,6 @@ describe.only('Multiple Keys in one register', () => {
 
 		const signed2 = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned2
 		);
 
@@ -117,7 +115,6 @@ describe.only('Multiple Keys in one register', () => {
 
 		const signed = await signTxAllInputs(
 			ALICE_MNEMONIC,
-			ALICE_ADDRESS,
 			unsigned
 		);
 		expect(signed.inputs.length).toBe(1);
@@ -135,7 +132,7 @@ describe.only('Multiple Keys in one register', () => {
 			.toEIP12Object();
 
 		expect(() =>
-			signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsigned)
+			signTxAllInputs(BOB_MNEMONIC, unsigned)
 		).rejects.toThrowError();
 	});
 
@@ -151,7 +148,7 @@ describe.only('Multiple Keys in one register', () => {
 			.toEIP12Object();
 
 		expect(
-			signTxAllInputs(ALICE_MNEMONIC, ALICE_ADDRESS, unsigned)
+			signTxAllInputs(ALICE_MNEMONIC, unsigned)
 		).rejects.toThrowError();
 	});
 
@@ -168,7 +165,6 @@ describe.only('Multiple Keys in one register', () => {
 
 		const signed = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned
 		);
 		expect(signed.inputs.length).toBe(1);

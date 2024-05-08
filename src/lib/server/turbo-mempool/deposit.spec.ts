@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALICE_ADDRESS, BOB_ADDRESS, SHADOWPOOL_ADDRESS } from '../constants/addresses';
-import { signMultisig, signTx, submitTx, txHasErrors } from '../multisig/multisig';
+import { signMultisig, signTxByAddress, submitTx, txHasErrors } from '../multisig/multisig';
 import { ALICE_MNEMONIC, BOB_MNEMONIC } from '../constants/mnemonics';
 import { createDeposit, createTx, createUnsignedMultisigTx, createWithdraw } from './common';
 

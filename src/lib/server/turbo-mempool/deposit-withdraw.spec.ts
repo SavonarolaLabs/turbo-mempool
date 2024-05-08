@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	signMultisig,
-	signTx,
+	signTxByAddress,
 	signTxAllInputs,
 	txHasErrors
 } from '../multisig/multisig';
@@ -22,7 +22,7 @@ describe.only('deposit -> withdraw', () => {
 			1290000 + 100,
 			1255856
 		);
-		const signedTx = await signTx(
+		const signedTx = await signTxByAddress(
 			BOB_MNEMONIC,
 			BOB_ADDRESS,
 			unsignedDepositTx
@@ -50,7 +50,7 @@ describe.only('deposit -> withdraw', () => {
 			2229000 + 100,
 			1255856
 		);
-		const signedTx = await signTx(
+		const signedTx = await signTxByAddress(
 			BOB_MNEMONIC,
 			BOB_ADDRESS,
 			unsignedDepositTx
@@ -65,7 +65,6 @@ describe.only('deposit -> withdraw', () => {
 
 		const signedTx2 = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsignedTx2
 		);
 		expect(signedTx2.inputs.length).toBe(1);
@@ -124,7 +123,6 @@ describe.only('deposit -> withdraw', () => {
 
 		const signedTx2 = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsignedTx2
 		);
 		expect(signedTx2.inputs.length).toBe(1);
@@ -145,7 +143,6 @@ describe.only('deposit -> withdraw', () => {
 
 		const signedTx2 = await signTxAllInputs(
 			SHADOW_MNEMONIC,
-			SHADOWPOOL_ADDRESS,
 			unsignedTx2
 		);
 		expect(signedTx2.inputs.length).toBe(1);

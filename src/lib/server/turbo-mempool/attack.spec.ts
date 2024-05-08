@@ -23,7 +23,7 @@ import {
 	SHADOWPOOL_ADDRESS
 } from '../constants/addresses';
 import { BOB_MNEMONIC } from '../constants/mnemonics';
-import { getProver, signTx } from '../multisig/multisig';
+import { getProver, signTxByAddress } from '../multisig/multisig';
 import { addBoxToContract } from './common';
 
 const allboxes = []; // table for utxos and spent Tx
@@ -277,7 +277,7 @@ describe('deposit funds', async () => {
 		// TEST BOB - > Shadow - > BOB
 		// ---------- Deposit Shadow------------
 		const unsignedTx = depositBobAssetsSync();
-		const signedTx = (await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx)).to_js_eip12();
+		const signedTx = (await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx)).to_js_eip12();
 
 		// const signedTx9 = await prover
 		//     .from([BOB_ADDRESS_STATE])

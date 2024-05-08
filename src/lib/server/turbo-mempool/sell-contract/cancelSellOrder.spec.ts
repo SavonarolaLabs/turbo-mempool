@@ -13,7 +13,7 @@ import {
 } from '@fleet-sdk/common';
 import {
 	signMultisig,
-	signTx,
+	signTxByAddress,
 	signTxAllInputs,
 } from '$lib/server/multisig/multisig';
 import { ALICE_MNEMONIC, BOB_MNEMONIC } from '$lib/server/constants/mnemonics';
@@ -42,7 +42,7 @@ describe(`Bob sellOrder: height:${height}, unlock -10`, () => {
 			height,
 			unlockHeight
 		);
-		const signedTx = await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
+		const signedTx = await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
 		utxoSell = [signedTx.outputs[0]];
 	});
 
@@ -56,7 +56,6 @@ describe(`Bob sellOrder: height:${height}, unlock -10`, () => {
 		);
 		const signedTx = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsignedTx
 		);
 		expect(signedTx.inputs.length).toBeDefined();
@@ -72,7 +71,6 @@ describe(`Bob sellOrder: height:${height}, unlock -10`, () => {
 		);
 		const signedTx = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsignedTx
 		);
 
@@ -88,7 +86,7 @@ describe(`Bob sellOrder: height:${height}, unlock -10`, () => {
 			unlockHeight
 		);
 		expect(() =>
-			signTxAllInputs(ALICE_MNEMONIC, ALICE_ADDRESS, unsignedTx)
+			signTxAllInputs(ALICE_MNEMONIC, unsignedTx)
 		).rejects.toThrowError();
 	});
 });
@@ -106,7 +104,7 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 			height,
 			unlockHeight
 		);
-		const signedTx = await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
+		const signedTx = await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
 		utxoSellMultisig = [signedTx.outputs[0]];
 	});
 
@@ -120,7 +118,7 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		);
 
 		expect(() =>
-			signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx)
+			signTxAllInputs(BOB_MNEMONIC, unsignedTx)
 		).rejects.toThrowError();
 	});
 
@@ -133,7 +131,7 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 			unlockHeight
 		);
 		expect(() =>
-			signTxAllInputs(ALICE_MNEMONIC, ALICE_ADDRESS, unsignedTx)
+			signTxAllInputs(ALICE_MNEMONIC, unsignedTx)
 		).rejects.toThrowError();
 	});
 	it('Alice+Pool CANT cancel', async () => {

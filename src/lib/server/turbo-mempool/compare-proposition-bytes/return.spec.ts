@@ -55,7 +55,6 @@ describe('contract box R4: multisig', () => {
 
 		const signed = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned
 		);
 		contractBoxesForMultisig = [signed.outputs[0]];
@@ -80,7 +79,6 @@ describe('contract box R4: multisig', () => {
 
 		const signed2 = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned2
 		);
 		contractBoxesForBob = [signed2.outputs[0]];
@@ -99,7 +97,6 @@ describe('contract box R4: multisig', () => {
 
 		const signed = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned
 		);
 
@@ -119,7 +116,7 @@ describe('contract box R4: multisig', () => {
 			.toEIP12Object();
 
 		expect(
-			signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsigned)
+			signTxAllInputs(BOB_MNEMONIC, unsigned)
 		).rejects.toThrowError();
 	});
 });
@@ -146,7 +143,6 @@ describe('contract box R4: BOB_ADDRESS', () => {
 
 		const signed2 = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned2
 		);
 		contractBoxesForBob = [signed2.outputs[0]];
@@ -164,7 +160,7 @@ describe('contract box R4: BOB_ADDRESS', () => {
 			.toEIP12Object();
 
 		expect(
-			signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsigned)
+			signTxAllInputs(BOB_MNEMONIC, unsigned)
 		).rejects.toThrowError();
 	});
 
@@ -181,7 +177,6 @@ describe('contract box R4: BOB_ADDRESS', () => {
 
 		const signed = await signTxAllInputs(
 			BOB_MNEMONIC,
-			BOB_ADDRESS,
 			unsigned
 		);
 

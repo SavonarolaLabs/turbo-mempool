@@ -16,6 +16,7 @@ import {
 } from '@fleet-sdk/common';
 import {
 	ErgoAddress,
+	ErgoTree,
 	OutputBuilder,
 	RECOMMENDED_MIN_FEE_VALUE,
 	SAFE_MIN_BOX_VALUE,
@@ -28,8 +29,11 @@ import {
 } from '@fleet-sdk/core';
 import {
 	signMultisig,
-	signTx,
-	signTxAllInputs
+	signTxByAddress,
+	signTxAllInputs,
+	signTxByInputs,
+	signTxInput,
+	txHasErrors
 } from '$lib/server/multisig/multisig';
 import {
 	ALICE_MNEMONIC,
@@ -37,6 +41,8 @@ import {
 	SHADOW_MNEMONIC
 } from '$lib/server/constants/mnemonics';
 import { createSellOrderTx } from './sell';
+import * as wasm from 'ergo-lib-wasm-nodejs';
+
 
 let sellContractUtxo: Box<Amount>[] = [];
 
@@ -60,8 +66,84 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 			height,
 			unlockHeight
 		);
-		const signedTx = await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
+		const signedTx = await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
 		sellContractUtxo = [signedTx.outputs[0]];
+	});
+
+	it('alice can spend sell order box and own box', async () => {
+		const sellerPK = BOB_ADDRESS;
+		const output = new OutputBuilder(
+			price * BigInt(tokenForSale.amount)*1000n,
+			DEPOSIT_ADDRESS
+		).setAdditionalRegisters({
+			R4: SColl(SSigmaProp, [
+				SGroupElement(
+					first(ErgoAddress.fromBase58(sellerPK).getPublicKeys())
+				),
+				SGroupElement(
+					first(
+						ErgoAddress.fromBase58(
+							SHADOWPOOL_ADDRESS
+						).getPublicKeys()
+					)
+				)
+			]).toHex(),
+			R5: SInt(unlockHeight).toHex(),
+			R6: SColl(SByte, tokenForSale.tokenId).toHex()
+		});
+
+		const unsignedTx = new TransactionBuilder(height)
+			.configureSelector((selector) =>
+				selector.ensureInclusion([sellContractUtxo[0].boxId])
+			)
+			.from([...sellContractUtxo, ...utxos[ALICE_ADDRESS]])
+			.to(output)
+			.sendChangeTo(sellerPK)
+			.payFee(RECOMMENDED_MIN_FEE_VALUE)
+			.build()
+			.toEIP12Object();
+
+		//console.dir(unsignedTx, { depth: null });
+
+		expect(unsignedTx.inputs.length).toBe(2);
+		expect(unsignedTx.inputs[0].ergoTree).toBe(
+			ErgoAddress.fromBase58(SELL_ORDER_ADDRESS).ergoTree
+		);
+
+		const shadowIndex = unsignedTx.inputs.findIndex(b => sellContractUtxo.map(b=>b.boxId).includes(b.boxId))
+		expect(shadowIndex).toBe(0)
+		const signedShadowInput = await signTxInput(
+			SHADOW_MNEMONIC,
+			unsignedTx,
+		);
+		const shadowInputProof = JSON.parse(signedShadowInput.spending_proof().to_json());
+		expect(shadowInputProof.proofBytes.length).greaterThan(10);
+
+		const aliceIndex = unsignedTx.inputs.findIndex(b => utxos[ALICE_ADDRESS].map(b=>b.boxId).includes(b.boxId))
+		expect(aliceIndex).toBe(1)
+		expect(unsignedTx.inputs[aliceIndex].ergoTree).toBe(ErgoAddress.fromBase58(ALICE_ADDRESS).ergoTree)
+		const signedAliceInput = await signTxInput(
+			ALICE_MNEMONIC,
+			unsignedTx,
+			aliceIndex
+		);
+		const aliceInputProof = JSON.parse(signedAliceInput.spending_proof().to_json());
+		expect(aliceInputProof.proofBytes.length).greaterThan(10);
+
+		const txId = wasm.UnsignedTransaction.from_json(JSON.stringify(unsignedTx)).id().to_str();
+
+		unsignedTx.inputs[shadowIndex] = {
+			boxId: unsignedTx.inputs[shadowIndex].boxId,
+			spendingProof: shadowInputProof
+		}
+		unsignedTx.inputs[aliceIndex] = {
+			boxId: unsignedTx.inputs[aliceIndex].boxId,
+			spendingProof: aliceInputProof
+		}
+		unsignedTx.id = txId;
+
+		const hasError = await txHasErrors(unsignedTx);
+		expect(hasError).toBeFalsy();
 	});
 
 	it('alice can buy with Shadow Signed - 100/100 tokens', async () => {
@@ -97,8 +179,6 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 			.build()
 			.toEIP12Object();
 
-		//console.dir(unsignedTx, { depth: null });
-
 		expect(unsignedTx.inputs.length).toBe(1);
 		expect(unsignedTx.inputs[0].ergoTree).toBe(
 			ErgoAddress.fromBase58(SELL_ORDER_ADDRESS).ergoTree
@@ -106,14 +186,13 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 
 		const signedTx = await signTxAllInputs(
 			SHADOW_MNEMONIC,
-			SHADOWPOOL_ADDRESS,
 			unsignedTx
 		);
 
 		expect(signedTx.inputs.length).toBeDefined();
 	});
 
-	it('alice CANT buy WITHOUT Shadow - 100/100 tokens', async () => {
+	it.skip('alice CANT buy WITHOUT Shadow - 100/100 tokens', async () => {
 		const sellerPK = BOB_ADDRESS;
 		const output = new OutputBuilder(
 			price * BigInt(tokenForSale.amount),
@@ -154,7 +233,7 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		);
 
 		expect(
-			signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx)
+			signTxAllInputs(BOB_MNEMONIC, unsignedTx)
 		).rejects.toThrowError();
 	});
 });

@@ -5,7 +5,7 @@ import { ErgoAddress } from '@fleet-sdk/core';
 import { mnemonicToSeedSync } from 'bip39';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import { bip32 } from './functions';
-import type { EIP12UnsignedTransaction, SignedTransaction } from '@fleet-sdk/common';
+import type { EIP12UnsignedInput, EIP12UnsignedTransaction, SignedTransaction } from '@fleet-sdk/common';
 import { SHADOW_MNEMONIC } from '../constants/mnemonics';
 import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
 
@@ -126,7 +126,7 @@ export async function txHasErrors(signedTransaction: SignedTransaction): Promise
 	});
 
 	if (!response.ok) {
-		throw new Error('Network response was not ok: ' + response.statusText);
+		throw new Error(response.statusText);
 	}
 
 	const jsonResp = await response.json();
@@ -224,14 +224,13 @@ export async function getProver(mnemonic: string): Promise<wasm.Wallet> {
 	return wasm.Wallet.from_secrets(secretKeys);
 }
 
-export async function signTx(
+export async function signTxByAddress(
 	mnemonic: string,
 	address: string,
 	tx: EIP12UnsignedTransaction
 ): Promise<SignedTransaction> {
 	const prover = await getProver(mnemonic);
 
-	// filtet  == address
 	const boxesToSign = tx.inputs.filter(
 		(i) => i.ergoTree == ErgoAddress.fromBase58(address).ergoTree
 	);
@@ -249,14 +248,33 @@ export async function signTx(
 	return signedTx.to_js_eip12();
 }
 
-export async function signTxAllInputs(
+export async function signTxByInputs(
 	mnemonic: string,
-	address: string,
+	boxesToSign: EIP12UnsignedInput[],
 	tx: EIP12UnsignedTransaction
 ): Promise<SignedTransaction> {
 	const prover = await getProver(mnemonic);
 
-	// filtet  == address
+	const boxes_to_spend = ErgoBoxes.empty();
+	boxesToSign.forEach((box) => {
+		boxes_to_spend.add(ErgoBox.from_json(JSON.stringify(box)));
+	});
+
+	const signedTx = prover.sign_transaction(
+		fakeContext(),
+		wasm.UnsignedTransaction.from_json(JSON.stringify(tx)),
+		boxes_to_spend,
+		ErgoBoxes.empty()
+	);
+	return signedTx.to_js_eip12();
+}
+
+export async function signTxAllInputs(
+	mnemonic: string,
+	tx: EIP12UnsignedTransaction
+): Promise<SignedTransaction> {
+	const prover = await getProver(mnemonic);
+
 	const boxesToSign = tx.inputs;
 	const boxes_to_spend = ErgoBoxes.empty();
 	boxesToSign.forEach((box) => {
@@ -270,6 +288,29 @@ export async function signTxAllInputs(
 		ErgoBoxes.empty()
 	);
 	return signedTx.to_js_eip12();
+}
+
+export async function signTxInput(
+	mnemonic: string,
+	tx: EIP12UnsignedTransaction,
+	index: number
+): Promise<wasm.Input> {
+	const prover = await getProver(mnemonic);
+
+	const boxesToSign = tx.inputs;
+	const boxes_to_spend = ErgoBoxes.empty();
+	boxesToSign.forEach((box) => {
+		boxes_to_spend.add(ErgoBox.from_json(JSON.stringify(box)));
+	});
+
+	const signedInput = prover.sign_tx_input(
+		index,
+		fakeContext(),
+		wasm.UnsignedTransaction.from_json(JSON.stringify(tx)),
+		boxes_to_spend,
+		ErgoBoxes.empty()
+	);
+	return signedInput;
 }
 
 const getWalletAddressSecret = (mnemonic: string, idx: number = 0) => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-	signTx,
+	signTxByAddress,
 	submitTx,
 } from '../multisig/multisig';
 import {
@@ -20,7 +20,7 @@ describe.skip('boxes from depositAddress', () => {
 			1256321 + 200,
 			1255856
 		);
-		const signedTx = await signTx(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
+		const signedTx = await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
 
 		const sumbitedTx = await submitTx(signedTx);
 		expect(sumbitedTx).toBeTypeOf('string');
