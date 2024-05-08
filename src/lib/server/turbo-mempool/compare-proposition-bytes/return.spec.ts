@@ -33,7 +33,7 @@ let contractBoxesForBob: OneOrMore<Box<Amount>> = [];
 let returnContract = returnToR4Address;
 
 const currentHeight = 1258770;
-describe.only('contract box R4: multisig', () => {
+describe('contract box R4: multisig', () => {
 	beforeAll(async () => {
 		const output = new OutputBuilder(
 			3n * SAFE_MIN_BOX_VALUE,
@@ -124,7 +124,7 @@ describe.only('contract box R4: multisig', () => {
 	});
 });
 
-describe.only('contract box R4: BOB_ADDRESS', () => {
+describe('contract box R4: BOB_ADDRESS', () => {
 	beforeAll(async () => {
 		const output2 = new OutputBuilder(
 			3n * SAFE_MIN_BOX_VALUE,
