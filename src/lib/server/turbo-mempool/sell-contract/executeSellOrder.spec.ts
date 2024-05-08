@@ -19,6 +19,7 @@ import {
 	OutputBuilder,
 	RECOMMENDED_MIN_FEE_VALUE,
 	SAFE_MIN_BOX_VALUE,
+	SByte,
 	SColl,
 	SGroupElement,
 	SInt,
@@ -63,10 +64,10 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		sellContractUtxo = [signedTx.outputs[0]];
 	});
 
-	it('alice can buy 100/100 tokens', async () => {
+	it('alice can buy with Shadow Signed - 100/100 tokens', async () => {
 		const sellerPK = BOB_ADDRESS;
 		const output = new OutputBuilder(
-			SAFE_MIN_BOX_VALUE, //price * BigInt(tokenForSale.amount),
+			price * BigInt(tokenForSale.amount), //SAFE_MIN_BOX_VALUE
 			DEPOSIT_ADDRESS
 		).setAdditionalRegisters({
 			R4: SColl(SSigmaProp, [
@@ -81,7 +82,8 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 					)
 				)
 			]).toHex(),
-			R5: SInt(unlockHeight).toHex()
+			R5: SInt(unlockHeight).toHex(),
+			R6: SColl(SByte, tokenForSale.tokenId).toHex()
 		});
 
 		const unsignedTx = new TransactionBuilder(height)
@@ -109,5 +111,50 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		);
 
 		expect(signedTx.inputs.length).toBeDefined();
+	});
+
+	it('alice CANT buy WITHOUT Shadow - 100/100 tokens', async () => {
+		const sellerPK = BOB_ADDRESS;
+		const output = new OutputBuilder(
+			price * BigInt(tokenForSale.amount),
+			DEPOSIT_ADDRESS
+		).setAdditionalRegisters({
+			R4: SColl(SSigmaProp, [
+				SGroupElement(
+					first(ErgoAddress.fromBase58(sellerPK).getPublicKeys())
+				),
+				SGroupElement(
+					first(
+						ErgoAddress.fromBase58(
+							SHADOWPOOL_ADDRESS
+						).getPublicKeys()
+					)
+				)
+			]).toHex(),
+			R5: SInt(unlockHeight).toHex(),
+			R6: SColl(SByte, tokenForSale.tokenId).toHex()
+		});
+
+		const unsignedTx = new TransactionBuilder(height)
+			.configureSelector((selector) =>
+				selector.ensureInclusion([sellContractUtxo[0].boxId])
+			)
+			.from([...sellContractUtxo])
+			.to(output)
+			.sendChangeTo(sellerPK)
+			.payFee(RECOMMENDED_MIN_FEE_VALUE)
+			.build()
+			.toEIP12Object();
+
+		//console.dir(unsignedTx, { depth: null });
+
+		expect(unsignedTx.inputs.length).toBe(1);
+		expect(unsignedTx.inputs[0].ergoTree).toBe(
+			ErgoAddress.fromBase58(SELL_ORDER_ADDRESS).ergoTree
+		);
+
+		expect(
+			signTxAllInputs(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx)
+		).rejects.toThrowError();
 	});
 });

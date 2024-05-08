@@ -16,7 +16,8 @@ export const sellTokenForErg = `{
   
 	def isSameToken(box: Box)    = 
 	  	getTokenId(SELF) == getTokenId(box) &&
-		  getTokenId(SELF) == box.tokens(0)._1 
+	  	box.tokens.size > 0 &&
+		getTokenId(SELF) == box.tokens(0)._1 
   
 	def isSameSeller(box: Box)   = 
       getSellerPk(SELF) == getSellerPk(box) &&
@@ -36,7 +37,7 @@ export const sellTokenForErg = `{
   
 	def isPaymentBox(box:Box) = {
 		isSameSeller(box) &&
-    isSameUnlockHeight(box) &&
+    	isSameUnlockHeight(box) &&
 		getTokenId(SELF) == getTokenId(box) &&
 		getSellerMultisigAddress(SELF) == box.propositionBytes
 	}
