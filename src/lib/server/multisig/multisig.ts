@@ -6,12 +6,10 @@ import { mnemonicToSeedSync } from 'bip39';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import { bip32 } from './functions';
 import type { EIP12UnsignedTransaction, SignedTransaction } from '@fleet-sdk/common';
-import { toBigNumber } from '../tx-chaining/utils/bigNumbers';
-import { BOB_MNEMONIC, SHADOW_MNEMONIC } from '../constants/mnemonics';
+import { SHADOW_MNEMONIC } from '../constants/mnemonics';
 import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
-import { BOB_ADDRESS } from '../constants/addresses';
 
-export async function signMultisig(unsignedTx, userMnemonic: string, userAddress: string) {
+export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMnemonic: string, userAddress: string) {
 	await wasmModule.loadAsync();
 
 	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
