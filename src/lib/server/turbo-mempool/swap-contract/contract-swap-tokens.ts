@@ -13,6 +13,7 @@ export const swapTokens = `{
 	def tokenId(box: Box) = box.tokens(0)._1
 	def tokenAmount(box: Box) = box.tokens(0)._2
   def sumTokenAmount(a:Long, b: Box) = a + tokenAmount(b)
+  def sumTokenAmountXRate(a:Long, b: Box) = a + tokenAmount(b) * getRate(b)
 
 	def isSameContract(box: Box) = 
 		  box.propositionBytes == SELF.propositionBytes
@@ -89,10 +90,10 @@ export const swapTokens = `{
 
   val inSellTokensXRate = INPUTS
 	  .filter(isLegitInput) 
-			.fold(0L, {(a:Long, b: Box) => a + getRate(b) * tokenAmount(b)})
+			.fold(0L, sumTokenAmountXRate)
   val outSellTokensXRate = OUTPUTS
 	  .filter(isLegitSellOrderOutput)
-	  .fold(0L, sumTokenAmount)
+	  .fold(0L, sumTokenAmountXRate)
 
   val sellTokensXRate = inSellTokensXRate - outSellTokensXRate
   val expectedRate = sellTokensXRate / tokensSold
