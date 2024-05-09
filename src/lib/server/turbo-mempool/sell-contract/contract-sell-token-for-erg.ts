@@ -30,11 +30,11 @@ export const sellTokenForErg = `{
       getSellerMultisigAddress(SELF) == getSellerMultisigAddress(box)
 
 
-
 	def isLegitInputBox(box: Box) = {
-		isSameContract(box) && isSameToken(box) && isSameMultisig(box)
+		isSameContract(box) && isSameToken(box) && isSameMultisig(box) && isSameSeller(box)
 	}
   
+
 	def isPaymentBox(box:Box) = {
 		isSameSeller(box) &&
     	isSameUnlockHeight(box) &&
