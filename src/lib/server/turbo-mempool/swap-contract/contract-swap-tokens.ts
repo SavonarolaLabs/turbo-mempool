@@ -10,10 +10,9 @@ export const swapTokens = `{
 	def getRate(box: Box)                  = box.R7[Long].get
 	def getSellerMultisigAddress(box: Box)  = box.R8[Coll[Byte]].get
 
-	def tokenId(box: Box) = 
-	  box.tokens(0)._1
-	def tokenAmount(box: Box) = 
-	  box.tokens(0)._2
+	def tokenId(box: Box) = box.tokens(0)._1
+	def tokenAmount(box: Box) = box.tokens(0)._2
+  def sumTokenAmount(a:Long, b: Box) = a + tokenAmount(b)
 
 	def isSameContract(box: Box) = 
 		  box.propositionBytes == SELF.propositionBytes
@@ -75,25 +74,25 @@ export const swapTokens = `{
 
   def sumSellTokensIn(boxes: Coll[Box]): Long = boxes
 			.filter(isLegitInput) 
-			.fold(0L, {(a:Long, b: Box) => a + tokenAmount(b)})
+			.fold(0L, sumTokenAmount)
 
   def sumSellTokensOut(boxes: Coll[Box]): Long = boxes
 	  .filter(isLegitSellOrderOutput)
-	  .fold(0L, {(a:Long, b: Box) => a + tokenAmount(b)})
+	  .fold(0L, sumTokenAmount)
 
   def sumBuyTokensPaid(boxes: Coll[Box]): Long = boxes
 			.filter(isPaymentBox) 
-			.fold(0L, {(a:Long, b: Box) => a + tokenAmount(b)})
+			.fold(0L, sumTokenAmount)
   
   val tokensSold = sumSellTokensIn(INPUTS) - sumSellTokensOut(OUTPUTS)
   val tokensPaid = sumBuyTokensPaid(OUTPUTS)
 
   val inSellTokensXRate = INPUTS
 	  .filter(isLegitInput) 
-			.fold(0L, {(a:Long, b: Box) => a + getRate(b)*tokenAmount(b)})
+			.fold(0L, {(a:Long, b: Box) => a + getRate(b) * tokenAmount(b)})
   val outSellTokensXRate = OUTPUTS
 	  .filter(isLegitSellOrderOutput)
-	  .fold(0L, {(a:Long, b: Box) => a + tokenAmount(b)})
+	  .fold(0L, sumTokenAmount)
 
   val sellTokensXRate = inSellTokensXRate - outSellTokensXRate
   val expectedRate = sellTokensXRate / tokensSold
