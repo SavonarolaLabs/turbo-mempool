@@ -25,7 +25,7 @@ export const buyTokenForErg = `{
 		  box.tokens.size > 0 &&
 		  getTokenId(SELF) == tokenId(box)
 
-  def isRateGreaterZero(box:Box) =
+  def isGreaterZeroRate(box:Box) =
 	  getBuyRate(box) > 0
 
 	def isSameBuyer(box: Box)   = 
@@ -42,7 +42,7 @@ export const buyTokenForErg = `{
 	  isSameBuyer(box) &&
 	  isSameUnlockHeight(box) && 
 	  isSameTokenId(box) &&
-	  isRateGreaterZero(box) &&
+	  isGreaterZeroRate(box) &&
 	  isSameMultisig(box) &&
 	  isSameContract(box)
 

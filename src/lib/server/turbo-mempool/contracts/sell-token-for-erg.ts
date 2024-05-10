@@ -20,7 +20,7 @@ export const sellTokenForErg = `{
 	  	box.tokens.size > 0 &&
 		  getTokenId(SELF) == tokenId(box)
 
-  	def isRateGreaterZero(box:Box) =
+  	def isGreaterZeroRate(box:Box) =
       getSellRate(box) > 0
   
 	def isSameSeller(box: Box)   = 
@@ -38,7 +38,7 @@ export const sellTokenForErg = `{
       isSameToken(b) && 
       isSameMultisig(b) && 
       isSameSeller(b) && 
-      isRateGreaterZero(b)
+      isGreaterZeroRate(b)
 	}
   
 	def isPaymentBox(box:Box) = {
