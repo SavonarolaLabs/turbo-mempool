@@ -1,6 +1,38 @@
 export const utxos = {
 	'9gJa6Mict6TVu9yipUX5aRUW87Yv8J62bbPEtkTje28sh5i3Lz8': [
 		{
+			boxId: 'e7f7fd708e42aca91c47cd3717dc4cb92b343971a9873592c8ecde768bd05f0c',
+			transactionId:
+				'cbe878ba916b5462e48b040f6f268ef4ed6e47722a901b5afdc5dd2873a98b1c',
+			blockId:
+				'ccf62fa8022532d2f1d2ed80a7e0b7527aae177479d07fbdd72486e8b479bff6',
+			value: '1000000',
+			index: 0,
+			globalIndex: 5493865,
+			creationHeight: 1261443,
+			settlementHeight: 1261445,
+			ergoTree:
+				'0008cd02eb083423041003740c9e791b2fea5ecf6e273669630a25b7ecabf9145395e447',
+			ergoTreeConstants: '',
+			ergoTreeScript:
+				'{SigmaProp(ProveDlog(ECPoint(eb0834,848edd,...)))}',
+			address: '9gJa6Mict6TVu9yipUX5aRUW87Yv8J62bbPEtkTje28sh5i3Lz8',
+			assets: [
+				{
+					tokenId:
+						'd2d0deb3b0b2c511e523fd43ae838ba7b89e4583f165169b90215ff11d942c1f',
+					index: 0,
+					amount: '1000000000000000',
+					name: 'SwapToken Test1',
+					decimals: 9,
+					type: 'EIP-004'
+				}
+			],
+			additionalRegisters: {},
+			spentTransactionId: null,
+			mainChain: true
+		},
+		{
 			boxId: 'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
 			transactionId:
 				'17739a5bb2742779f2875a0215693d36b8fc3d7241f662657faef354cc06599c',
@@ -8,7 +40,7 @@ export const utxos = {
 				'20578b15c08d09a4289881f729b6300ea714793791d90fe75f17423e8a415d31',
 			value: '997800000',
 			index: 1,
-			globalIndex: 4910611,
+			globalIndex: 4914287,
 			creationHeight: 1246984,
 			settlementHeight: 1246986,
 			ergoTree:
@@ -25,6 +57,78 @@ export const utxos = {
 	],
 	'9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU': [
 		{
+			boxId: '92c4cb3b47dd44d65da295b51d2adb75c6f39e96c2715b176e5a11d824949ae4',
+			transactionId:
+				'cbe878ba916b5462e48b040f6f268ef4ed6e47722a901b5afdc5dd2873a98b1c',
+			blockId:
+				'ccf62fa8022532d2f1d2ed80a7e0b7527aae177479d07fbdd72486e8b479bff6',
+			value: '1900000',
+			index: 2,
+			globalIndex: 5493867,
+			creationHeight: 1261443,
+			settlementHeight: 1261445,
+			ergoTree:
+				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
+			ergoTreeConstants: '',
+			ergoTreeScript:
+				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
+			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+			assets: [
+				{
+					tokenId:
+						'd2d0deb3b0b2c511e523fd43ae838ba7b89e4583f165169b90215ff11d942c1f',
+					index: 0,
+					amount: '49000000000000000',
+					name: 'SwapToken Test1',
+					decimals: 9,
+					type: 'EIP-004'
+				},
+				{
+					tokenId:
+						'3f61f140d3fe334a845df647245a9e534337458f976a9d2a32ce4a7a3ee89232',
+					index: 1,
+					amount: '1',
+					name: '5,000.00 ERG Holdbox',
+					decimals: 0,
+					type: 'EIP-004'
+				},
+				{
+					tokenId:
+						'69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8',
+					index: 2,
+					amount: '200',
+					name: 'HoldErgDoge Test1',
+					decimals: 9,
+					type: 'EIP-004'
+				}
+			],
+			additionalRegisters: {},
+			spentTransactionId: null,
+			mainChain: true
+		},
+		{
+			boxId: '545e6e787e4854143df59fac3b65a10390bfd147b5eb049b776ed33f56a63201',
+			transactionId:
+				'583043befdaf0ac2ee65db64088c8ecf9b56e7e68bd4554dcc384f1259b6216a',
+			blockId:
+				'0291ef4108d7ccaf45c7e49e189333605a662dabbbaa4d42335ba2fe79f51a79',
+			value: '96800000',
+			index: 2,
+			globalIndex: 5492278,
+			creationHeight: 1261380,
+			settlementHeight: 1261382,
+			ergoTree:
+				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
+			ergoTreeConstants: '',
+			ergoTreeScript:
+				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
+			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+			assets: [],
+			additionalRegisters: {},
+			spentTransactionId: null,
+			mainChain: true
+		},
+		{
 			boxId: '95717ec09d4589b58701186a7f814f253deaba1ad028defbd81938cac98f41be',
 			transactionId:
 				'f313a09270465b65c48e8446f56f6884921feab6fce1237c114fbb853f424db4',
@@ -32,7 +136,7 @@ export const utxos = {
 				'00af65da4b5dfc66c1d700103f65503c55bd72c2ffbbac1ef1a6caf56e37fbb5',
 			value: '1772300000',
 			index: 2,
-			globalIndex: 5466977,
+			globalIndex: 5470653,
 			creationHeight: 1260252,
 			settlementHeight: 1260744,
 			ergoTree:
@@ -109,7 +213,7 @@ export const utxos = {
 				'6ebdd762b9b09b88a7d8ac8913aac6e5ed36c5fe281e1a8d0302b62d5c099713',
 			value: '1000000',
 			index: 0,
-			globalIndex: 5364563,
+			globalIndex: 5368239,
 			creationHeight: 1255856,
 			settlementHeight: 1257927,
 			ergoTree:
@@ -143,7 +247,7 @@ export const utxos = {
 				'e4a70ae6edb5adb015c2861835d96bac22d327e6ca1933dc94b876b23cceedd4',
 			value: '1000000',
 			index: 0,
-			globalIndex: 5364308,
+			globalIndex: 5367984,
 			creationHeight: 1255856,
 			settlementHeight: 1257919,
 			ergoTree:
@@ -167,7 +271,7 @@ export const utxos = {
 				'a3ba4f78e64011297ba1fe21b766a8ec6e800e62aeada435afb2a67aa11ee851',
 			value: '1000000',
 			index: 0,
-			globalIndex: 5364197,
+			globalIndex: 5367873,
 			creationHeight: 1255856,
 			settlementHeight: 1257914,
 			ergoTree:
@@ -182,101 +286,6 @@ export const utxos = {
 			},
 			spentTransactionId: null,
 			mainChain: true
-		},
-		{
-			boxId: 'abd587f350c19d352cf8aa9a21dd86f99d8bf849f91f02130053b986b9060ca3',
-			transactionId:
-				'f69451ad5030dea04a933c97b55f04f3b5ca5071d5128da1fd0a787eaf5934a1',
-			blockId:
-				'e08c56dd46e017c0d54bfcfe433b8821dede39147d89d3bdc1c8389a0cfa37d3',
-			value: '2000000',
-			index: 0,
-			globalIndex: 5363562,
-			creationHeight: 1255856,
-			settlementHeight: 1257895,
-			ergoTree:
-				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
-			ergoTreeConstants: '',
-			ergoTreeScript:
-				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
-			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
-			assets: [
-				{
-					tokenId:
-						'69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8',
-					index: 0,
-					amount: '200',
-					name: 'HoldErgDoge Test1',
-					decimals: 9,
-					type: 'EIP-004'
-				}
-			],
-			additionalRegisters: {
-				R4: '0e2069feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8'
-			},
-			spentTransactionId: null,
-			mainChain: true
-		},
-		{
-			boxId: '0cff50cf00914fb243ed73d38ffb103e3ea0634988202aa1c9691ebeee0f496e',
-			transactionId:
-				'b34528840fbf61af64f5268d380e4466884a7e679ecf435deb9af4e8cb721790',
-			blockId:
-				'01b07cded9dd8480f9fa2e3f6e20a480a335b5b48f02030e6f81dcf801a6c6fa',
-			value: '1000000',
-			index: 1,
-			globalIndex: 5281990,
-			creationHeight: 1255566,
-			settlementHeight: 1255568,
-			ergoTree:
-				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
-			ergoTreeConstants: '',
-			ergoTreeScript:
-				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
-			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
-			assets: [
-				{
-					tokenId:
-						'3f61f140d3fe334a845df647245a9e534337458f976a9d2a32ce4a7a3ee89232',
-					index: 0,
-					amount: '1',
-					name: '5,000.00 ERG Holdbox',
-					decimals: 0,
-					type: 'EIP-004'
-				}
-			],
-			additionalRegisters: {
-				R5: '0e2f70726963653a2035204552472c206865696774683a313235353536382c20646174653a20323032382d30342d32312c',
-				R6: '0e0130',
-				R8: '0e20d2c6d985f2d1203ab3a768aaf91cf66efc701d14c03368adb6d7c4a8064e1d57',
-				R7: '0e020101',
-				R9: '0e2468747470733a2f2f692e6962622e636f2f316e68347266772f353030306572672e706e67',
-				R4: '0e14352c3030302e30302045524720486f6c64626f78'
-			},
-			spentTransactionId: null,
-			mainChain: true
-		},
-		{
-			boxId: 'd2d0deb3b0b2c511e523fd43ae838ba7b89e4583f165169b90215ff11d942c1f',
-			transactionId:
-				'bb60c4c35130d4f5ed92d12943bcba4f4567b09e0c49cbf9c40e41eb1b67efb8',
-			blockId:
-				'd9b7142bd03e3b580205eb7d154612b76326d142768302453d2203c2d1303336',
-			value: '100000000',
-			index: 0,
-			globalIndex: 5083853,
-			creationHeight: 1251583,
-			settlementHeight: 1251587,
-			ergoTree:
-				'0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c',
-			ergoTreeConstants: '',
-			ergoTreeScript:
-				'{SigmaProp(ProveDlog(ECPoint(33e9a9,377709,...)))}',
-			address: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
-			assets: [],
-			additionalRegisters: {},
-			spentTransactionId: null,
-			mainChain: true
 		}
 	],
 	JixnxAz48B1XvS9qoad8H4amt9JcQQPQPE4uURGUWNWnN1D: [
@@ -288,7 +297,7 @@ export const utxos = {
 				'aaa33df85cdd8d65a9706bfe0e4a0b3f0beb1625686bf2486a7c7a2d2754e428',
 			value: '3000000',
 			index: 0,
-			globalIndex: 5307043,
+			globalIndex: 5310719,
 			creationHeight: 1255856,
 			settlementHeight: 1256345,
 			ergoTree:
@@ -314,7 +323,7 @@ export const utxos = {
 				'013483321e97651446a05fd48d7cb18d1d8771d9ce2de62944d9b2d685369b1c',
 			value: '3000000',
 			index: 0,
-			globalIndex: 5307021,
+			globalIndex: 5310697,
 			creationHeight: 1255856,
 			settlementHeight: 1256341,
 			ergoTree:
@@ -343,7 +352,7 @@ export const utxos = {
 					'00af65da4b5dfc66c1d700103f65503c55bd72c2ffbbac1ef1a6caf56e37fbb5',
 				value: '3200000',
 				index: 0,
-				globalIndex: 5466975,
+				globalIndex: 5470651,
 				creationHeight: 1260252,
 				settlementHeight: 1260744,
 				ergoTree:
@@ -383,7 +392,7 @@ export const utxos = {
 					'a7d3a673c8e87b52a343f9d19b7b706743011ed734ef0e2c1b00f6161e8b4002',
 				value: '3200000',
 				index: 0,
-				globalIndex: 5466871,
+				globalIndex: 5470547,
 				creationHeight: 1260252,
 				settlementHeight: 1260738,
 				ergoTree:
@@ -423,7 +432,7 @@ export const utxos = {
 					'240f5767c4019c80e26c9bf47198cf626afb7a8d65f68b856a59472da9f79419',
 				value: '3200000',
 				index: 0,
-				globalIndex: 5465438,
+				globalIndex: 5469114,
 				creationHeight: 1260252,
 				settlementHeight: 1260700,
 				ergoTree:
@@ -463,7 +472,7 @@ export const utxos = {
 					'09d32d4dcc80a9213ca352e3e6c35c134782fa5f3fa654555c1854454b38553b',
 				value: '3200000',
 				index: 0,
-				globalIndex: 5449691,
+				globalIndex: 5453367,
 				creationHeight: 1260251,
 				settlementHeight: 1260253,
 				ergoTree:
@@ -503,7 +512,7 @@ export const utxos = {
 					'bb561101ba7c7528b48116dbc560b128827186f4359d08cf2f95408788538da7',
 				value: '3200000',
 				index: 0,
-				globalIndex: 5449653,
+				globalIndex: 5453329,
 				creationHeight: 1260248,
 				settlementHeight: 1260250,
 				ergoTree:
@@ -543,7 +552,7 @@ export const utxos = {
 					'0bf27e62dfcb18fce6af833fdf9c05c338f4f2d761d16236c8a325afc1c4a4d2',
 				value: '1000000',
 				index: 0,
-				globalIndex: 5443756,
+				globalIndex: 5447432,
 				creationHeight: 1260126,
 				settlementHeight: 1260138,
 				ergoTree:

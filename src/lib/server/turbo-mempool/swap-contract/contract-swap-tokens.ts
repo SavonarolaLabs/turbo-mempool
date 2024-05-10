@@ -5,15 +5,15 @@ export const swapTokens = `{
 	def getSellerPk(box: Box)              = box.R4[Coll[SigmaProp]].getOrElse(Coll[SigmaProp](sigmaProp(false),sigmaProp(false)))(0)
 	def getPoolPk(box: Box)                = box.R4[Coll[SigmaProp]].getOrElse(Coll[SigmaProp](sigmaProp(false),sigmaProp(false)))(1)
 	def unlockHeight(box: Box)             = box.R5[Int].get
-	def getSellingTokenId(box: Box)        = box.R6[Coll[Coll[Byte]]].getOrElse(Coll(Coll[Byte](),Coll[Byte]()))(0)
-	def getBuyingTokenId(box: Box)         = box.R6[Coll[Coll[Byte]]].getOrElse(Coll(Coll[Byte](),Coll[Byte]()))(1)
+	def getSellingTokenId(box: Box)        = box.R6[(Coll[Byte],Coll[Byte])].getOrElse((Coll[Byte](),Coll[Byte]()))._1
+	def getBuyingTokenId(box: Box)         = box.R6[(Coll[Byte],Coll[Byte])].getOrElse((Coll[Byte](),Coll[Byte]()))._2
 	def getRate(box: Box)                  = box.R7[Long].get
 	def getSellerMultisigAddress(box: Box)  = box.R8[Coll[Byte]].get
 
 	def tokenId(box: Box) = box.tokens(0)._1
 	def tokenAmount(box: Box) = box.tokens(0)._2
   def sumTokenAmount(a:Long, b: Box) = a + tokenAmount(b)
-  def sumTokenAmountXRate(a:Long, b: Box) = a + tokenAmount(b) * getRate(b)
+  def sumTokenAmountXRate(a:Long, b: Box) = a + tokenAmount(b) * getRate(b)   
 
 	def isSameContract(box: Box) = 
 		  box.propositionBytes == SELF.propositionBytes
@@ -85,20 +85,20 @@ export const swapTokens = `{
 			.filter(isPaymentBox) 
 			.fold(0L, sumTokenAmount)
   
-  val tokensSold = sumSellTokensIn(INPUTS) - sumSellTokensOut(OUTPUTS)
-  val tokensPaid = sumBuyTokensPaid(OUTPUTS)
+  val tokensSold = sumSellTokensIn(INPUTS) - sumSellTokensOut(OUTPUTS) // v R6.1
+  val tokensPaid = sumBuyTokensPaid(OUTPUTS) // R6.2 zaplatil
 
   val inSellTokensXRate = INPUTS
 	  .filter(isLegitInput) 
-			.fold(0L, sumTokenAmountXRate)
+			.fold(0L, sumTokenAmountXRate)    //R6.1 -> R6.2 za 1 R6.1 (v R6.2)
   val outSellTokensXRate = OUTPUTS
 	  .filter(isLegitSellOrderOutput)
-	  .fold(0L, sumTokenAmountXRate)
+	  .fold(0L, sumTokenAmountXRate)      //-v (R6.2)
 
-  val sellTokensXRate = inSellTokensXRate - outSellTokensXRate
-  val expectedRate = sellTokensXRate / tokensSold
+  val sellTokensXRate = inSellTokensXRate - outSellTokensXRate    // R6.2 
+  val expectedRate = sellTokensXRate / tokensSold   
 
-  val isPaidAtFairRate = tokensSold/tokensPaid >= expectedRate 
+  val isPaidAtFairRate = tokensPaid/tokensSold >= expectedRate   //R6.2/R6.1  >= R6.2/R6.1
 
 	if(HEIGHT > unlockHeight(SELF)){
 		getSellerPk(SELF)

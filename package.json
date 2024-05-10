@@ -5,6 +5,7 @@
 	"scripts": {
 		"utxo": "bun src/lib/server/utxo/script_loadUnspetUtxo.ts > src/lib/server/utxo/unspent.ts",
 		"compile:sell": "bun src/lib/server/turbo-mempool/sell-contract/contract-sell-token-for-erg.ts > src/lib/server/constants/sellOrder.ts",
+		"compile:swap": "bun src/lib/server/turbo-mempool/swap-contract/contract-swap-tokens.ts > src/lib/server/constants/swapOrder.ts",
 		"compile:deposit": "bun src/lib/server/turbo-mempool/contract-user-shadow-pool.ts > src/lib/server/constants/depositAddress.ts",
 		"compile:return": "bun src/lib/server/turbo-mempool/compare-proposition-bytes/contract-return-to-r4.ts > src/lib/server/turbo-mempool/compare-proposition-bytes/contract-address-return-to-r4.ts",
 		"dev": "vite dev",
@@ -40,6 +41,7 @@
 		"@fleet-sdk/common": "^0.3.4",
 		"@fleet-sdk/compiler": "^0.3.4",
 		"@fleet-sdk/core": "^0.3.4",
+		"@fleet-sdk/serializer": "^0.3.4",
 		"bip32": "^4.0.0",
 		"bip39": "^3.1.0",
 		"bs58": "^5.0.0",

@@ -229,7 +229,6 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		const tempBox = JSON.parse(JSON.stringify(sellContractUtxo[0]));
 
 		expect(tempBox.additionalRegisters.R7).toBe(SLong(price).toHex());
-		console.log('hui');
 		const outputSellOrder = new OutputBuilder(
 			BigInt(tempBox.value), // //BOX (3200000) -> BOX (3200000) // - 100n
 			SELL_ORDER_ADDRESS
