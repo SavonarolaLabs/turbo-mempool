@@ -1,9 +1,7 @@
 import {
 	ALICE_ADDRESS,
 	BOB_ADDRESS,
-	DEPOSIT_ADDRESS,
-	SHADOWPOOL_ADDRESS,
-	SWAP_ORDER_ADDRESS
+	DEPOSIT_ADDRESS, SWAP_ORDER_ADDRESS
 } from '$lib/server/constants/addresses';
 import {
 	ALICE_MNEMONIC,
@@ -13,26 +11,11 @@ import {
 import { signTxByAddress, signTxInput } from '$lib/server/multisig/multisig';
 import { utxos } from '$lib/server/utxo/unspent';
 import {
-	first,
-	type Amount,
-	type Box,
-	type EIP12UnsignedTransaction,
-	type OneOrMore
-} from '@fleet-sdk/common';
-import {
 	ErgoAddress,
 	OutputBuilder,
 	RECOMMENDED_MIN_FEE_VALUE,
-	SAFE_MIN_BOX_VALUE,
-	SByte,
-	SColl,
-	SGroupElement,
-	SInt,
-	SLong,
-	SSigmaProp,
-	TransactionBuilder
+	SAFE_MIN_BOX_VALUE, TransactionBuilder
 } from '@fleet-sdk/core';
-import { SPair } from '@fleet-sdk/serializer';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import { createSwapOrderTx } from '../utils/swap';
