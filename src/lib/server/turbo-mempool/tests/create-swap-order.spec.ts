@@ -35,6 +35,7 @@ import {
 import { SPair } from '@fleet-sdk/serializer';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as wasm from 'ergo-lib-wasm-nodejs';
+import { createSwapOrderTx } from '../utils/swap';
 
 const sellingTokenId =
 	'69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8'; //HoldErgDoge Test1
@@ -63,7 +64,9 @@ describe('create new Swap order', async () => {
 			tokenForSale,
 			price,
 			height,
-			unlockHeight
+			unlockHeight,
+			sellingTokenId,
+			buyingTokenId
 		);
 
 		const signedTx = await signTxByAddress(
@@ -180,49 +183,3 @@ describe('create new Swap order', async () => {
 		unsignedTx.id = txId;
 	});
 });
-
-export function createSwapOrderTx(
-	sellerPK: string,
-	sellerMultisigAddress: string,
-	inputBoxes: OneOrMore<Box<Amount>>,
-	token: { tokenId: string; amount: Amount },
-	sellRate: bigint,
-	currentHeight: number,
-	unlockHeight: number
-): EIP12UnsignedTransaction {
-	const output = new OutputBuilder(SAFE_MIN_BOX_VALUE, SWAP_ORDER_ADDRESS)
-		.addTokens(token)
-		.setAdditionalRegisters({
-			R4: SColl(SSigmaProp, [
-				SGroupElement(
-					first(ErgoAddress.fromBase58(sellerPK).getPublicKeys())
-				),
-				SGroupElement(
-					first(
-						ErgoAddress.fromBase58(
-							SHADOWPOOL_ADDRESS
-						).getPublicKeys()
-					)
-				)
-			]).toHex(),
-			R5: SInt(unlockHeight).toHex(),
-			R6: SPair(
-				SColl(SByte, sellingTokenId),
-				SColl(SByte, buyingTokenId)
-			).toHex(),
-			R7: SLong(sellRate).toHex(),
-			R8: SColl(
-				SByte,
-				ErgoAddress.fromBase58(sellerMultisigAddress).ergoTree
-			).toHex()
-		});
-
-	const unsignedTransaction = new TransactionBuilder(currentHeight)
-		.from(inputBoxes)
-		.to(output)
-		.sendChangeTo(sellerPK)
-		.payFee(RECOMMENDED_MIN_FEE_VALUE)
-		.build()
-		.toEIP12Object();
-	return unsignedTransaction;
-}
