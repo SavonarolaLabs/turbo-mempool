@@ -1,1 +1,1 @@
-export const depositAddress = "JixnxAz48B1XvS9qoad8H4amt9JcQQPQPE4uURGUWNWnN1D"
+export const depositAddress = "t5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo"
