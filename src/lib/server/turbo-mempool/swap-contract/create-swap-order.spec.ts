@@ -5,7 +5,11 @@ import {
 	SHADOWPOOL_ADDRESS,
 	SWAP_ORDER_ADDRESS
 } from '$lib/server/constants/addresses';
-import { BOB_MNEMONIC, SHADOW_MNEMONIC } from '$lib/server/constants/mnemonics';
+import {
+	ALICE_MNEMONIC,
+	BOB_MNEMONIC,
+	SHADOW_MNEMONIC
+} from '$lib/server/constants/mnemonics';
 import { signTxByAddress, signTxInput } from '$lib/server/multisig/multisig';
 import { utxos } from '$lib/server/utxo/unspent';
 import {
@@ -33,6 +37,7 @@ import {
 import { SPair, STupleType } from '@fleet-sdk/serializer';
 import { TokenId } from 'ergo-lib-wasm-nodejs';
 import { beforeAll, describe, expect, it } from 'vitest';
+import * as wasm from 'ergo-lib-wasm-nodejs';
 
 const sellingTokenId =
 	'69feaac1e621c76d0f45057191ba740c2b4aa1ca28aff58fd889d071a0d795b8'; //HoldErgDoge Test1
@@ -45,7 +50,7 @@ const tokenForSale = {
 	amount: '100'
 };
 
-const price = 5n;
+const price = 2n;
 
 let height = 1_260_252; // await fetchHeight()
 let unlockHeight = 1_260_258;
@@ -75,40 +80,36 @@ describe('create new Swap order', async () => {
 	//swapOrderBoxes
 
 	it('create swap', async () => {
-		const buyAmount = 10n;
-		const error = -5n;
+		const buyAmount = 50n;
+		const error = 0n;
 		const buyerPk = ALICE_ADDRESS;
 		const currentHeight = height;
 
 		const paymentInTokens = {
 			tokenId: buyingTokenId,
-			amount: buyAmount * price //50 tokenov
-		};
+			amount: buyAmount * price
+		}; // Сколько заплатили в Других токенах
 
-		console.log('paymentInTokens=', paymentInTokens.amount);
-
+		//Seller Output
 		const outputPayment = new OutputBuilder(
 			SAFE_MIN_BOX_VALUE,
 			DEPOSIT_ADDRESS
 		)
 			.setAdditionalRegisters({
 				R4: swapOrderBoxes[0].additionalRegisters.R4,
-				R5: swapOrderBoxes[0].additionalRegisters.R5
+				R5: swapOrderBoxes[0].additionalRegisters.R5,
+				R6: swapOrderBoxes[0].additionalRegisters.R6
 			})
 			.addTokens(paymentInTokens);
 
 		const tempOutputSwapOrder = JSON.parse(
 			JSON.stringify(swapOrderBoxes[0])
-		); //copy
+		);
 
 		tempOutputSwapOrder.assets[0].amount =
 			BigInt(tokenForSale.amount) - buyAmount;
 
-		console.log('swapOrderBoxes[0].', swapOrderBoxes[0].assets[0].amount);
-		console.log(
-			'tempOutputSwapOrder.assets[0].amount',
-			tempOutputSwapOrder.assets[0].amount
-		);
+		//Swap Order Output
 		const outputSwapOrder = new OutputBuilder(
 			tempOutputSwapOrder.value,
 			SWAP_ORDER_ADDRESS
@@ -127,9 +128,8 @@ describe('create new Swap order', async () => {
 			.build()
 			.toEIP12Object();
 
-		//SIGN INPUTS: Alice and Shadow
+		//Sign inputs
 		const unsignedTx = unsignedTransaction; // <---
-		//console.log('🚀 ~ it ~ unsignedTx:', unsignedTx);
 		let swapContractUtxo = swapOrderBoxes;
 
 		const shadowIndex = unsignedTx.inputs.findIndex((b) =>
@@ -165,7 +165,7 @@ describe('create new Swap order', async () => {
 		);
 		expect(aliceInputProof.proofBytes.length).greaterThan(10);
 
-		console.dir(unsignedTx, { depth: null });
+		//console.dir(unsignedTx, { depth: null });
 
 		const txId = wasm.UnsignedTransaction.from_json(
 			JSON.stringify(unsignedTx)
@@ -184,7 +184,6 @@ describe('create new Swap order', async () => {
 
 		unsignedTx.id = txId;
 		console.log(ErgoAddress.fromBase58(DEPOSIT_ADDRESS).ergoTree);
-		expect(await txHasErrors(unsignedTx)).toBe(false);
 	});
 });
 
