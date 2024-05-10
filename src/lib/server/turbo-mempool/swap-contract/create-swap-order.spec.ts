@@ -50,7 +50,7 @@ const price = 5n;
 let height = 1_260_252; // await fetchHeight()
 let unlockHeight = 1_260_258;
 
-let swapOrderBoxes;
+let swapOrderBoxes: any;
 
 describe('create new Swap order', async () => {
 	beforeAll(async () => {
@@ -63,7 +63,6 @@ describe('create new Swap order', async () => {
 			height,
 			unlockHeight
 		);
-		//console.dir(unsignedTx, { depth: null });
 
 		const signedTx = await signTxByAddress(
 			BOB_MNEMONIC,
@@ -77,6 +76,7 @@ describe('create new Swap order', async () => {
 
 	it('create swap', async () => {
 		const buyAmount = 10n;
+		const error = -5n;
 		const buyerPk = ALICE_ADDRESS;
 		const currentHeight = height;
 
@@ -84,6 +84,8 @@ describe('create new Swap order', async () => {
 			tokenId: buyingTokenId,
 			amount: buyAmount * price //50 tokenov
 		};
+
+		console.log('paymentInTokens=', paymentInTokens.amount);
 
 		const outputPayment = new OutputBuilder(
 			SAFE_MIN_BOX_VALUE,
@@ -98,12 +100,15 @@ describe('create new Swap order', async () => {
 		const tempOutputSwapOrder = JSON.parse(
 			JSON.stringify(swapOrderBoxes[0])
 		); //copy
-		// tempOutputSwapOrder.assets.find((a) => a.tokenId == sellingTokenId).amount =
-		// 	BigInt(tokenForSale.amount) - buyAmount;
-		tempOutputSwapOrder.assets[0].amount = (
-			BigInt(tokenForSale.amount) - buyAmount
-		).toString();
 
+		tempOutputSwapOrder.assets[0].amount =
+			BigInt(tokenForSale.amount) - buyAmount;
+
+		console.log('swapOrderBoxes[0].', swapOrderBoxes[0].assets[0].amount);
+		console.log(
+			'tempOutputSwapOrder.assets[0].amount',
+			tempOutputSwapOrder.assets[0].amount
+		);
 		const outputSwapOrder = new OutputBuilder(
 			tempOutputSwapOrder.value,
 			SWAP_ORDER_ADDRESS
@@ -111,29 +116,11 @@ describe('create new Swap order', async () => {
 			.addTokens(tempOutputSwapOrder.assets)
 			.setAdditionalRegisters(tempOutputSwapOrder.additionalRegisters);
 
-		//console.dir(outputSwapOrder, { depth: null });
-
-		const totalInValue = [...swapOrderBoxes, ...utxos[buyerPk]].reduce(
-			(a, e) => a + +e.value,
-			0
-		);
-		console.log('🚀 ~ it ~ totalInValue:', totalInValue);
-		const totalOutValue = [outputPayment, outputSwapOrder].reduce(
-			(a, e) => a + +e.value.toString(),
-			0
-		);
-		console.log('🚀 ~ it ~ totalOutValue: ', totalOutValue);
-		console.log('🚀 ~ it ~ totalOutValue: ', 2100000);
-
-		const tokensIn = [...swapOrderBoxes, ...utxos[buyerPk]].reduce(
-			(a, e) => a + +e.value,
-			0
-		);
 		const unsignedTransaction = new TransactionBuilder(currentHeight)
 			.configureSelector((selector) =>
 				selector.ensureInclusion(swapOrderBoxes.map((b) => b.boxId))
 			)
-			.from(...swapOrderBoxes, ...utxos[buyerPk])
+			.from([...swapOrderBoxes, ...utxos[buyerPk]])
 			.to([outputPayment, outputSwapOrder])
 			.sendChangeTo(buyerPk) //add registers
 			.payFee(RECOMMENDED_MIN_FEE_VALUE)
@@ -142,6 +129,7 @@ describe('create new Swap order', async () => {
 
 		//SIGN INPUTS: Alice and Shadow
 		const unsignedTx = unsignedTransaction; // <---
+		//console.log('🚀 ~ it ~ unsignedTx:', unsignedTx);
 		let swapContractUtxo = swapOrderBoxes;
 
 		const shadowIndex = unsignedTx.inputs.findIndex((b) =>
