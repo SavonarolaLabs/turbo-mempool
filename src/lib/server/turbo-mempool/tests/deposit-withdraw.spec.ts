@@ -4,15 +4,14 @@ import {
 	signTxByAddress,
 	signTxAllInputs,
 	txHasErrors
-} from '../multisig/multisig';
-import { BOB_MNEMONIC, SHADOW_MNEMONIC } from '../constants/mnemonics';
+} from '../../multisig/multisig';
+import { BOB_MNEMONIC, SHADOW_MNEMONIC } from '../../constants/mnemonics';
 import {
 	BOB_ADDRESS,
 	DEPOSIT_ADDRESS,
-	SHADOWPOOL_ADDRESS
-} from '../constants/addresses';
-import { utxos } from '../utxo/unspent';
-import { createDepositTx, createWithdrawTx } from './account';
+} from '../../constants/addresses';
+import { utxos } from '../../utxo/unspent';
+import { createDepositTx, createWithdrawTx } from '../utils/account';
 
 describe.only('deposit -> withdraw', () => {
 	it('can spent a deposit', async () => {

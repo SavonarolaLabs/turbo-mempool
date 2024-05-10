@@ -17,7 +17,8 @@ import {
 	signTxAllInputs,
 } from '$lib/server/multisig/multisig';
 import { ALICE_MNEMONIC, BOB_MNEMONIC } from '$lib/server/constants/mnemonics';
-import { canсelSellOrderTx, createSellOrderTx } from './sell';
+import { canсelSellOrderTx, createSellOrderTx } from '../utils/sell';
+
 
 let utxoSell: OneOrMore<Box<Amount>> = [];
 let utxoSellMultisig: OneOrMore<Box<Amount>> = [];

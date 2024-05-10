@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { BOB_ADDRESS } from '../constants/addresses';
-import { signTxByAddress } from '../multisig/multisig';
-import { BOB_MNEMONIC } from '../constants/mnemonics';
-import { createTx } from './common';
+import { BOB_ADDRESS } from '../../constants/addresses';
+import { signTxByAddress } from '../../multisig/multisig';
+import { BOB_MNEMONIC } from '../../constants/mnemonics';
+import { createTx } from '../utils/common';
 
 describe('tx to ', async () => {
 	it('it works', async () => {

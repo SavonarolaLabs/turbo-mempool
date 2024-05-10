@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
 	ALICE_ADDRESS,
 	BOB_ADDRESS,
@@ -8,19 +8,13 @@ import {
 } from '$lib/server/constants/addresses';
 import { utxos } from '$lib/server/utxo/unspent';
 import {
-	first,
-	type Amount,
-	type Box,
-	type EIP12UnsignedTransaction,
-	type OneOrMore
+	first
 } from '@fleet-sdk/common';
 import {
 	BOX_VALUE_PER_BYTE,
 	ErgoAddress,
-	ErgoTree,
 	OutputBuilder,
 	RECOMMENDED_MIN_FEE_VALUE,
-	SAFE_MIN_BOX_VALUE,
 	SByte,
 	SColl,
 	SGroupElement,
@@ -30,10 +24,8 @@ import {
 	TransactionBuilder
 } from '@fleet-sdk/core';
 import {
-	signMultisig,
 	signTxByAddress,
 	signTxAllInputs,
-	signTxByInputs,
 	signTxInput,
 	txHasErrors,
 	submitTx
@@ -43,9 +35,9 @@ import {
 	BOB_MNEMONIC,
 	SHADOW_MNEMONIC
 } from '$lib/server/constants/mnemonics';
-import { createSellOrderTx } from './sell';
 import * as wasm from 'ergo-lib-wasm-nodejs';
-import { fetchHeight } from '../fetchHeight';
+import { fetchHeight } from '../utils/fetchHeight';
+import { createSellOrderTx } from '../utils/sell';
 
 const price = 1000n;
 const tokenForSale = {

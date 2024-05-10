@@ -26,16 +26,13 @@ import {
 	SAFE_MIN_BOX_VALUE,
 	SByte,
 	SColl,
-	SConstant,
 	SGroupElement,
 	SInt,
 	SLong,
 	SSigmaProp,
-	SType,
 	TransactionBuilder
 } from '@fleet-sdk/core';
-import { SPair, STupleType } from '@fleet-sdk/serializer';
-import { TokenId } from 'ergo-lib-wasm-nodejs';
+import { SPair } from '@fleet-sdk/serializer';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 

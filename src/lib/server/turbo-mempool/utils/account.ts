@@ -1,6 +1,6 @@
 import { first, type Amount, type Box, type EIP12UnsignedTransaction, type OneOrMore } from "@fleet-sdk/common";
 import { ErgoAddress, OutputBuilder, RECOMMENDED_MIN_FEE_VALUE, SAFE_MIN_BOX_VALUE, SGroupElement, SInt, SSigmaProp, TransactionBuilder } from "@fleet-sdk/core";
-import { DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from "../constants/addresses";
+import { DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from "../../constants/addresses";
 
 export function createDepositTx(userPK: string, inputBoxes: OneOrMore<Box<Amount>>, unlockHeight: number, currentHeight: number): EIP12UnsignedTransaction{
 	const output = new OutputBuilder(

@@ -4,8 +4,8 @@ import {
 	TransactionBuilder,
 	ErgoAddress
 } from '@fleet-sdk/core';
-import { BOB_ADDRESS, DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from '../constants/addresses';
-import { utxos } from '../utxo/unspent';
+import { BOB_ADDRESS, DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from '../../constants/addresses';
+import { utxos } from '../../utxo/unspent';
 import { fetchHeight } from './fetchHeight';
 import { first, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
 

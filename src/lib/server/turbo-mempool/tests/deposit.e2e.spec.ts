@@ -2,15 +2,15 @@ import { describe, expect, it } from 'vitest';
 import {
 	signTxByAddress,
 	submitTx,
-} from '../multisig/multisig';
+} from '../../multisig/multisig';
 import {
 	BOB_MNEMONIC,
-} from '../constants/mnemonics';
+} from '../../constants/mnemonics';
 import {
 	BOB_ADDRESS,
-} from '../constants/addresses';
-import { utxos } from '../utxo/unspent';
-import { createDepositTx } from './account';
+} from '../../constants/addresses';
+import { utxos } from '../../utxo/unspent';
+import { createDepositTx } from '../utils/account';
 
 describe.skip('boxes from depositAddress', () => {
 	it('Bob deposit real box to deposit ', async () => {
