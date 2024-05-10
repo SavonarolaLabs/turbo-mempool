@@ -9,6 +9,12 @@ import type { EIP12UnsignedInput, EIP12UnsignedTransaction, SignedTransaction } 
 import { SHADOW_MNEMONIC } from '../constants/mnemonics';
 import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
 
+
+
+export async function signTxMulti(unsignedTx: EIP12UnsignedTransaction, userMnemonic: string, userAddress: string): Promise<SignedTransaction>{
+	return (await signMultisig(unsignedTx, userMnemonic, userAddress)).to_js_eip12()
+}
+
 export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMnemonic: string, userAddress: string) {
 	await wasmModule.loadAsync();
 
@@ -255,6 +261,27 @@ export async function signTxByInputs(
 ): Promise<SignedTransaction> {
 	const prover = await getProver(mnemonic);
 
+	const boxes_to_spend = ErgoBoxes.empty();
+	boxesToSign.forEach((box) => {
+		boxes_to_spend.add(ErgoBox.from_json(JSON.stringify(box)));
+	});
+
+	const signedTx = prover.sign_transaction(
+		fakeContext(),
+		wasm.UnsignedTransaction.from_json(JSON.stringify(tx)),
+		boxes_to_spend,
+		ErgoBoxes.empty()
+	);
+	return signedTx.to_js_eip12();
+}
+
+export async function signTx(
+	tx: EIP12UnsignedTransaction,
+	mnemonic: string
+): Promise<SignedTransaction> {
+	const prover = await getProver(mnemonic);
+
+	const boxesToSign = tx.inputs;
 	const boxes_to_spend = ErgoBoxes.empty();
 	boxesToSign.forEach((box) => {
 		boxes_to_spend.add(ErgoBox.from_json(JSON.stringify(box)));

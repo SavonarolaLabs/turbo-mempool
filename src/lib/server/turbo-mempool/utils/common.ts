@@ -7,7 +7,7 @@ import {
 import { BOB_ADDRESS, DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from '../../constants/addresses';
 import { utxos } from '../../utxo/unspent';
 import { fetchHeight } from './fetchHeight';
-import { first, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
+import { first, type Amount, type Box, type EIP12UnsignedTransaction, type OneOrMore } from '@fleet-sdk/common';
 
 import { SGroupElement, SInt, SLong, SSigmaProp } from '@fleet-sdk/serializer';
 
