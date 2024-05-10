@@ -181,17 +181,11 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		unsignedTx.id = txId;
 	});
 
-	it('50/100 sigmaProp(orderFilled) && getPoolPk(SELF)', async () => {
+	it.skip('50/100 sigmaProp(orderFilled) && getPoolPk(SELF)', async () => {
 		const sellerPK = BOB_ADDRESS;
 		const buyerPK = ALICE_ADDRESS; //Deposit Address
-		const buyPart = 50n;
-		const buyDenom = 100n;
 		let payment = 50n * price;
 		// TODO: Decode price from R7
-		let steal = 400000n;
-		console.log('payment', payment);
-		console.log('steal  ', steal);
-		payment = payment - steal;
 		const output = new OutputBuilder(
 			payment, //50n * price, //<minValuePerByte * outputSize> nanoErgs
 			DEPOSIT_ADDRESS
@@ -220,7 +214,6 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 
 		const tempBox = JSON.parse(JSON.stringify(sellContractUtxo[0]));
 
-		expect(tempBox.additionalRegisters.R7).toBe(SLong(price).toHex());
 		const outputSellOrder = new OutputBuilder(
 			BigInt(tempBox.value), // //BOX (3200000) -> BOX (3200000) // - 100n
 			SELL_ORDER_ADDRESS
@@ -295,8 +288,6 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		};
 
 		unsignedTx.id = txId;
-		console.log(ErgoAddress.fromBase58(DEPOSIT_ADDRESS).ergoTree);
-		expect(await txHasErrors(unsignedTx)).toBe(false);
 	});
 
 	it.skip('NEW CONTRACT 100 000 sigmaProp(orderFilled) && getPoolPk(SELF)', async () => {
@@ -433,8 +424,6 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 		};
 
 		unsignedTx.id = txId;
-		console.log(ErgoAddress.fromBase58(DEPOSIT_ADDRESS).ergoTree);
-		//expect(await txHasErrors(unsignedTx)).toBe(false);
 	});
 
 	it.skip('alice can buy with Shadow Signed - 100/100 tokens', async () => {

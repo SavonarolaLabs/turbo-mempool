@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { signTxAllInputs } from '../../multisig/multisig';
-import { ALICE_MNEMONIC, BOB_MNEMONIC } from '../../constants/mnemonics';
-import { ALICE_ADDRESS, BOB_ADDRESS } from '../../constants/addresses';
-import { utxos } from '../../utxo/unspent';
+import { signTxAllInputs } from '$lib/server/multisig/multisig';
+import { ALICE_MNEMONIC, BOB_MNEMONIC } from '$lib/server/constants/mnemonics';
+import { ALICE_ADDRESS, BOB_ADDRESS } from '$lib/server/constants/addresses';
+import { utxos } from '$lib/server/utxo/unspent';
 import {
 	ErgoAddress,
 	OutputBuilder,

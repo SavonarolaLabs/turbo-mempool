@@ -1,3 +1,4 @@
+import { buyOrderAddress } from './buyOrder';
 import { depositAddress } from './depositAddress';
 import { sellOrderAddress } from './sellOrder';
 import { swapTokensAddress } from './swapOrder';
@@ -12,5 +13,5 @@ export const ALICE_AND_BOB_ADDRESS =
 	'7Jpc1Fq4K8BSi4CNq5V8AsfSYUNW15LNJauE5ZRKZ52HaJ9u8ZBhK3MNXsBJ38f7JMhAYAdQzJnfzNQiyU5ixfKacwzk5KdXCpccwZVhyamQSjEJsssMxvYkF';
 export const DEPOSIT_ADDRESS = depositAddress;
 export const SELL_ORDER_ADDRESS = sellOrderAddress;
-export const BUY_ORDER_ADDRESS = ''; //TODO:add buy
+export const BUY_ORDER_ADDRESS = buyOrderAddress;
 export const SWAP_ORDER_ADDRESS = swapTokensAddress;
