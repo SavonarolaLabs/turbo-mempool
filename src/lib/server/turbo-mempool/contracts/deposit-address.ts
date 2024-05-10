@@ -1,8 +1,7 @@
 import { Network } from '@fleet-sdk/common';
 import { compile } from '@fleet-sdk/compiler';
 
-//1255856
-export const userAndShadowPoolMultisig = `{
+export const depositAddress = `{
 	def getSellerPk(box: Box)              = box.R4[Coll[SigmaProp]].get(0)
 	def getPoolPk(box: Box)                = box.R4[Coll[SigmaProp]].get(1)
 	def unlockHeight(box: Box)             = box.R5[Int].get
@@ -17,7 +16,7 @@ export const userAndShadowPoolMultisig = `{
 //SELF.tokens(0)._1 == sellTokenId,
 
 function compileContract() {
-	const tree = compile(userAndShadowPoolMultisig, {
+	const tree = compile(depositAddress, {
 		version: 0,
 		includeSize: false
 	});
