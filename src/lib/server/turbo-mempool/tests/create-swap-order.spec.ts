@@ -162,8 +162,6 @@ describe('create new Swap order', async () => {
 		);
 		expect(aliceInputProof.proofBytes.length).greaterThan(10);
 
-		//console.dir(unsignedTx, { depth: null });
-
 		const txId = wasm.UnsignedTransaction.from_json(
 			JSON.stringify(unsignedTx)
 		)
@@ -180,7 +178,6 @@ describe('create new Swap order', async () => {
 		};
 
 		unsignedTx.id = txId;
-		console.log(ErgoAddress.fromBase58(DEPOSIT_ADDRESS).ergoTree);
 	});
 });
 
