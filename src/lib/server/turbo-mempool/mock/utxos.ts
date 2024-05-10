@@ -68,7 +68,7 @@ export const aliceUtxosInitial = [
 	}
 ];
 
-export const FUNDING_UTXO = [
+export const PRINTER_UTXO = [
     {
       boxId: "200f8b94cc1a8b726bb40450d3ee684bb4506cdf3867000d0d5a67bd15af930e",
       transactionId: "325e71adc66f484a44cb445a443d6a310bc490a65d6a5179c6dff9ac9ac1cb2d",
@@ -145,5 +145,5 @@ export const FUNDING_UTXO = [
     }
 ]
 
-export const FUNDING_MNEMONIC = ALICE_MNEMONIC
-export const FUNDING_ADDRESS = ALICE_ADDRESS
+export const PRINTER_MNEMONIC = ALICE_MNEMONIC
+export const PRINTER_ADDRESS = ALICE_ADDRESS

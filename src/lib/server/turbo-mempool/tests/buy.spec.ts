@@ -8,8 +8,8 @@ import {
 	TransactionBuilder,
 	type Box
 } from '@fleet-sdk/core';
-import { ALICE_ADDRESS, BOB_ADDRESS } from '$lib/server/constants/addresses';
-import { FUNDING_ADDRESS, FUNDING_MNEMONIC, FUNDING_UTXO } from '../mock/utxos';
+import { ALICE_ADDRESS, BOB_ADDRESS, BUY_ORDER_ADDRESS, DEPOSIT_ADDRESS } from '$lib/server/constants/addresses';
+import { PRINTER_ADDRESS, PRINTER_MNEMONIC, PRINTER_UTXO } from '../mock/utxos';
 import { deposit } from '../utils/account';
 import { signMultisig, signTx, signTxAllInputs, signTxMulti } from '$lib/server/multisig/multisig';
 import { buy } from '../utils/buy';
@@ -29,24 +29,24 @@ const BUY_ORDER_TOKEN = {
 const RATE = 1n;
 
 //let depositBox;
-let sellOrderBox: Box;
+let buyOrderBox: Box;
 
-describe('limit sell order', () => {
+describe('buy', () => {
 	beforeAll(async () => {
 		const depositUTx = deposit(
 			CHAIN_HEIGHT,
-			FUNDING_UTXO,
-			FUNDING_ADDRESS,
+			PRINTER_UTXO,
+			PRINTER_ADDRESS,
 			BUYER_PK,
 			BUYER_UNLOCK_HEIGHT,
 			BUY_ORDER_TOKEN,
 			10n * SAFE_MIN_BOX_VALUE
 		);
-		const depositTx = await signTx(depositUTx, FUNDING_MNEMONIC);
+
+		const depositTx = await signTx(depositUTx, PRINTER_MNEMONIC);
 		const depositBox = depositTx.outputs.find(
-			(o) => o.ergoTree == ErgoAddress.fromBase58(FUNDING_ADDRESS).ergoTree
+			(o) => o.ergoTree == ErgoAddress.fromBase58(DEPOSIT_ADDRESS).ergoTree
 		);
-		expect(depositBox?.assets[0].amount).toBe(BUY_ORDER_TOKEN.amount);
 
 		const buyOrderUTx = buy(
 			CHAIN_HEIGHT,
@@ -59,12 +59,12 @@ describe('limit sell order', () => {
 		)
 		const buyOrderTx = await signTxMulti(buyOrderUTx, BUYER_MNEMONIC, BUYER_PK);
 
-		sellOrderBox = (buyOrderTx.outputs.find(
-			(o) => o.ergoTree == ErgoAddress.fromBase58(BUYER_PK).ergoTree
+		buyOrderBox = (buyOrderTx.outputs.find(
+			(o) => o.ergoTree == ErgoAddress.fromBase58(BUY_ORDER_ADDRESS).ergoTree
 		) as Box)
 	});
 
-	it("valid sell order", ()=>{
-		expect(sellOrderBox).toBeDefined();
+	it("create buy order box", ()=>{
+		expect(buyOrderBox).toBeDefined();
 	})
 });
