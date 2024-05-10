@@ -1,12 +1,4 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { signTxAllInputs } from '../../multisig/multisig';
-import { ALICE_MNEMONIC, BOB_MNEMONIC } from '../../constants/mnemonics';
-import {
-	ALICE_ADDRESS,
-	BOB_ADDRESS,
-	SHADOWPOOL_ADDRESS
-} from '../../constants/addresses';
-import { utxos } from '../../utxo/unspent';
 import {
 	ErgoAddress,
 	OutputBuilder,
@@ -14,9 +6,6 @@ import {
 	SAFE_MIN_BOX_VALUE,
 	SByte,
 	SColl,
-	SGroupElement,
-	SInt,
-	SSigmaProp,
 	TransactionBuilder
 } from '@fleet-sdk/core';
 import {
@@ -27,6 +16,10 @@ import {
 } from '@fleet-sdk/common';
 import { returnToR4Address } from './contract-address-return-to-r4';
 import { depositAddress } from '$lib/server/constants/depositAddress';
+import { signTxAllInputs } from '$lib/server/multisig/multisig';
+import { BOB_MNEMONIC } from '$lib/server/constants/mnemonics';
+import { utxos } from '$lib/server/utxo/unspent';
+import { BOB_ADDRESS } from '$lib/server/constants/addresses';
 
 let contractBoxesForMultisig: OneOrMore<Box<Amount>> = [];
 let contractBoxesForBob: OneOrMore<Box<Amount>> = [];
