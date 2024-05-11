@@ -1,12 +1,14 @@
 import {
 	BUY_ORDER_ADDRESS,
-	DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS
+	DEPOSIT_ADDRESS,
+	SHADOWPOOL_ADDRESS
 } from '$lib/server/constants/addresses';
 import {
 	first,
 	type Amount,
 	type Box,
-	type EIP12UnsignedTransaction
+	type EIP12UnsignedTransaction,
+	type TokenAmount
 } from '@fleet-sdk/common';
 import {
 	ErgoAddress,
@@ -21,7 +23,7 @@ import {
 	SSigmaProp,
 	TransactionBuilder
 } from '@fleet-sdk/core';
-import { asBigInt, sumNanoErg } from './helper';
+import { asBigInt, calcTokenChange, sumNanoErg } from './helper';
 
 export function buy(
 	blockchainHeight: number,
@@ -30,14 +32,12 @@ export function buy(
 	buyRate: bigint,
 	unlockHeight: number,
 	token: { tokenId: string; amount: Amount },
-	nanoErg: string | bigint = 2n * RECOMMENDED_MIN_FEE_VALUE + SAFE_MIN_BOX_VALUE
+	nanoErg: string | bigint = 2n * RECOMMENDED_MIN_FEE_VALUE +
+		SAFE_MIN_BOX_VALUE
 ): EIP12UnsignedTransaction {
-	console.dir(inputBoxes, {depth: null})
-	console.log(token)
-	const buyOrder = new OutputBuilder(
-		nanoErg,
-		BUY_ORDER_ADDRESS
-	)
+	console.dir(inputBoxes, { depth: null });
+	console.log(token);
+	const buyOrder = new OutputBuilder(nanoErg, BUY_ORDER_ADDRESS)
 		.addTokens(token)
 		.setAdditionalRegisters({
 			R4: SColl(SSigmaProp, [
@@ -60,25 +60,27 @@ export function buy(
 				ErgoAddress.fromBase58(DEPOSIT_ADDRESS).ergoTree
 			).toHex()
 		});
-	
+
 	const change = new OutputBuilder(
 		sumNanoErg(inputBoxes) - asBigInt(nanoErg) - RECOMMENDED_MIN_FEE_VALUE,
 		DEPOSIT_ADDRESS
-	).setAdditionalRegisters({
-		R4: SColl(SSigmaProp, [
-			SGroupElement(
-				first(ErgoAddress.fromBase58(buyerPK).getPublicKeys())
-			),
-			SGroupElement(
-				first(
-					ErgoAddress.fromBase58(
-						SHADOWPOOL_ADDRESS
-					).getPublicKeys()
+	)
+		.setAdditionalRegisters({
+			R4: SColl(SSigmaProp, [
+				SGroupElement(
+					first(ErgoAddress.fromBase58(buyerPK).getPublicKeys())
+				),
+				SGroupElement(
+					first(
+						ErgoAddress.fromBase58(
+							SHADOWPOOL_ADDRESS
+						).getPublicKeys()
+					)
 				)
-			)
-		]).toHex(),
-		R5: SInt(unlockHeight).toHex()
-	})
+			]).toHex(),
+			R5: SInt(unlockHeight).toHex()
+		})
+		.addTokens(calcTokenChange(inputBoxes, token));
 
 	const uTx = new TransactionBuilder(blockchainHeight)
 		.from(inputBoxes)
@@ -86,6 +88,6 @@ export function buy(
 		.payFee(RECOMMENDED_MIN_FEE_VALUE)
 		.build()
 		.toEIP12Object();
-	
+
 	return uTx;
 }
