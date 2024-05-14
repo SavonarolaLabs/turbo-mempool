@@ -53,7 +53,7 @@ describe('buy()', () => {
 
 		const buyOrderUTx = buy(
 			CHAIN_HEIGHT,
-			[depositBox as Box],
+			[depositBox],
 			BUYER_PK,
 			RATE,
 			BUYER_UNLOCK_HEIGHT,
