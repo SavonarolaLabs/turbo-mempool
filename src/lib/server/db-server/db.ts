@@ -11,9 +11,11 @@ type ServerDB = {
     txes: TxRow[]
 }
 
-export const db: ServerDB = {
-    boxes: [],
-    txes: [],
+export function initDb(): ServerDB {
+    return {
+        boxes: [],
+        txes: [],
+    }
 }
 
 function nextId(table: HasId[]){
