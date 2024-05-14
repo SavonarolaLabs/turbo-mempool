@@ -1,6 +1,6 @@
 import type { Box } from "@fleet-sdk/common"
 
-export type BoxTable  = {
+export type BoxRow  = {
     id: number
     box: Box
     unspent: Boolean

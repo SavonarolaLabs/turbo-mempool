@@ -1,8 +1,8 @@
 import type { EIP12UnsignedTransaction } from "@fleet-sdk/common"
 
-type todo = {}
+type todo = []
 
-export type TxTable = {
+export type TxRow = {
     id: number
     unsignedTx: EIP12UnsignedTransaction
     commitments: todo
