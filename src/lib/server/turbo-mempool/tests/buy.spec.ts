@@ -21,7 +21,7 @@ const BUYER_MNEMONIC = BOB_MNEMONIC;
 const DEPOSIT_TOKEN = {
 	name: 'TestToken Test2',
 	tokenId: 'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
-	amount: 100_000_000_000n, // this is only 100 tokens
+	amount: 100_000_000_000n,
 	decimals: 9
 };
 const RATE = 1n;
