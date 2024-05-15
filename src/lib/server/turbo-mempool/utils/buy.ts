@@ -35,8 +35,6 @@ export function buy(
 	nanoErg: string | bigint = 2n * RECOMMENDED_MIN_FEE_VALUE +
 		SAFE_MIN_BOX_VALUE
 ): EIP12UnsignedTransaction {
-	console.dir(inputBoxes, { depth: null });
-	console.log(token);
 	const buyOrder = new OutputBuilder(nanoErg, BUY_ORDER_ADDRESS)
 		.addTokens(token)
 		.setAdditionalRegisters({
