@@ -8,16 +8,13 @@ import {
 	ErgoBox,
 	ErgoBoxes,
 	ReducedTransaction,
+	Transaction,
 	TransactionHintsBag,
 	UnsignedTransaction,
 	extract_hints
 } from 'ergo-lib-wasm-nodejs';
 
-export async function part1(
-	unsignedTx: EIP12UnsignedTransaction,
-	userMnemonic: string,
-	userAddress: string
-) {
+export async function part1(unsignedTx: EIP12UnsignedTransaction) {
 	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
 	const proverBob = await getProver(shadow.mnemonic);
 	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
@@ -51,15 +48,20 @@ export async function part1(
 		JSON.stringify(jsonBobHints)
 	);
 
-	return { initialCommitsBobForAlice };
+	const hintsString = JSON.stringify(jsonBobHints);
+
+	return { hintsString };
 }
 
 export async function part2(
 	unsignedTx: EIP12UnsignedTransaction,
-	initialCommitsBobForAlice: any,
+	hintsString: string,
 	userMnemonic: string,
 	userAddress: string
 ) {
+	const initialCommitsBobForAlice =
+		TransactionHintsBag.from_json(hintsString);
+
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
@@ -102,14 +104,18 @@ export async function part2(
 		convertedHintsForAliceSign
 	);
 
-	return { partialSignedTx };
+	const partialSignedString = partialSignedTx.to_json();
+
+	return { partialSignedString };
 }
 
 export async function part3(
 	unsignedTx: EIP12UnsignedTransaction,
-	partialSignedTx: any,
+	partialSignedString: string,
 	userAddress: string
 ) {
+	const partialSignedTx = Transaction.from_json(partialSignedString);
+
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
@@ -179,22 +185,22 @@ export async function signMultisigV1(
 	userAddress: string
 ) {
 	// part 1 start
-	const { initialCommitsBobForAlice } = await part1(
-		unsignedTx,
-		userMnemonic,
-		userAddress
-	);
+	const { hintsString } = await part1(unsignedTx, userMnemonic, userAddress);
 
 	// part 2 start
-	const { partialSignedTx } = await part2(
+	const { partialSignedString } = await part2(
 		unsignedTx,
-		initialCommitsBobForAlice,
+		hintsString,
 		userMnemonic,
 		userAddress
 	);
 
 	// part 3 start
-	const { signedTx } = await part3(unsignedTx, partialSignedTx, userAddress);
+	const { signedTx } = await part3(
+		unsignedTx,
+		partialSignedString,
+		userAddress
+	);
 	// part 3 end
 
 	return signedTx.to_js_eip12();
