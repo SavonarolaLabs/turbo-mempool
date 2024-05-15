@@ -262,7 +262,7 @@ export interface StateAddress {
 	tokens: Array<TokenInfo>;
 }
 
-const arrayToProposition = (input: Array<string>): Propositions => {
+export function arrayToProposition(input: Array<string>) {
 	const output = new wasmModule.SigmaRust.Propositions();
 	input.forEach((pk) => {
 		const proposition = Uint8Array.from(Buffer.from('cd' + pk, 'hex'));
