@@ -5,11 +5,18 @@ import {
 	BUY_ORDER_ADDRESS,
 	DEPOSIT_ADDRESS
 } from '$lib/server/constants/addresses';
-import { PRINTER_ADDRESS, PRINTER_MNEMONIC, PRINTER_UTXO } from '../turbo-mempool/mock/utxos';
-import { signTx} from '$lib/server/multisig/multisig';
+import {
+	PRINTER_ADDRESS,
+	PRINTER_MNEMONIC,
+	PRINTER_UTXO
+} from '../turbo-mempool/mock/utxos';
+import { signTx } from '$lib/server/multisig/multisig';
 import { buy } from '../turbo-mempool/utils/buy';
 import { BOB_MNEMONIC } from '$lib/server/constants/mnemonics';
-import { boxAtAddress, boxesAtAddress } from '../turbo-mempool/utils/test-helper';
+import {
+	boxAtAddress,
+	boxesAtAddress
+} from '../turbo-mempool/utils/test-helper';
 import { deposit } from '../turbo-mempool/utils/account';
 import { signMultisigV1 } from './multi-in-parts';
 
@@ -61,11 +68,7 @@ describe('buy()', () => {
 			token,
 			SAFE_MIN_BOX_VALUE
 		);
-		const buyOrderTx = await signMultisigV1(
-			buyOrderUTx,
-			BUYER_MNEMONIC,
-			BUYER_PK
-		);
+		const buyOrderTx = await signMultisigV1(buyOrderUTx);
 
 		const buyOrderBox = boxAtAddress(buyOrderTx, BUY_ORDER_ADDRESS);
 		expect(buyOrderBox, 'buy order box in output').toBeDefined();

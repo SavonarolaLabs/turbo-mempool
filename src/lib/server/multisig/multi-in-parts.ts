@@ -1,6 +1,6 @@
 import type { EIP12UnsignedTransaction } from '@fleet-sdk/common';
-import { SHADOW_MNEMONIC } from '../constants/mnemonics';
-import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
+import { ALICE_MNEMONIC, SHADOW_MNEMONIC } from '../constants/mnemonics';
+import { ALICE_ADDRESS, SHADOWPOOL_ADDRESS } from '../constants/addresses';
 import { arrayToProposition, getProver } from './multisig';
 import { ErgoAddress } from '@fleet-sdk/core';
 import { fakeContext } from './fakeContext';
@@ -13,11 +13,7 @@ import {
 	extract_hints
 } from 'ergo-lib-wasm-nodejs';
 
-export async function part1(
-	unsignedTx: EIP12UnsignedTransaction,
-	userMnemonic: string,
-	userAddress: string
-) {
+export async function part1(unsignedTx: EIP12UnsignedTransaction) {
 	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
 	const proverBob = await getProver(shadow.mnemonic);
 	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
@@ -56,59 +52,8 @@ export async function part1(
 
 export async function part2(
 	unsignedTx: EIP12UnsignedTransaction,
-	userMnemonic: string,
-	userAddress: string
+	initialCommitsBobForAlice: any
 ) {
-	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
-	const proverBob = await getProver(shadow.mnemonic);
-	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
-
-	const wasmUnsignedTx = UnsignedTransaction.from_json(
-		JSON.stringify(unsignedTx)
-	);
-	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
-
-	let context = fakeContext();
-
-	let reducedTx = ReducedTransaction.from_unsigned_tx(
-		wasmUnsignedTx,
-		inputBoxes,
-		ErgoBoxes.empty(),
-		context
-	);
-
-	let initialCommitsBobForAlice =
-		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
-
-	let jsonBobHints = initialCommitsBobForAlice.to_json();
-
-	for (var row in jsonBobHints.publicHints) {
-		jsonBobHints.publicHints[row] = jsonBobHints.publicHints[row].filter(
-			(item: { hint: string; pubkey: { h: string } }) =>
-				!(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
-		);
-	}
-	initialCommitsBobForAlice = TransactionHintsBag.from_json(
-		JSON.stringify(jsonBobHints)
-	);
-
-	return { initialCommitsBobForAlice };
-}
-
-export async function signMultisigV1(
-	unsignedTx: EIP12UnsignedTransaction,
-	userMnemonic: string,
-	userAddress: string
-) {
-	// part 2 start
-	const { initialCommitsBobForAlice } = await part1(
-		unsignedTx,
-		userMnemonic,
-		userAddress
-	);
-
-	//const {partialSignedTx} = await part2(unsignedTx,)
-
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
@@ -121,9 +66,8 @@ export async function signMultisigV1(
 		context
 	);
 
-	const user = { mnemonic: userMnemonic, address: userAddress };
+	const user = { mnemonic: ALICE_MNEMONIC, address: ALICE_ADDRESS };
 	const proverAlice = await getProver(user.mnemonic);
-	const hAlice = ErgoAddress.fromBase58(user.address).ergoTree.slice(6);
 
 	const initialCommitsAlice =
 		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
@@ -151,9 +95,34 @@ export async function signMultisigV1(
 		reducedTx,
 		convertedHintsForAliceSign
 	);
+
+	return { partialSignedTx };
+}
+
+export async function signMultisigV1(unsignedTx: EIP12UnsignedTransaction) {
+	// part 2 start
+	const { initialCommitsBobForAlice } = await part1(unsignedTx);
+
+	const { partialSignedTx } = await part2(
+		unsignedTx,
+		initialCommitsBobForAlice
+	);
+
 	// part 2 end (partial only )
 
 	// part 3 end
+	const hAlice = ErgoAddress.fromBase58(ALICE_ADDRESS).ergoTree.slice(6);
+	let context = fakeContext();
+	const wasmUnsignedTx = UnsignedTransaction.from_json(
+		JSON.stringify(unsignedTx)
+	);
+	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
+	let reducedTx = ReducedTransaction.from_unsigned_tx(
+		wasmUnsignedTx,
+		inputBoxes,
+		ErgoBoxes.empty(),
+		context
+	);
 
 	const ergoBoxes = ErgoBoxes.empty();
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
