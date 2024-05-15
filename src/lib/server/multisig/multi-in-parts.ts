@@ -51,7 +51,48 @@ export async function part1(
 		JSON.stringify(jsonBobHints)
 	);
 
-	return {initialCommitsBobForAlice}
+	return { initialCommitsBobForAlice };
+}
+
+export async function part2(
+	unsignedTx: EIP12UnsignedTransaction,
+	userMnemonic: string,
+	userAddress: string
+) {
+	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
+	const proverBob = await getProver(shadow.mnemonic);
+	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
+
+	const wasmUnsignedTx = UnsignedTransaction.from_json(
+		JSON.stringify(unsignedTx)
+	);
+	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
+
+	let context = fakeContext();
+
+	let reducedTx = ReducedTransaction.from_unsigned_tx(
+		wasmUnsignedTx,
+		inputBoxes,
+		ErgoBoxes.empty(),
+		context
+	);
+
+	let initialCommitsBobForAlice =
+		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+
+	let jsonBobHints = initialCommitsBobForAlice.to_json();
+
+	for (var row in jsonBobHints.publicHints) {
+		jsonBobHints.publicHints[row] = jsonBobHints.publicHints[row].filter(
+			(item: { hint: string; pubkey: { h: string } }) =>
+				!(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
+		);
+	}
+	initialCommitsBobForAlice = TransactionHintsBag.from_json(
+		JSON.stringify(jsonBobHints)
+	);
+
+	return { initialCommitsBobForAlice };
 }
 
 export async function signMultisigV1(
@@ -60,7 +101,13 @@ export async function signMultisigV1(
 	userAddress: string
 ) {
 	// part 2 start
-	const {initialCommitsBobForAlice} = await part1(unsignedTx, userMnemonic, userAddress);
+	const { initialCommitsBobForAlice } = await part1(
+		unsignedTx,
+		userMnemonic,
+		userAddress
+	);
+
+	//const {partialSignedTx} = await part2(unsignedTx,)
 
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
@@ -104,9 +151,7 @@ export async function signMultisigV1(
 		reducedTx,
 		convertedHintsForAliceSign
 	);
-
-	// part 2 end
-
+	// part 2 end (partial only )
 
 	// part 3 end
 
@@ -122,10 +167,10 @@ export async function signMultisigV1(
 
 	let hints = extract_hints(
 		partialSignedTx,
-		context, // ?
+		context,
 		ergoBoxes,
 		ErgoBoxes.empty(),
-		realPropositionsAlice, // ?
+		realPropositionsAlice,
 		simulatedPropositions
 	);
 
@@ -133,8 +178,10 @@ export async function signMultisigV1(
 
 	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
 	const proverBob = await getProver(shadow.mnemonic);
-	let initialCommitsBob = proverBob.generate_commitments_for_reduced_transaction(reducedTx);
-	
+
+	let initialCommitsBob =
+		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+
 	const hintsForBobSign = initialCommitsBob.to_json();
 
 	for (var row in hintsForBobSign.publicHints) {
@@ -145,6 +192,7 @@ export async function signMultisigV1(
 			hintsForBobSign.secretHints[row].push(ourHints.secretHints[row][i]);
 		}
 	}
+
 	const convertedHintsForBobSign = TransactionHintsBag.from_json(
 		JSON.stringify(hintsForBobSign)
 	);

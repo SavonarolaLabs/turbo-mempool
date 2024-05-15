@@ -1,21 +1,39 @@
 import { fakeContext } from './fakeContext';
-import { ErgoBox, ErgoBoxes, Propositions, ReducedTransaction, TransactionHintsBag, UnsignedTransaction } from 'ergo-lib-wasm-nodejs';
+import {
+	ErgoBox,
+	ErgoBoxes,
+	Propositions,
+	ReducedTransaction,
+	TransactionHintsBag,
+	UnsignedTransaction
+} from 'ergo-lib-wasm-nodejs';
 import { ErgoAddress } from '@fleet-sdk/core';
 import { mnemonicToSeedSync } from 'bip39';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import { bip32 } from './functions';
-import type { EIP12UnsignedInput, EIP12UnsignedTransaction, SignedTransaction } from '@fleet-sdk/common';
+import type {
+	EIP12UnsignedInput,
+	EIP12UnsignedTransaction,
+	SignedTransaction
+} from '@fleet-sdk/common';
 import { SHADOW_MNEMONIC } from '../constants/mnemonics';
 import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
 
-
-
-export async function signTxMulti(unsignedTx: EIP12UnsignedTransaction, userMnemonic: string, userAddress: string): Promise<SignedTransaction>{
-	return (await signMultisig(unsignedTx, userMnemonic, userAddress)).to_js_eip12()
+export async function signTxMulti(
+	unsignedTx: EIP12UnsignedTransaction,
+	userMnemonic: string,
+	userAddress: string
+): Promise<SignedTransaction> {
+	return (
+		await signMultisig(unsignedTx, userMnemonic, userAddress)
+	).to_js_eip12();
 }
 
-export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMnemonic: string, userAddress: string) {
-
+export async function signMultisig(
+	unsignedTx: EIP12UnsignedTransaction,
+	userMnemonic: string,
+	userAddress: string
+) {
 	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
 	//const shadow = { mnemonic: BOB_MNEMONIC, address: BOB_ADDRESS };
 	const user = { mnemonic: userMnemonic, address: userAddress };
@@ -41,20 +59,30 @@ export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMne
 		context
 	);
 
-	const initialCommitsBob = proverBob.generate_commitments_for_reduced_transaction(reducedTx);
-	const initialCommitsAlice = proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
+	const initialCommitsBob =
+		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+	const initialCommitsAlice =
+		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
 
 	const hintsAll = TransactionHintsBag.empty();
 
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
-		hintsAll.add_hints_for_input(i, initialCommitsAlice.all_hints_for_input(i));
-		hintsAll.add_hints_for_input(i, initialCommitsBob.all_hints_for_input(i));
+		hintsAll.add_hints_for_input(
+			i,
+			initialCommitsAlice.all_hints_for_input(i)
+		);
+		hintsAll.add_hints_for_input(
+			i,
+			initialCommitsBob.all_hints_for_input(i)
+		);
 	}
 
 	const hintsForAliceSign = JSON.parse(JSON.stringify(hintsAll.to_json())); // make copy
 
 	for (var row in hintsForAliceSign.publicHints) {
-		hintsForAliceSign.publicHints[row] = hintsForAliceSign.publicHints[row].filter(
+		hintsForAliceSign.publicHints[row] = hintsForAliceSign.publicHints[
+			row
+		].filter(
 			(item) => !(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
 		);
 	}
@@ -99,14 +127,21 @@ export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMne
 			hintsForBobSign.secretHints[row].push(ourHints.secretHints[row][i]);
 		}
 	}
-	const convertedHintsForBobSign = TransactionHintsBag.from_json(JSON.stringify(hintsForBobSign));
+	const convertedHintsForBobSign = TransactionHintsBag.from_json(
+		JSON.stringify(hintsForBobSign)
+	);
 
-	let signedTx = proverBob.sign_reduced_transaction_multi(reducedTx, convertedHintsForBobSign);
+	let signedTx = proverBob.sign_reduced_transaction_multi(
+		reducedTx,
+		convertedHintsForBobSign
+	);
 
 	return signedTx;
 }
 
-export async function txHasErrors(signedTransaction: SignedTransaction): Promise<false | string> {
+export async function txHasErrors(
+	signedTransaction: SignedTransaction
+): Promise<false | string> {
 	const endpoint = 'https://gql.ergoplatform.com/';
 	const query = `
       mutation CheckTransaction($signedTransaction: SignedTransaction!) {
@@ -141,7 +176,9 @@ export async function txHasErrors(signedTransaction: SignedTransaction): Promise
 	}
 }
 
-export async function submitTx(signedTransaction: SignedTransaction): Promise<false | string> {
+export async function submitTx(
+	signedTransaction: SignedTransaction
+): Promise<false | string> {
 	const endpoint = 'https://gql.ergoplatform.com/';
 	const query = `
       mutation SubmitTransaction($signedTransaction: SignedTransaction!) {
@@ -220,7 +257,7 @@ export function arrayToProposition(input: Array<string>): wasm.Propositions {
 		output.add_proposition_from_byte(proposition);
 	});
 	return output;
-};
+}
 
 export async function getProver(mnemonic: string): Promise<wasm.Wallet> {
 	const secretKeys = new wasm.SecretKeys();
@@ -342,7 +379,9 @@ const getWalletAddressSecret = (mnemonic: string, idx: number = 0) => {
 	let seed = mnemonicToSeedSync(mnemonic);
 	const path = calcPathFromIndex(idx);
 	const extended = bip32.fromSeed(seed).derivePath(path);
-	return wasm.SecretKey.dlog_from_bytes(Uint8Array.from(extended.privateKey ?? Buffer.from('')));
+	return wasm.SecretKey.dlog_from_bytes(
+		Uint8Array.from(extended.privateKey ?? Buffer.from(''))
+	);
 };
 
 const RootPathWithoutIndex = "m/44'/429'/0'/0";
