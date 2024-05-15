@@ -1,18 +1,16 @@
-import type { EIP12UnsignedTransaction } from "@fleet-sdk/common";
-import { wasmModule } from "../tx-chaining/utils/wasm-module";
-import { SHADOW_MNEMONIC } from "../constants/mnemonics";
-import { SHADOWPOOL_ADDRESS } from "../constants/addresses";
-import { arrayToProposition, getProver } from "./multisig";
-import { ErgoAddress } from "@fleet-sdk/core";
-import { fakeContext } from "./fakeContext";
-import { ErgoBox, ErgoBoxes, TransactionHintsBag } from "ergo-lib-wasm-nodejs";
+import type { EIP12UnsignedTransaction } from '@fleet-sdk/common';
+import { SHADOW_MNEMONIC } from '../constants/mnemonics';
+import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
+import { arrayToProposition, getProver } from './multisig';
+import { ErgoAddress } from '@fleet-sdk/core';
+import { fakeContext } from './fakeContext';
+import { ErgoBox, ErgoBoxes, ReducedTransaction, TransactionHintsBag, UnsignedTransaction, extract_hints } from 'ergo-lib-wasm-nodejs';
 
 export async function signMultisigV1(
 	unsignedTx: EIP12UnsignedTransaction,
 	userMnemonic: string,
 	userAddress: string
 ) {
-	await wasmModule.loadAsync();
 	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
 	//const shadow = { mnemonic: BOB_MNEMONIC, address: BOB_ADDRESS };
 	const user = { mnemonic: userMnemonic, address: userAddress };
@@ -23,7 +21,7 @@ export async function signMultisigV1(
 	const hAlice = ErgoAddress.fromBase58(user.address).ergoTree.slice(6);
 	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
 
-	const wasmUnsignedTx = wasmModule.SigmaRust.UnsignedTransaction.from_json(
+	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
 
@@ -31,18 +29,37 @@ export async function signMultisigV1(
 
 	let context = fakeContext();
 
-	let reducedTx = wasmModule.SigmaRust.ReducedTransaction.from_unsigned_tx(
+	let reducedTx = ReducedTransaction.from_unsigned_tx(
 		wasmUnsignedTx,
 		inputBoxes,
 		ErgoBoxes.empty(),
 		context
 	);
 
-	const initialCommitsBob =
+	let initialCommitsBobForAlice =
 		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+
+	let initialCommitsBob =
+		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+
+	let jsonBobHints = initialCommitsBobForAlice.to_json();
+	console.log("🚀 ~ jsonBobHints:", jsonBobHints)
+	
+
+	for (var row in jsonBobHints.publicHints) {
+		jsonBobHints.publicHints[row] = jsonBobHints.publicHints[row].filter(
+			(item: { hint: string; pubkey: { h: string } }) =>
+				!(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
+		);
+	}
+
+	initialCommitsBobForAlice = TransactionHintsBag.from_json(JSON.stringify(jsonBobHints));
+
+
+	//end
+
 	const initialCommitsAlice =
 		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
-
 
 	const hintsAll = TransactionHintsBag.empty();
 
@@ -53,7 +70,7 @@ export async function signMultisigV1(
 		);
 		hintsAll.add_hints_for_input(
 			i,
-			initialCommitsBob.all_hints_for_input(i)
+			initialCommitsBobForAlice.all_hints_for_input(i)
 		);
 	}
 
@@ -67,8 +84,6 @@ export async function signMultisigV1(
 		);
 	}
 
-
-
 	const convertedHintsForAliceSign = TransactionHintsBag.from_json(
 		JSON.stringify(hintsForAliceSign) // to wasm...
 	);
@@ -78,7 +93,7 @@ export async function signMultisigV1(
 		convertedHintsForAliceSign
 	);
 
-	const ergoBoxes = wasmModule.SigmaRust.ErgoBoxes.empty();
+	const ergoBoxes = ErgoBoxes.empty();
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
 		ergoBoxes.add(ErgoBox.from_json(JSON.stringify(unsignedTx.inputs[i])));
 	}
@@ -89,11 +104,11 @@ export async function signMultisigV1(
 	const simulated: string[] = [];
 	const simulatedPropositions = arrayToProposition(simulated);
 
-	let hints = wasmModule.SigmaRust.extract_hints(
+	let hints = extract_hints(
 		partialSignedTx,
 		context, // ?
 		ergoBoxes,
-		wasmModule.SigmaRust.ErgoBoxes.empty(),
+		ErgoBoxes.empty(),
 		realPropositionsAlice, // ?
 		simulatedPropositions
 	);

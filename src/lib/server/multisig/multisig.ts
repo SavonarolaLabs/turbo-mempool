@@ -1,6 +1,5 @@
-import { wasmModule } from '../tx-chaining/utils/wasm-module';
 import { fakeContext } from './fakeContext';
-import { ErgoBox, ErgoBoxes, TransactionHintsBag } from 'ergo-lib-wasm-nodejs';
+import { ErgoBox, ErgoBoxes, Propositions, ReducedTransaction, TransactionHintsBag, UnsignedTransaction } from 'ergo-lib-wasm-nodejs';
 import { ErgoAddress } from '@fleet-sdk/core';
 import { mnemonicToSeedSync } from 'bip39';
 import * as wasm from 'ergo-lib-wasm-nodejs';
@@ -16,7 +15,6 @@ export async function signTxMulti(unsignedTx: EIP12UnsignedTransaction, userMnem
 }
 
 export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMnemonic: string, userAddress: string) {
-	await wasmModule.loadAsync();
 
 	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
 	//const shadow = { mnemonic: BOB_MNEMONIC, address: BOB_ADDRESS };
@@ -28,7 +26,7 @@ export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMne
 	const hAlice = ErgoAddress.fromBase58(user.address).ergoTree.slice(6);
 	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
 
-	const wasmUnsignedTx = wasmModule.SigmaRust.UnsignedTransaction.from_json(
+	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
 
@@ -36,7 +34,7 @@ export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMne
 
 	let context = fakeContext();
 
-	let reducedTx = wasmModule.SigmaRust.ReducedTransaction.from_unsigned_tx(
+	let reducedTx = ReducedTransaction.from_unsigned_tx(
 		wasmUnsignedTx,
 		inputBoxes,
 		ErgoBoxes.empty(),
@@ -70,7 +68,7 @@ export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMne
 		convertedHintsForAliceSign
 	);
 
-	const ergoBoxes = wasmModule.SigmaRust.ErgoBoxes.empty();
+	const ergoBoxes = ErgoBoxes.empty();
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
 		ergoBoxes.add(ErgoBox.from_json(JSON.stringify(unsignedTx.inputs[i])));
 	}
@@ -81,11 +79,11 @@ export async function signMultisig(unsignedTx: EIP12UnsignedTransaction, userMne
 	const simulated = [];
 	const simulatedPropositions = arrayToProposition(simulated);
 
-	let hints = wasmModule.SigmaRust.extract_hints(
+	let hints = extract_hints(
 		partialSignedTx,
 		context, // ?
 		ergoBoxes,
-		wasmModule.SigmaRust.ErgoBoxes.empty(),
+		ErgoBoxes.empty(),
 		realPropositionsAlice, // ?
 		simulatedPropositions
 	);
@@ -216,7 +214,7 @@ export interface StateAddress {
 }
 
 export function arrayToProposition(input: Array<string>): wasm.Propositions {
-	const output = new wasmModule.SigmaRust.Propositions();
+	const output = new Propositions();
 	input.forEach((pk) => {
 		const proposition = Uint8Array.from(Buffer.from('cd' + pk, 'hex'));
 		output.add_proposition_from_byte(proposition);

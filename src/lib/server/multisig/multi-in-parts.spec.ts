@@ -43,7 +43,7 @@ describe('buy()', () => {
 		depositBox = boxAtAddress(depositTx, DEPOSIT_ADDRESS);
 	});
 
-	it('returns change to DEPOSIT_ADDRESS', async () => {
+	it('signMultisigV1', async () => {
 		const token = {
 			name: 'TestToken Test2',
 			tokenId:
