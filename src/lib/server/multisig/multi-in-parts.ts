@@ -104,18 +104,32 @@ export async function part2(
 		convertedHintsForAliceSign
 	);
 
-	const partialSignedString = partialSignedTx.to_json();
+	const hAlice = ErgoAddress.fromBase58(userAddress).ergoTree.slice(6);
+	const ergoBoxes = ErgoBoxes.empty();
+	for (var i = 0; i < unsignedTx.inputs.length; i++) {
+		ergoBoxes.add(ErgoBox.from_json(JSON.stringify(unsignedTx.inputs[i])));
+	}
+	const realPropositionsAlice = arrayToProposition([hAlice]); //->p2
+	const simulated: string[] = [];
+	const simulatedPropositions = arrayToProposition(simulated);
 
-	return { partialSignedString };
+	let hints = extract_hints(
+		partialSignedTx,
+		context,
+		ergoBoxes,
+		ErgoBoxes.empty(),
+		realPropositionsAlice,
+		simulatedPropositions
+	);
+	const hintsStringPartial = JSON.stringify(hints.to_json());
+
+	return { hintsStringPartial };
 }
 
 export async function part3(
 	unsignedTx: EIP12UnsignedTransaction,
-	partialSignedString: string,
-	userAddress: string
+	hintsStringPartial: string
 ) {
-	const partialSignedTx = Transaction.from_json(partialSignedString);
-
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
@@ -128,25 +142,7 @@ export async function part3(
 		context
 	);
 
-	const hAlice = ErgoAddress.fromBase58(userAddress).ergoTree.slice(6);
-	const ergoBoxes = ErgoBoxes.empty();
-	for (var i = 0; i < unsignedTx.inputs.length; i++) {
-		ergoBoxes.add(ErgoBox.from_json(JSON.stringify(unsignedTx.inputs[i])));
-	}
-
-	const realPropositionsAlice = arrayToProposition([hAlice]);
-
-	const simulated: string[] = [];
-	const simulatedPropositions = arrayToProposition(simulated);
-
-	let hints = extract_hints(
-		partialSignedTx,
-		context,
-		ergoBoxes,
-		ErgoBoxes.empty(),
-		realPropositionsAlice,
-		simulatedPropositions
-	);
+	let hints = TransactionHintsBag.from_json(hintsStringPartial);
 
 	const ourHints = hints.to_json();
 
@@ -188,7 +184,7 @@ export async function signMultisigV1(
 	const { hintsString } = await part1(unsignedTx);
 
 	// part 2 start
-	const { partialSignedString } = await part2(
+	const { hintsStringPartial } = await part2(
 		unsignedTx,
 		hintsString,
 		userMnemonic,
@@ -196,11 +192,7 @@ export async function signMultisigV1(
 	);
 
 	// part 3 start
-	const { signedTx } = await part3(
-		unsignedTx,
-		partialSignedString,
-		userAddress
-	);
+	const { signedTx } = await part3(unsignedTx, hintsStringPartial);
 	// part 3 end
 
 	return signedTx.to_js_eip12();
