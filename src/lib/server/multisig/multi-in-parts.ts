@@ -185,7 +185,7 @@ export async function signMultisigV1(
 	userAddress: string
 ) {
 	// part 1 start
-	const { hintsString } = await part1(unsignedTx, userMnemonic, userAddress);
+	const { hintsString } = await part1(unsignedTx);
 
 	// part 2 start
 	const { partialSignedString } = await part2(
