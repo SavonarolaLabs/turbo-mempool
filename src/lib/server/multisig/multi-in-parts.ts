@@ -50,27 +50,28 @@ export async function part1(unsignedTx: EIP12UnsignedTransaction) {
 	return { initialCommitsBobForAlice };
 }
 
-export async function part2(
-	unsignedTx: EIP12UnsignedTransaction,
-	initialCommitsBobForAlice: any
-) {
-	const wasmUnsignedTx = UnsignedTransaction.from_json(
+export async function signMultisigV1(unsignedTx: EIP12UnsignedTransaction) {
+	// part 1 start
+	const { initialCommitsBobForAlice } = await part1(unsignedTx);
+
+	// part 2 start
+	const wasmUnsignedTx2 = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
 	);
-	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
-	let context = fakeContext();
-	let reducedTx = ReducedTransaction.from_unsigned_tx(
-		wasmUnsignedTx,
-		inputBoxes,
+	const inputBoxes2 = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
+	let context2 = fakeContext();
+	let reducedTx2 = ReducedTransaction.from_unsigned_tx(
+		wasmUnsignedTx2,
+		inputBoxes2,
 		ErgoBoxes.empty(),
-		context
+		context2
 	);
 
 	const user = { mnemonic: ALICE_MNEMONIC, address: ALICE_ADDRESS };
 	const proverAlice = await getProver(user.mnemonic);
 
 	const initialCommitsAlice =
-		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
+		proverAlice.generate_commitments_for_reduced_transaction(reducedTx2);
 
 	const hintsAll = TransactionHintsBag.empty();
 
@@ -92,23 +93,9 @@ export async function part2(
 	);
 
 	const partialSignedTx = proverAlice.sign_reduced_transaction_multi(
-		reducedTx,
+		reducedTx2,
 		convertedHintsForAliceSign
 	);
-
-	return { partialSignedTx };
-}
-
-export async function signMultisigV1(unsignedTx: EIP12UnsignedTransaction) {
-	// part 2 start
-	const { initialCommitsBobForAlice } = await part1(unsignedTx);
-
-	const { partialSignedTx } = await part2(
-		unsignedTx,
-		initialCommitsBobForAlice
-	);
-
-	// part 2 end (partial only )
 
 	// part 3 end
 	const hAlice = ErgoAddress.fromBase58(ALICE_ADDRESS).ergoTree.slice(6);
