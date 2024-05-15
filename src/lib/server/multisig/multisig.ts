@@ -59,6 +59,7 @@ export async function signMultisig(
 	const initialCommitsAlice =
 		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
 
+	// //initial Hints:
 	console.log(
 		'🚀 Multi orig~ initialCommitsBob:',
 		initialCommitsBob.to_json()
@@ -67,7 +68,8 @@ export async function signMultisig(
 		'🚀 Multi orig~ initialCommitsAlice:',
 		initialCommitsAlice.to_json()
 	);
-	console.dir(initialCommitsAlice.to_json(), { depth: null });
+	// console.dir(initialCommitsAlice.to_json(), { depth: null });
+
 	const hintsAll = TransactionHintsBag.empty();
 
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
@@ -81,6 +83,9 @@ export async function signMultisig(
 		);
 	}
 
+	// console.log('🚀 ~ hintsAll:', hintsAll.to_json()); //Public 4-2 : Secret 0-0
+	// console.dir(hintsAll.to_json(), { depth: null });
+
 	const hintsForAliceSign = JSON.parse(JSON.stringify(hintsAll.to_json())); // make copy
 
 	for (var row in hintsForAliceSign.publicHints) {
@@ -90,6 +95,9 @@ export async function signMultisig(
 			(item) => !(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
 		);
 	}
+
+	console.log('🚀 ~ hintsForAliceSign:', hintsForAliceSign); //Public 4-2 : Secret 0-0
+	console.dir(hintsForAliceSign, { depth: null });
 
 	const convertedHintsForAliceSign = TransactionHintsBag.from_json(
 		JSON.stringify(hintsForAliceSign) // to wasm...
@@ -433,7 +441,6 @@ export async function signMultisigPart1(unsignedTx: EIP12UnsignedTransaction) {
 			(item) => !(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
 		);
 	}
-
 	// ----------------------------------------------
 
 	// P2
@@ -514,9 +521,25 @@ export async function signMultisigPart2(
 	const proverAlice = await getProver(user.mnemonic);
 	const hAlice = ErgoAddress.fromBase58(user.address).ergoTree.slice(6);
 
+	const wasmUnsignedTx = wasmModule.SigmaRust.UnsignedTransaction.from_json(
+		JSON.stringify(unsignedTx)
+	);
+
+	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
+
+	let context = fakeContext();
+
+	let reducedTx = wasmModule.SigmaRust.ReducedTransaction.from_unsigned_tx(
+		wasmUnsignedTx,
+		inputBoxes,
+		ErgoBoxes.empty(),
+		context
+	);
+
+	//------------------------------------------------
 	const initialCommitsAlice =
 		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
-	console.log('🚀 ~ initialCommitsAlice:', initialCommitsAlice.to_json());
+	console.trace('🚀 ~ initialCommitsAlice:', initialCommitsAlice.to_json());
 	const hintsAll = TransactionHintsBag.empty();
 
 	// ?

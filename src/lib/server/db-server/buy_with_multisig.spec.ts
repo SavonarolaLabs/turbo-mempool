@@ -55,6 +55,32 @@ describe('buy()', () => {
 		depositBox = boxAtAddress(depositTx, DEPOSIT_ADDRESS);
 	});
 
+	it.skip('return with OLD multisig', async () => {
+		const token = {
+			name: 'TestToken Test2',
+			tokenId:
+				'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
+			amount: 10_000_000_000n,
+			decimals: 9
+		};
+
+		const buyOrderUTx = buy(
+			CHAIN_HEIGHT,
+			[depositBox],
+			BUYER_PK,
+			RATE,
+			BUYER_UNLOCK_HEIGHT,
+			token,
+			SAFE_MIN_BOX_VALUE
+		);
+
+		const buyOrderTx = await signTxMulti(
+			buyOrderUTx,
+			BUYER_MNEMONIC,
+			BUYER_PK
+		);
+	});
+
 	it('returns change to DEPOSIT_ADDRESS', async () => {
 		const token = {
 			name: 'TestToken Test2',
@@ -78,9 +104,10 @@ describe('buy()', () => {
 		// Construct Tx (with ShadowPool commitment)
 		// ergoTree:'100204000402d801d601d9010163b2e4c6720104147300009591a3dad9010263e4c67202050401a7da720101a7ea02da720101a7dad9010263b2e4c67202041473010001a7'
 		const transactionP1 = await signMultisigPart1(buyOrderUTx); //Boxes to sign?
-		console.dir(transactionP1.transactionHintsBag, {
-			depth: null
-		});
+		// console.log('new hint bag');
+		// console.dir(transactionP1.transactionHintsBag, {
+		// 	depth: null
+		// });
 
 		const transactionP2 = await signMultisigPart2(
 			transactionP1.transaction,
@@ -88,14 +115,8 @@ describe('buy()', () => {
 			ALICE_MNEMONIC,
 			ALICE_ADDRESS
 		); //Boxes to sign?
-		console.log('🚀 ~ it ~ hintsP2:', transactionP2);
-		console.dir(transactionP2.to_json(), { depth: null });
-
-		const buyOrderTx = await signTxMulti(
-			buyOrderUTx,
-			BUYER_MNEMONIC,
-			BUYER_PK
-		);
+		// console.log('🚀 ~ it ~ hintsP2:', transactionP2);
+		// console.dir(transactionP2.to_json(), { depth: null });
 
 		//	const buyOrderBox = boxAtAddress(buyOrderTx, BUY_ORDER_ADDRESS);
 	});
