@@ -18,7 +18,12 @@ import {
 	boxesAtAddress
 } from '../turbo-mempool/utils/test-helper';
 import { deposit } from '../turbo-mempool/utils/account';
-import { signMultisigV1 } from './multi-in-parts';
+import {
+	signMultisigV1,
+	signPart1,
+	signPart2,
+	signPart3
+} from './multi-in-parts';
 
 const CHAIN_HEIGHT = 1250600;
 const UNLOCK_DELTA = 100;
@@ -50,7 +55,7 @@ describe('buy()', () => {
 		depositBox = boxAtAddress(depositTx, DEPOSIT_ADDRESS);
 	});
 
-	it('signMultisigV1', async () => {
+	it('signMultisigV1 Virtual Box', async () => {
 		const token = {
 			name: 'TestToken Test2',
 			tokenId:
@@ -68,11 +73,15 @@ describe('buy()', () => {
 			token,
 			SAFE_MIN_BOX_VALUE
 		);
-		const buyOrderTx = await signMultisigV1(
+
+		const hintsServer = await signPart1(buyOrderUTx);
+		const hintsUserPartial = await signPart2(
 			buyOrderUTx,
+			hintsServer,
 			BUYER_MNEMONIC,
 			BUYER_PK
 		);
+		const buyOrderTx = await signPart3(buyOrderUTx, hintsUserPartial);
 
 		const buyOrderBox = boxAtAddress(buyOrderTx, BUY_ORDER_ADDRESS);
 		expect(buyOrderBox, 'buy order box in output').toBeDefined();

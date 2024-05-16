@@ -14,10 +14,10 @@ import {
 	extract_hints
 } from 'ergo-lib-wasm-nodejs';
 
-export async function part1(unsignedTx: EIP12UnsignedTransaction) {
-	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
-	const proverBob = await getProver(shadow.mnemonic);
-	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
+export async function signPart1(unsignedTx: EIP12UnsignedTransaction) {
+	const proverServer = await getProver(SHADOW_MNEMONIC);
+	const hServer =
+		ErgoAddress.fromBase58(SHADOWPOOL_ADDRESS).ergoTree.slice(6);
 
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
@@ -33,33 +33,38 @@ export async function part1(unsignedTx: EIP12UnsignedTransaction) {
 		context
 	);
 
-	let initialCommitsBobForAlice =
-		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+	let initialCommitsServerForUser =
+		proverServer.generate_commitments_for_reduced_transaction(reducedTx);
 
-	let jsonBobHints = initialCommitsBobForAlice.to_json();
+	let jsonServerHints = initialCommitsServerForUser.to_json();
 
-	for (var row in jsonBobHints.publicHints) {
-		jsonBobHints.publicHints[row] = jsonBobHints.publicHints[row].filter(
+	for (var row in jsonServerHints.publicHints) {
+		jsonServerHints.publicHints[row] = jsonServerHints.publicHints[
+			row
+		].filter(
 			(item: { hint: string; pubkey: { h: string } }) =>
-				!(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
+				!(item.hint == 'cmtWithSecret' && item.pubkey.h == hServer)
 		);
 	}
-	initialCommitsBobForAlice = TransactionHintsBag.from_json(
-		JSON.stringify(jsonBobHints)
+	initialCommitsServerForUser = TransactionHintsBag.from_json(
+		JSON.stringify(jsonServerHints)
 	);
 
-	const hintsString = JSON.stringify(jsonBobHints);
+	const hintsString = JSON.stringify(jsonServerHints);
 
-	return { hintsString };
+	console.log('PART 1 FINAL HINTS');
+	console.dir(jsonServerHints, { depth: null });
+
+	return hintsString;
 }
 
-export async function part2(
+export async function signPart2(
 	unsignedTx: EIP12UnsignedTransaction,
 	hintsString: string,
 	userMnemonic: string,
 	userAddress: string
 ) {
-	const initialCommitsBobForAlice =
+	const initialCommitsServerForUser =
 		TransactionHintsBag.from_json(hintsString);
 
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
@@ -74,42 +79,39 @@ export async function part2(
 		context
 	);
 
-	const user = { mnemonic: userMnemonic, address: userAddress };
-	const proverAlice = await getProver(user.mnemonic);
+	const proverUser = await getProver(userMnemonic);
 
-	const initialCommitsAlice =
-		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
+	const initialCommitsUser =
+		proverUser.generate_commitments_for_reduced_transaction(reducedTx);
 
-	const hintsAll = TransactionHintsBag.empty();
+	const hintsForSign = TransactionHintsBag.empty();
 
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
-		hintsAll.add_hints_for_input(
+		hintsForSign.add_hints_for_input(
 			i,
-			initialCommitsAlice.all_hints_for_input(i)
+			initialCommitsUser.all_hints_for_input(i)
 		);
-		hintsAll.add_hints_for_input(
+		hintsForSign.add_hints_for_input(
 			i,
-			initialCommitsBobForAlice.all_hints_for_input(i)
+			initialCommitsServerForUser.all_hints_for_input(i)
 		);
 	}
 
-	const hintsForAliceSign = JSON.parse(JSON.stringify(hintsAll.to_json())); // make copy
-
-	const convertedHintsForAliceSign = TransactionHintsBag.from_json(
-		JSON.stringify(hintsForAliceSign) // to wasm...
+	const wasmHintsForSign = TransactionHintsBag.from_json(
+		JSON.stringify(hintsForSign.to_json()) // to wasm...
 	);
 
-	const partialSignedTx = proverAlice.sign_reduced_transaction_multi(
+	const partialSignedTx = proverUser.sign_reduced_transaction_multi(
 		reducedTx,
-		convertedHintsForAliceSign
+		wasmHintsForSign
 	);
 
-	const hAlice = ErgoAddress.fromBase58(userAddress).ergoTree.slice(6);
+	const hUser = ErgoAddress.fromBase58(userAddress).ergoTree.slice(6);
 	const ergoBoxes = ErgoBoxes.empty();
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
 		ergoBoxes.add(ErgoBox.from_json(JSON.stringify(unsignedTx.inputs[i])));
 	}
-	const realPropositionsAlice = arrayToProposition([hAlice]); //->p2
+	const realPropositionsUser = arrayToProposition([hUser]); //->p2
 	const simulated: string[] = [];
 	const simulatedPropositions = arrayToProposition(simulated);
 
@@ -118,15 +120,23 @@ export async function part2(
 		context,
 		ergoBoxes,
 		ErgoBoxes.empty(),
-		realPropositionsAlice,
+		realPropositionsUser,
 		simulatedPropositions
 	);
-	const hintsStringPartial = JSON.stringify(hints.to_json());
+	//console.dir(hints.to_json(), { depth: null });
+	const hintsTemp = hints.to_json();
+	//hintsTemp.publicHints['0'] = [];
+	hintsTemp.secretHints['0'] = [];
+	console.log('PART 2 FINAL HINTS');
+	console.dir(hintsTemp, { depth: null });
 
-	return { hintsStringPartial };
+	const hintsStringPartial = JSON.stringify(hintsTemp);
+	//const hintsStringPartial = JSON.stringify(hints.to_json());
+
+	return hintsStringPartial;
 }
 
-export async function part3(
+export async function signPart3(
 	unsignedTx: EIP12UnsignedTransaction,
 	hintsStringPartial: string
 ) {
@@ -146,33 +156,36 @@ export async function part3(
 
 	const ourHints = hints.to_json();
 
-	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
-	const proverBob = await getProver(shadow.mnemonic);
+	const proverServer = await getProver(SHADOW_MNEMONIC);
 
-	let initialCommitsBob =
-		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+	let initialCommitsServer =
+		proverServer.generate_commitments_for_reduced_transaction(reducedTx);
 
-	const hintsForBobSign = initialCommitsBob.to_json();
+	const hintsForServerSign = initialCommitsServer.to_json();
 
-	for (var row in hintsForBobSign.publicHints) {
+	for (var row in hintsForServerSign.publicHints) {
 		for (var i = 0; i < ourHints.publicHints[row].length; i++) {
-			hintsForBobSign.publicHints[row].push(ourHints.publicHints[row][i]);
+			hintsForServerSign.publicHints[row].push(
+				ourHints.publicHints[row][i]
+			);
 		}
 		for (var i = 0; i < ourHints.secretHints[row].length; i++) {
-			hintsForBobSign.secretHints[row].push(ourHints.secretHints[row][i]);
+			hintsForServerSign.secretHints[row].push(
+				ourHints.secretHints[row][i]
+			);
 		}
 	}
 
-	const convertedHintsForBobSign = TransactionHintsBag.from_json(
-		JSON.stringify(hintsForBobSign)
+	const convertedHintsForServerSign = TransactionHintsBag.from_json(
+		JSON.stringify(hintsForServerSign)
 	);
 
-	let signedTx = proverBob.sign_reduced_transaction_multi(
+	let signedTx = proverServer.sign_reduced_transaction_multi(
 		reducedTx,
-		convertedHintsForBobSign
+		convertedHintsForServerSign
 	);
 
-	return { signedTx };
+	return signedTx.to_js_eip12();
 }
 
 export async function signMultisigV1(
@@ -181,10 +194,10 @@ export async function signMultisigV1(
 	userAddress: string
 ) {
 	// part 1 start
-	const { hintsString } = await part1(unsignedTx);
+	const hintsString = await signPart1(unsignedTx);
 
 	// part 2 start
-	const { hintsStringPartial } = await part2(
+	const hintsStringPartial = await signPart2(
 		unsignedTx,
 		hintsString,
 		userMnemonic,
@@ -192,8 +205,8 @@ export async function signMultisigV1(
 	);
 
 	// part 3 start
-	const { signedTx } = await part3(unsignedTx, hintsStringPartial);
+	const signedTx = await signPart3(unsignedTx, hintsStringPartial);
 	// part 3 end
 
-	return signedTx.to_js_eip12();
+	return signedTx;
 }
