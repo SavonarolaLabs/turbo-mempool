@@ -52,8 +52,8 @@ export async function signPart1(unsignedTx: EIP12UnsignedTransaction) {
 
 	const hintsString = JSON.stringify(jsonServerHints);
 
-	console.log('PART 1 FINAL HINTS');
-	console.dir(jsonServerHints, { depth: null });
+	// console.log('PART 1 FINAL HINTS');
+	// console.dir(jsonServerHints, { depth: null });
 
 	return hintsString;
 }
@@ -126,9 +126,14 @@ export async function signPart2(
 	//console.dir(hints.to_json(), { depth: null });
 	const hintsTemp = hints.to_json();
 	//hintsTemp.publicHints['0'] = [];
-	hintsTemp.secretHints['0'] = [];
-	console.log('PART 2 FINAL HINTS');
-	console.dir(hintsTemp, { depth: null });
+	const keys = Object.keys(hintsTemp.secretHints);
+	// console.log(keys);
+	// keys.forEach((k) => {
+	// 	hintsTemp.server[k] = [];
+	// });
+	//hintsTemp.secretHints['0'] = [];
+	// console.log('PART 2 FINAL HINTS');
+	// console.dir(hintsTemp, { depth: null });
 
 	const hintsStringPartial = JSON.stringify(hintsTemp);
 	//const hintsStringPartial = JSON.stringify(hints.to_json());

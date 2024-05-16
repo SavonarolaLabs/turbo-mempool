@@ -5,7 +5,8 @@ import {
 	Propositions,
 	ReducedTransaction,
 	TransactionHintsBag,
-	UnsignedTransaction
+	UnsignedTransaction,
+	extract_hints
 } from 'ergo-lib-wasm-nodejs';
 import { ErgoAddress } from '@fleet-sdk/core';
 import { mnemonicToSeedSync } from 'bip39';

@@ -13,4 +13,5 @@ utxo[DEPOSIT_ADDRESS] = await getContractBoxes(DEPOSIT_ADDRESS);
 utxo[SELL_ORDER_ADDRESS] = await getContractBoxes(SELL_ORDER_ADDRESS);
 
 console.log('export const utxos = ');
-console.dir(utxo, { depth: null });
+
+console.log(JSON.stringify(utxo, null, 2));

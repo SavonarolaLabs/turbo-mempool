@@ -1,14 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import {
-	signTxByAddress,
-	submitTx,
-} from '../../multisig/multisig';
-import {
-	BOB_MNEMONIC,
-} from '../../constants/mnemonics';
-import {
-	BOB_ADDRESS,
-} from '../../constants/addresses';
+import { signTxByAddress, submitTx } from '../../multisig/multisig';
+import { BOB_MNEMONIC } from '../../constants/mnemonics';
+import { BOB_ADDRESS } from '../../constants/addresses';
 import { utxos } from '../../utxo/unspent';
 import { createDepositTx } from '../utils/account';
 
@@ -20,9 +13,13 @@ describe.skip('boxes from depositAddress', () => {
 			1256321 + 200,
 			1255856
 		);
-		const signedTx = await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
+		const signedTx = await signTxByAddress(
+			BOB_MNEMONIC,
+			BOB_ADDRESS,
+			unsignedTx
+		);
 
-		const sumbitedTx = await submitTx(signedTx);
-		expect(sumbitedTx).toBeTypeOf('string');
+		const submitedTx = await submitTx(signedTx);
+		expect(submitedTx).toBeTypeOf('string');
 	});
 });
