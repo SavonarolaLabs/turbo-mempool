@@ -30,6 +30,8 @@ export async function signTxMulti(
 	).to_js_eip12();
 }
 
+type JSONTransactionHintsBag = any;
+
 function _removeSecrets(
 	privateCommitments: TransactionHintsBag,
 	address: string
@@ -53,7 +55,6 @@ async function a(unsignedTx: EIP12UnsignedTransaction): Promise<any> {
 	const privateCommitsBob =
 		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
 
-	// filter out private stuff
 	let publicCommitsBob = _removeSecrets(
 		privateCommitsBob,
 		SHADOWPOOL_ADDRESS
@@ -62,31 +63,33 @@ async function a(unsignedTx: EIP12UnsignedTransaction): Promise<any> {
 	return { privateCommitsBob, publicCommitsBob, reducedTx };
 }
 
-async function b(unsignedTx, userMnemonic, userAddress, publicCommitsBob) {
+async function b(
+	unsignedTx: EIP12UnsignedTransaction,
+	userMnemonic: string,
+	userAddress: string,
+	publicCommitsBob: TransactionHintsBag
+) {
 	const proverAlice = await getProver(userMnemonic);
 	const reducedTx = reducedFromUnsignedTx(unsignedTx);
 	const initialCommitsAlice =
 		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
 
-	const allHints = TransactionHintsBag.empty();
+	const combinedHints = TransactionHintsBag.empty();
 
-	for (var i = 0; i < unsignedTx.inputs.length; i++) {
-		allHints.add_hints_for_input(
+	for (let i = 0; i < unsignedTx.inputs.length; i++) {
+		combinedHints.add_hints_for_input(
 			i,
 			initialCommitsAlice.all_hints_for_input(i)
 		);
-		allHints.add_hints_for_input(
+		combinedHints.add_hints_for_input(
 			i,
 			publicCommitsBob.all_hints_for_input(i)
 		);
 	}
 
-	let allHintsFiltered = allHints;
-	// end of filter
-
 	const partialSignedTx = proverAlice.sign_reduced_transaction_multi(
 		reducedTx,
-		allHintsFiltered
+		combinedHints
 	);
 
 	const hAlice = ErgoAddress.fromBase58(userAddress).ergoTree.slice(6);
@@ -101,15 +104,19 @@ async function b(unsignedTx, userMnemonic, userAddress, publicCommitsBob) {
 	return extractedHints;
 }
 
-async function c(privateCommitsBob, ourHints, reducedTx) {
+async function c(
+	privateCommitsBob: TransactionHintsBag,
+	hints: JSONTransactionHintsBag,
+	reducedTx: ReducedTransaction
+) {
 	const hintsForBobSign = privateCommitsBob.to_json();
 
 	for (var row in hintsForBobSign.publicHints) {
-		for (var i = 0; i < ourHints.publicHints[row].length; i++) {
-			hintsForBobSign.publicHints[row].push(ourHints.publicHints[row][i]);
+		for (var i = 0; i < hints.publicHints[row].length; i++) {
+			hintsForBobSign.publicHints[row].push(hints.publicHints[row][i]);
 		}
-		for (var i = 0; i < ourHints.secretHints[row].length; i++) {
-			hintsForBobSign.secretHints[row].push(ourHints.secretHints[row][i]);
+		for (var i = 0; i < hints.secretHints[row].length; i++) {
+			hintsForBobSign.secretHints[row].push(hints.secretHints[row][i]);
 		}
 	}
 	const convertedHintsForBobSign = TransactionHintsBag.from_json(
@@ -125,7 +132,7 @@ async function c(privateCommitsBob, ourHints, reducedTx) {
 	return signedTx;
 }
 
-function reducedFromUnsignedTx(unsignedTx) {
+function reducedFromUnsignedTx(unsignedTx: EIP12UnsignedTransaction) {
 	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
 	const wasmUnsignedTx = UnsignedTransaction.from_json(
 		JSON.stringify(unsignedTx)
@@ -148,11 +155,14 @@ export async function signMultisig(
 	const { privateCommitsBob, publicCommitsBob, reducedTx } =
 		await a(unsignedTx);
 
-	const extractedHints = 
-		await b(unsignedTx, userMnemonic, userAddress, publicCommitsBob);
+	const extractedHints = await b(
+		unsignedTx,
+		userMnemonic,
+		userAddress,
+		publicCommitsBob
+	);
 
-	const signedTx = 
-		await c(privateCommitsBob, extractedHints, reducedTx);
+	const signedTx = await c(privateCommitsBob, extractedHints, reducedTx);
 
 	return signedTx;
 }
