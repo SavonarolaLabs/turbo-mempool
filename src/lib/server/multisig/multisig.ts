@@ -30,95 +30,79 @@ export async function signTxMulti(
 	).to_js_eip12();
 }
 
-export async function signMultisig(
-	unsignedTx: EIP12UnsignedTransaction,
-	userMnemonic: string,
-	userAddress: string
+function _removeSecrets(
+	privateCommitments: TransactionHintsBag,
+	address: string
 ) {
-	const shadow = { mnemonic: SHADOW_MNEMONIC, address: SHADOWPOOL_ADDRESS };
-	//const shadow = { mnemonic: BOB_MNEMONIC, address: BOB_ADDRESS };
-	const user = { mnemonic: userMnemonic, address: userAddress };
+	let copy = JSON.parse(JSON.stringify(privateCommitments.to_json()));
 
-	const proverAlice = await getProver(user.mnemonic);
-	const proverBob = await getProver(shadow.mnemonic);
+	const hBob = ErgoAddress.fromBase58(address).ergoTree.slice(6);
+	for (var row in copy.publicHints) {
+		copy.publicHints[row] = copy.publicHints[row].filter(
+			(item: { hint: string; pubkey: { h: string } }) =>
+				!(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
+		);
+	}
 
-	const hAlice = ErgoAddress.fromBase58(user.address).ergoTree.slice(6);
-	const hBob = ErgoAddress.fromBase58(shadow.address).ergoTree.slice(6);
+	return TransactionHintsBag.from_json(JSON.stringify(copy));
+}
 
-	const wasmUnsignedTx = UnsignedTransaction.from_json(
-		JSON.stringify(unsignedTx)
-	);
-
-	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
-
-	let context = fakeContext();
-
-	let reducedTx = ReducedTransaction.from_unsigned_tx(
-		wasmUnsignedTx,
-		inputBoxes,
-		ErgoBoxes.empty(),
-		context
-	);
-
-	const initialCommitsBob =
+async function a(unsignedTx: EIP12UnsignedTransaction): Promise<any> {
+	const proverBob = await getProver(SHADOW_MNEMONIC);
+	let reducedTx = reducedFromUnsignedTx(unsignedTx);
+	const privateCommitsBob =
 		proverBob.generate_commitments_for_reduced_transaction(reducedTx);
+
+	// filter out private stuff
+	let publicCommitsBob = _removeSecrets(
+		privateCommitsBob,
+		SHADOWPOOL_ADDRESS
+	);
+
+	return { privateCommitsBob, publicCommitsBob, reducedTx };
+}
+
+async function b(unsignedTx, userMnemonic, userAddress, publicCommitsBob) {
+	const proverAlice = await getProver(userMnemonic);
+	const reducedTx = reducedFromUnsignedTx(unsignedTx);
 	const initialCommitsAlice =
 		proverAlice.generate_commitments_for_reduced_transaction(reducedTx);
 
-	const hintsAll = TransactionHintsBag.empty();
+	const allHints = TransactionHintsBag.empty();
 
 	for (var i = 0; i < unsignedTx.inputs.length; i++) {
-		hintsAll.add_hints_for_input(
+		allHints.add_hints_for_input(
 			i,
 			initialCommitsAlice.all_hints_for_input(i)
 		);
-		hintsAll.add_hints_for_input(
+		allHints.add_hints_for_input(
 			i,
-			initialCommitsBob.all_hints_for_input(i)
+			publicCommitsBob.all_hints_for_input(i)
 		);
 	}
 
-	const hintsForAliceSign = JSON.parse(JSON.stringify(hintsAll.to_json())); // make copy
-
-	for (var row in hintsForAliceSign.publicHints) {
-		hintsForAliceSign.publicHints[row] = hintsForAliceSign.publicHints[
-			row
-		].filter(
-			(item) => !(item.hint == 'cmtWithSecret' && item.pubkey.h == hBob)
-		);
-	}
-
-	const convertedHintsForAliceSign = TransactionHintsBag.from_json(
-		JSON.stringify(hintsForAliceSign) // to wasm...
-	);
+	let allHintsFiltered = allHints;
+	// end of filter
 
 	const partialSignedTx = proverAlice.sign_reduced_transaction_multi(
 		reducedTx,
-		convertedHintsForAliceSign
+		allHintsFiltered
 	);
 
-	const ergoBoxes = ErgoBoxes.empty();
-	for (var i = 0; i < unsignedTx.inputs.length; i++) {
-		ergoBoxes.add(ErgoBox.from_json(JSON.stringify(unsignedTx.inputs[i])));
-	}
-
-	const realPropositionsAlice = arrayToProposition([hAlice]);
-	const realPropositionsBob = arrayToProposition([hBob]);
-
-	const simulated = [];
-	const simulatedPropositions = arrayToProposition(simulated);
-
-	let hints = extract_hints(
+	const hAlice = ErgoAddress.fromBase58(userAddress).ergoTree.slice(6);
+	let extractedHints = extract_hints(
 		partialSignedTx,
-		context, // ?
-		ergoBoxes,
+		fakeContext(),
+		ErgoBoxes.from_boxes_json(unsignedTx.inputs),
 		ErgoBoxes.empty(),
-		realPropositionsAlice, // ?
-		simulatedPropositions
-	);
+		arrayToProposition([hAlice]),
+		arrayToProposition([])
+	).to_json();
+	return extractedHints;
+}
 
-	const ourHints = hints.to_json();
-	const hintsForBobSign = initialCommitsBob.to_json();
+async function c(privateCommitsBob, ourHints, reducedTx) {
+	const hintsForBobSign = privateCommitsBob.to_json();
 
 	for (var row in hintsForBobSign.publicHints) {
 		for (var i = 0; i < ourHints.publicHints[row].length; i++) {
@@ -132,10 +116,43 @@ export async function signMultisig(
 		JSON.stringify(hintsForBobSign)
 	);
 
+	const proverBob = await getProver(SHADOW_MNEMONIC);
 	let signedTx = proverBob.sign_reduced_transaction_multi(
 		reducedTx,
 		convertedHintsForBobSign
 	);
+
+	return signedTx;
+}
+
+function reducedFromUnsignedTx(unsignedTx) {
+	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
+	const wasmUnsignedTx = UnsignedTransaction.from_json(
+		JSON.stringify(unsignedTx)
+	);
+	let context = fakeContext();
+	let reducedTx = ReducedTransaction.from_unsigned_tx(
+		wasmUnsignedTx,
+		inputBoxes,
+		ErgoBoxes.empty(),
+		context
+	);
+	return reducedTx;
+}
+
+export async function signMultisig(
+	unsignedTx: EIP12UnsignedTransaction,
+	userMnemonic: string,
+	userAddress: string
+) {
+	const { privateCommitsBob, publicCommitsBob, reducedTx } =
+		await a(unsignedTx);
+
+	const extractedHints = 
+		await b(unsignedTx, userMnemonic, userAddress, publicCommitsBob);
+
+	const signedTx = 
+		await c(privateCommitsBob, extractedHints, reducedTx);
 
 	return signedTx;
 }
