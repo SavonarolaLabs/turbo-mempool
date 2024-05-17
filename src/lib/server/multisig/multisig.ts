@@ -49,11 +49,12 @@ function _removeSecrets(
 	return copy;
 }
 
-async function a(unsignedTx: EIP12UnsignedTransaction): Promise<any> {
+export async function a(unsignedTx: EIP12UnsignedTransaction): Promise<any> {
 	const proverBob = await getProver(SHADOW_MNEMONIC);
 	let reducedTx = reducedFromUnsignedTx(unsignedTx);
-	const privateCommitsBob =
-		proverBob.generate_commitments_for_reduced_transaction(reducedTx).to_json();
+	const privateCommitsBob = proverBob
+		.generate_commitments_for_reduced_transaction(reducedTx)
+		.to_json();
 
 	let publicCommitsBob = _removeSecrets(
 		privateCommitsBob,
@@ -63,13 +64,15 @@ async function a(unsignedTx: EIP12UnsignedTransaction): Promise<any> {
 	return { privateCommitsBob, publicCommitsBob };
 }
 
-async function b(
+export async function b(
 	unsignedTx: EIP12UnsignedTransaction,
 	userMnemonic: string,
 	userAddress: string,
 	publicCommits: JSONTransactionHintsBag
 ) {
-	const publicBag = TransactionHintsBag.from_json(JSON.stringify(publicCommits))
+	const publicBag = TransactionHintsBag.from_json(
+		JSON.stringify(publicCommits)
+	);
 	const proverAlice = await getProver(userMnemonic);
 	const reducedTx = reducedFromUnsignedTx(unsignedTx);
 	const initialCommitsAlice =
@@ -82,10 +85,7 @@ async function b(
 			i,
 			initialCommitsAlice.all_hints_for_input(i)
 		);
-		combinedHints.add_hints_for_input(
-			i,
-			publicBag.all_hints_for_input(i)
-		);
+		combinedHints.add_hints_for_input(i, publicBag.all_hints_for_input(i));
 	}
 
 	const partialSignedTx = proverAlice.sign_reduced_transaction_multi(
@@ -105,10 +105,10 @@ async function b(
 	return extractedHints;
 }
 
-async function c(
+export async function c(
 	unsignedTx: EIP12UnsignedTransaction,
 	privateCommitsBob: JSONTransactionHintsBag,
-	hints: JSONTransactionHintsBag,
+	hints: JSONTransactionHintsBag
 ) {
 	const hintsForBobSign = privateCommitsBob;
 
@@ -153,8 +153,7 @@ export async function signMultisig(
 	userMnemonic: string,
 	userAddress: string
 ) {
-	const { privateCommitsBob, publicCommitsBob } =
-		await a(unsignedTx);
+	const { privateCommitsBob, publicCommitsBob } = await a(unsignedTx);
 
 	const extractedHints = await b(
 		unsignedTx,
