@@ -19,6 +19,52 @@ import {
 } from '@fleet-sdk/core';
 import { DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from '../../constants/addresses';
 
+type userDeposit = {
+	userPK: string,
+	tokens: OneOrMore<TokenAmount<Amount>>,
+	nanoErg: string | bigint
+}
+
+export function depositMultiple(
+	blockchainHeight: number,
+	inputBoxes: OneOrMore<Box<Amount>>,
+	changeAddress: string,
+	unlockHeight: number,
+	deposits: userDeposit[]
+){
+	const depositBoxes :OutputBuilder[]  = deposits.map(d =>{
+		const depositBox = new OutputBuilder(d.nanoErg, DEPOSIT_ADDRESS)
+		.setAdditionalRegisters({
+			R4: SColl(SSigmaProp, [
+				SGroupElement(
+					first(ErgoAddress.fromBase58(d.userPK).getPublicKeys())
+				),
+				SGroupElement(
+					first(
+						ErgoAddress.fromBase58(
+							SHADOWPOOL_ADDRESS
+						).getPublicKeys()
+					)
+				)
+			]).toHex(),
+			R5: SInt(unlockHeight).toHex()
+		})
+		.addTokens(d.tokens);
+		return depositBox;
+	})
+
+
+	const unsignedTx = new TransactionBuilder(blockchainHeight)
+		.from(inputBoxes)
+		.to(depositBoxes)
+		.sendChangeTo(changeAddress)
+		.payFee(RECOMMENDED_MIN_FEE_VALUE)
+		.build()
+		.toEIP12Object();
+
+	return unsignedTx;
+}
+
 export function deposit(
 	blockchainHeight: number,
 	inputBoxes: OneOrMore<Box<Amount>>,
