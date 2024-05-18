@@ -7,9 +7,22 @@ export enum ContractType {
     UNKNOWN
 }
 
+export type DepositParams = {
+    shadowPk: string
+    userPk: string
+    unlockHeight: number
+}
+
+export type BuyParams = {
+    shadowPk: string
+    userPk: string
+    unlockHeight: number
+} & DepositParams
+
 export type BoxRow  = {
     id: number
     box: Box
     contract: ContractType
+    params: DepositParams | BuyParams
     unspent: Boolean
 }
