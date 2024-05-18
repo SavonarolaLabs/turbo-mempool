@@ -3,9 +3,10 @@ import {
 	contractTypeFromErgoTree,
 	decodeR4,
 	decodeR5,
-	decodeR6,
+	decodeTokenIdFromR6,
 	decodeR7,
-	decodeR8
+	decodeR8,
+	decodeTokenIdPairFromR6
 } from './db';
 import { ContractType } from './boxRow';
 import { SConstant, parse } from '@fleet-sdk/serializer';
@@ -20,7 +21,8 @@ import {
 	BOB_ADDRESS,
 	BUY_ORDER_ADDRESS,
 	DEPOSIT_ADDRESS,
-	SELL_ORDER_ADDRESS
+	SELL_ORDER_ADDRESS,
+	SWAP_ORDER_ADDRESS
 } from '../constants/addresses';
 import {
 	boxAtAddress,
@@ -30,6 +32,7 @@ import { signTx, signTxMulti } from '../multisig/multisig';
 import { buy } from '../turbo-mempool/utils/buy';
 import { BOB_MNEMONIC } from '../constants/mnemonics';
 import { createSellOrderTx } from '../turbo-mempool/utils/sell';
+import { createSwapOrderTx } from '../turbo-mempool/utils/swap';
 
 const depositBox = {
 	boxId: '9721de0f8ec7da47b2b31083856bf24819a1d7d755e0e0e57c42fb6ff7a8eff8',
@@ -157,7 +160,7 @@ describe('buy order box registers', () => {
 	it('R6 (tokenId) can be parsed', () => {
 		const expected =
 			'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab';
-		expect(decodeR6(buyOrderBox)).toStrictEqual(expected);
+		expect(decodeTokenIdFromR6(buyOrderBox)).toStrictEqual(expected);
 	});
 	it('R7( rate) can be parsed', () => {
 		const expected = 1n;
@@ -226,7 +229,7 @@ describe(`sell order box registers`, () => {
 	it('R6 (tokenId) can be parsed', () => {
 		const expected =
 			'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab';
-		expect(decodeR6(sellOrderBox)).toStrictEqual(expected);
+		expect(decodeTokenIdFromR6(sellOrderBox)).toStrictEqual(expected);
 	});
 	it('R7( rate) can be parsed', () => {
 		const expected = 1n;
@@ -236,5 +239,80 @@ describe(`sell order box registers`, () => {
 		const expected =
 			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
 		expect(decodeR8(sellOrderBox)).toStrictEqual(expected);
+	});
+});
+
+describe('create new Swap order', async () => {
+	let swapOrderBox: Box;
+	beforeAll(async () => {
+		const depositUTx = deposit(
+			CHAIN_HEIGHT,
+			PRINTER_UTXO,
+			PRINTER_ADDRESS,
+			BUYER_PK,
+			BUYER_UNLOCK_HEIGHT,
+			DEPOSIT_TOKEN,
+			10n * SAFE_MIN_BOX_VALUE
+		);
+		const depositTx = await signTx(depositUTx, PRINTER_MNEMONIC);
+		const depositBox = boxAtAddress(depositTx, DEPOSIT_ADDRESS);
+
+		const sellingTokenId = DEPOSIT_TOKEN.tokenId;
+		const buyingTokenId =
+			'd2d0deb3b0b2c511e523fd43ae838ba7b89e4583f165169b90215ff11d942c1f'; //SwapToken Test1
+
+		const tokenForSwap = {
+			tokenId: sellingTokenId,
+			amount: '100'
+		};
+		const price = 1n;
+
+		const swapOrderUTx = createSwapOrderTx(
+			BUYER_PK,
+			DEPOSIT_ADDRESS,
+			[depositBox],
+			tokenForSwap,
+			price,
+			CHAIN_HEIGHT,
+			BUYER_UNLOCK_HEIGHT,
+			sellingTokenId,
+			buyingTokenId
+		);
+
+		const swapOrderTx = await signTxMulti(
+			swapOrderUTx,
+			BUYER_MNEMONIC,
+			BUYER_PK
+		);
+		swapOrderBox = boxAtAddress(swapOrderTx, SWAP_ORDER_ADDRESS);
+	});
+	it('R4(userPk poolPk) can be parsed', () => {
+		const expected = {
+			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
+			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+		};
+		expect(decodeR4(swapOrderBox)).toStrictEqual(expected);
+	});
+	it('R5(unlock height) can be parsed', () => {
+		const expected = 1250700;
+		expect(decodeR5(swapOrderBox)).toStrictEqual(expected);
+	});
+	it('R6 (tokenId) can be parsed', () => {
+		const expected = {
+			sellingTokenId:
+				'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
+			buyingTokenId:
+				'd2d0deb3b0b2c511e523fd43ae838ba7b89e4583f165169b90215ff11d942c1f'
+		};
+		expect(decodeTokenIdPairFromR6(swapOrderBox)).toStrictEqual(expected);
+	});
+	it('R7( rate) can be parsed', () => {
+		const expected = 1n;
+		expect(decodeR7(swapOrderBox)).toStrictEqual(expected);
+	});
+	it('R8(deposit address) can be parsed', () => {
+		const expected =
+			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
+		expect(decodeR8(swapOrderBox)).toStrictEqual(expected);
 	});
 });

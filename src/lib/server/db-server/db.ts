@@ -83,7 +83,7 @@ export function decodeR5(box: Box): number {
 	return parsed;
 }
 
-export function decodeR6(box: Box): string {
+export function decodeTokenIdFromR6(box: Box): string {
 	const r6 = box.additionalRegisters.R6;
 	const parsed = Buffer.from(parse(r6)).toString('hex');
 	return parsed;
@@ -100,4 +100,16 @@ export function decodeR8(box: Box): string {
 	const hexBuffer = Buffer.from(parse(r8)).toString('hex');
 	const parsed = ErgoAddress.fromErgoTree(hexBuffer).toString();
 	return parsed;
+}
+
+export function decodeTokenIdPairFromR6(box: Box): {
+	sellingTokenId: string;
+	buyingTokenId: string;
+} {
+	const r6 = box.additionalRegisters.R6;
+	const parsed = parse(r6);
+	return {
+		sellingTokenId: Buffer.from(parsed[0]).toString('hex'),
+		buyingTokenId: Buffer.from(parsed[1]).toString('hex')
+	};
 }
