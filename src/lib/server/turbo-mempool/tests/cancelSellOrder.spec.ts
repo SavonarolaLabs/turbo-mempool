@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import {
 	ALICE_ADDRESS,
 	BOB_ADDRESS,
-	DEPOSIT_ADDRESS,
+	DEPOSIT_ADDRESS
 } from '$lib/server/constants/addresses';
 import { utxos } from '$lib/server/utxo/unspent';
 import {
@@ -14,11 +14,10 @@ import {
 import {
 	signMultisig,
 	signTxByAddress,
-	signTxAllInputs,
+	signTxAllInputs
 } from '$lib/server/multisig/multisig';
 import { ALICE_MNEMONIC, BOB_MNEMONIC } from '$lib/server/constants/mnemonics';
 import { canсelSellOrderTx, createSellOrderTx } from '../utils/sell';
-
 
 let utxoSell: OneOrMore<Box<Amount>> = [];
 let utxoSellMultisig: OneOrMore<Box<Amount>> = [];
@@ -43,7 +42,11 @@ describe(`Bob sellOrder: height:${height}, unlock -10`, () => {
 			height,
 			unlockHeight
 		);
-		const signedTx = await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
+		const signedTx = await signTxByAddress(
+			BOB_MNEMONIC,
+			BOB_ADDRESS,
+			unsignedTx
+		);
 		utxoSell = [signedTx.outputs[0]];
 	});
 
@@ -55,10 +58,7 @@ describe(`Bob sellOrder: height:${height}, unlock -10`, () => {
 			height,
 			unlockHeight
 		);
-		const signedTx = await signTxAllInputs(
-			BOB_MNEMONIC,
-			unsignedTx
-		);
+		const signedTx = await signTxAllInputs(BOB_MNEMONIC, unsignedTx);
 		expect(signedTx.inputs.length).toBeDefined();
 	});
 
@@ -70,10 +70,7 @@ describe(`Bob sellOrder: height:${height}, unlock -10`, () => {
 			height,
 			unlockHeight
 		);
-		const signedTx = await signTxAllInputs(
-			BOB_MNEMONIC,
-			unsignedTx
-		);
+		const signedTx = await signTxAllInputs(BOB_MNEMONIC, unsignedTx);
 
 		expect(signedTx.inputs.length).toBeDefined();
 	});
@@ -105,7 +102,11 @@ describe(`Bob sellOrder: height:${height}, unlock +10`, () => {
 			height,
 			unlockHeight
 		);
-		const signedTx = await signTxByAddress(BOB_MNEMONIC, BOB_ADDRESS, unsignedTx);
+		const signedTx = await signTxByAddress(
+			BOB_MNEMONIC,
+			BOB_ADDRESS,
+			unsignedTx
+		);
 		utxoSellMultisig = [signedTx.outputs[0]];
 	});
 

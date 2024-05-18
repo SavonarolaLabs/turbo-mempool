@@ -19,7 +19,8 @@ import {
 import {
 	BOB_ADDRESS,
 	BUY_ORDER_ADDRESS,
-	DEPOSIT_ADDRESS
+	DEPOSIT_ADDRESS,
+	SELL_ORDER_ADDRESS
 } from '../constants/addresses';
 import {
 	boxAtAddress,
@@ -28,6 +29,7 @@ import {
 import { signTx, signTxMulti } from '../multisig/multisig';
 import { buy } from '../turbo-mempool/utils/buy';
 import { BOB_MNEMONIC } from '../constants/mnemonics';
+import { createSellOrderTx } from '../turbo-mempool/utils/sell';
 
 const depositBox = {
 	boxId: '9721de0f8ec7da47b2b31083856bf24819a1d7d755e0e0e57c42fb6ff7a8eff8',
@@ -165,5 +167,74 @@ describe('buy order box registers', () => {
 		const expected =
 			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
 		expect(decodeR8(buyOrderBox)).toStrictEqual(expected);
+	});
+});
+
+describe(`sell order box registers`, () => {
+	let sellOrderBox: Box;
+
+	beforeAll(async () => {
+		const depositUTx = deposit(
+			CHAIN_HEIGHT,
+			PRINTER_UTXO,
+			PRINTER_ADDRESS,
+			BUYER_PK,
+			BUYER_UNLOCK_HEIGHT,
+			DEPOSIT_TOKEN,
+			10n * SAFE_MIN_BOX_VALUE
+		);
+		const depositTx = await signTx(depositUTx, PRINTER_MNEMONIC);
+		const depositBox = boxAtAddress(depositTx, DEPOSIT_ADDRESS);
+
+		const token = {
+			name: 'TestToken Test2',
+			tokenId:
+				'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
+			amount: 10_000_000_000n,
+			decimals: 9
+		};
+		const RATE = 1n;
+
+		const sellOrderUTx = createSellOrderTx(
+			BUYER_PK, //<----------___SELLER PK
+			DEPOSIT_ADDRESS,
+			[depositBox],
+			token,
+			RATE,
+			CHAIN_HEIGHT,
+			BUYER_UNLOCK_HEIGHT //<-------_SELLER
+		);
+		const sellOrderTx = await signTxMulti(
+			sellOrderUTx,
+			BUYER_MNEMONIC,
+			BUYER_PK
+		);
+
+		sellOrderBox = boxAtAddress(sellOrderTx, SELL_ORDER_ADDRESS);
+	});
+	it('R4(userPk poolPk) can be parsed', () => {
+		const expected = {
+			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
+			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+		};
+		expect(decodeR4(sellOrderBox)).toStrictEqual(expected);
+	});
+	it('R5(unlock height) can be parsed', () => {
+		const expected = 1250700;
+		expect(decodeR5(sellOrderBox)).toStrictEqual(expected);
+	});
+	it('R6 (tokenId) can be parsed', () => {
+		const expected =
+			'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab';
+		expect(decodeR6(sellOrderBox)).toStrictEqual(expected);
+	});
+	it('R7( rate) can be parsed', () => {
+		const expected = 1n;
+		expect(decodeR7(sellOrderBox)).toStrictEqual(expected);
+	});
+	it('R8(deposit address) can be parsed', () => {
+		const expected =
+			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
+		expect(decodeR8(sellOrderBox)).toStrictEqual(expected);
 	});
 });
