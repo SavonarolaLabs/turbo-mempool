@@ -1,76 +1,78 @@
-import { type Box, type EIP12UnsignedTransaction } from "@fleet-sdk/common"
-import { ContractType, type BoxRow } from "./boxRow"
-import type { TxRow } from "./txRow"
-import { ErgoAddress, ErgoTree } from "@fleet-sdk/core"
-import { BUY_ORDER_ADDRESS, DEPOSIT_ADDRESS, SELL_ORDER_ADDRESS } from "../constants/addresses"
-import { parse } from "@fleet-sdk/serializer"
+import { type Box, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
+import { ContractType, type BoxRow } from './boxRow';
+import type { TxRow } from './txRow';
+import { ErgoAddress, ErgoTree } from '@fleet-sdk/core';
+import {
+	BUY_ORDER_ADDRESS,
+	DEPOSIT_ADDRESS,
+	SELL_ORDER_ADDRESS
+} from '../constants/addresses';
+import { parse } from '@fleet-sdk/serializer';
 
 interface HasId {
-    id: number
+	id: number;
 }
 
 export type BoxDB = {
-    boxRows: BoxRow[]
-    txes: TxRow[]
-}
+	boxRows: BoxRow[];
+	txes: TxRow[];
+};
 
 export function initDb(): BoxDB {
-    return {
-        boxRows: [],
-        txes: [],
-    }
+	return {
+		boxRows: [],
+		txes: []
+	};
 }
 
-function nextId(table: HasId[]){
-    const maxId = Math.max(...table.map(row => row.id))
-    return maxId + 1;
+function nextId(table: HasId[]) {
+	const maxId = Math.max(...table.map((row) => row.id));
+	return maxId + 1;
 }
 
-export function db_addBox(db: BoxDB, box: Box){
-    const newRow: BoxRow = {
-        id: nextId(db.boxRows),
-        contract: contractTypeFromErgoTree(box),
-        box,
-        unspent: true,
-    }
-    db.boxRows.push(newRow);
+export function db_addBox(db: BoxDB, box: Box) {
+	const newRow: BoxRow = {
+		id: nextId(db.boxRows),
+		contract: contractTypeFromErgoTree(box),
+		box,
+		unspent: true
+	};
+	db.boxRows.push(newRow);
 }
 
-export function db_addBoxes(db: BoxDB, boxRows: Box[]){
-    boxRows.forEach(box => db_addBox(db, box))
+export function db_addBoxes(db: BoxDB, boxRows: Box[]) {
+	boxRows.forEach((box) => db_addBox(db, box));
 }
 
-export function db_addTx(db: BoxDB, tx: EIP12UnsignedTransaction){
-    const newRow: TxRow = {
-        id: nextId(db.txes),
-        unsignedTx: tx,
-        commitments: [],
-        hintbags: [],
-    }
-    db.txes.push(newRow);
+export function db_addTx(db: BoxDB, tx: EIP12UnsignedTransaction) {
+	const newRow: TxRow = {
+		id: nextId(db.txes),
+		unsignedTx: tx,
+		commitments: [],
+		hintbags: []
+	};
+	db.txes.push(newRow);
 }
 
-export function contractTypeFromErgoTree(box: Box): ContractType{
-    const address = new ErgoTree(box.ergoTree).toAddress().toString();
-    if(address == DEPOSIT_ADDRESS){
-        return ContractType.DEPOSIT
-    }else if(address == BUY_ORDER_ADDRESS){
-        return ContractType.BUY
-    }else if(address == SELL_ORDER_ADDRESS){
-        return ContractType.SELL
-    }else{
-        return ContractType.UNKNOWN
-    }
+export function contractTypeFromErgoTree(box: Box): ContractType {
+	const address = new ErgoTree(box.ergoTree).toAddress().toString();
+	if (address == DEPOSIT_ADDRESS) {
+		return ContractType.DEPOSIT;
+	} else if (address == BUY_ORDER_ADDRESS) {
+		return ContractType.BUY;
+	} else if (address == SELL_ORDER_ADDRESS) {
+		return ContractType.SELL;
+	} else {
+		return ContractType.UNKNOWN;
+	}
 }
 
-export function decodeR4(box: Box): {userPK: string, poolPk: string}{
-    const r4 = box.additionalRegisters.R4;
+export function decodeR4(box: Box): { userPK: string; poolPk: string } {
+	const r4 = box.additionalRegisters.R4;
 
-    const parsed = parse(r4);
-    const userPK = Buffer.from(parsed[0]).toString('hex')
-    const poolPK = Buffer.from(parsed[1]).toString('hex')
-    return {
-        userPK: ErgoAddress.fromPublicKey(userPK).toString(),
-        poolPk: ErgoAddress.fromPublicKey(poolPK).toString(),
-    }
+	const parsed = parse(r4);
+	return {
+		userPK: ErgoAddress.fromPublicKey(parsed[0]).toString(),
+		poolPk: ErgoAddress.fromPublicKey(parsed[1]).toString()
+	};
 }
