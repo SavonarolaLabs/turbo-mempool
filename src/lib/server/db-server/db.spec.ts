@@ -92,7 +92,7 @@ describe('contractTypeFromErgoTree', () => {
 	});
 });
 
-describe('deposit box registers ', () => {
+describe('deposit box parser', () => {
 	it('R4 can be parsed', () => {
 		const expected = {
 			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
@@ -118,7 +118,7 @@ describe('deposit box registers ', () => {
 	})
 });
 
-describe('buy order box registers can be parsed', () => {
+describe('buy order box parser', () => {
 	let buyOrderBox: Box;
 
 	beforeAll(async () => {
@@ -184,7 +184,7 @@ describe('buy order box registers can be parsed', () => {
 			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
 		expect(decodeR8(buyOrderBox), "deposit address").toStrictEqual(expected);
 	});
-	it.only("box recognized and parsed",()=>{
+	it("box recognized and parsed",()=>{
 		const expected = {
 			contract: ContractType.BUY,
 			parameters: {
@@ -197,11 +197,11 @@ describe('buy order box registers can be parsed', () => {
 			}
 		}
 		const actual = parseBox(buyOrderBox);
-		expect(actual, "deposit type and parameters").toStrictEqual(expected);
+		expect(actual, "buy type and parameters").toStrictEqual(expected);
 	})
 });
 
-describe(`sell order box registers`, () => {
+describe(`sell order box parser`, () => {
 	let sellOrderBox: Box;
 
 	beforeAll(async () => {
@@ -243,34 +243,49 @@ describe(`sell order box registers`, () => {
 
 		sellOrderBox = boxAtAddress(sellOrderTx, SELL_ORDER_ADDRESS);
 	});
-	it('R4(userPk poolPk) can be parsed', () => {
+	it('R4', () => {
 		const expected = {
-			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
-			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8'
 		};
-		expect(decodeR4(sellOrderBox)).toStrictEqual(expected);
+		expect(decodeR4(sellOrderBox), "userPk poolPk").toStrictEqual(expected);
 	});
-	it('R5(unlock height) can be parsed', () => {
+	it('R5', () => {
 		const expected = 1250700;
-		expect(decodeR5(sellOrderBox)).toStrictEqual(expected);
+		expect(decodeR5(sellOrderBox), "unlock height").toStrictEqual(expected);
 	});
-	it('R6 (tokenId) can be parsed', () => {
+	it('R6', () => {
 		const expected =
 			'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab';
-		expect(decodeTokenIdFromR6(sellOrderBox)).toStrictEqual(expected);
+		expect(decodeTokenIdFromR6(sellOrderBox), "tokenId").toStrictEqual(expected);
 	});
-	it('R7( rate) can be parsed', () => {
+	it('R7', () => {
 		const expected = 1n;
-		expect(decodeR7(sellOrderBox)).toStrictEqual(expected);
+		expect(decodeR7(sellOrderBox), "rate").toStrictEqual(expected);
 	});
-	it('R8(deposit address) can be parsed', () => {
+	it('R8', () => {
 		const expected =
 			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
-		expect(decodeR8(sellOrderBox)).toStrictEqual(expected);
+		expect(decodeR8(sellOrderBox), "deposit address").toStrictEqual(expected);
 	});
+	it("box recognized and parsed",()=>{
+		const expected = {
+			contract: ContractType.SELL,
+			parameters: {
+				userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+				poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
+				unlockHeight: 1250700,
+				tokenId: 'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
+				sellRate: 1n,
+				sellerMultisigAddress: 't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo'
+			}
+		}
+		const actual = parseBox(sellOrderBox);
+		expect(actual, "sell type and parameters").toStrictEqual(expected);
+	})
 });
 
-describe('create new Swap order', async () => {
+describe('swap order box parser', async () => {
 	let swapOrderBox: Box;
 	beforeAll(async () => {
 		const depositUTx = deposit(
@@ -314,33 +329,49 @@ describe('create new Swap order', async () => {
 		);
 		swapOrderBox = boxAtAddress(swapOrderTx, SWAP_ORDER_ADDRESS);
 	});
-	it('R4(userPk poolPk) can be parsed', () => {
+	it('R4', () => {
 		const expected = {
-			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
-			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8'
 		};
-		expect(decodeR4(swapOrderBox)).toStrictEqual(expected);
+		expect(decodeR4(swapOrderBox), "userPk poolPk").toStrictEqual(expected);
 	});
-	it('R5(unlock height) can be parsed', () => {
+	it('R5', () => {
 		const expected = 1250700;
-		expect(decodeR5(swapOrderBox)).toStrictEqual(expected);
+		expect(decodeR5(swapOrderBox), "unlock height").toStrictEqual(expected);
 	});
-	it('R6 (tokenId) can be parsed', () => {
+	it('R6', () => {
 		const expected = {
 			sellingTokenId:
 				'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
 			buyingTokenId:
 				'd2d0deb3b0b2c511e523fd43ae838ba7b89e4583f165169b90215ff11d942c1f'
 		};
-		expect(decodeTokenIdPairFromR6(swapOrderBox)).toStrictEqual(expected);
+		expect(decodeTokenIdPairFromR6(swapOrderBox),"tokenId").toStrictEqual(expected);
 	});
-	it('R7( rate) can be parsed', () => {
+	it('R7', () => {
 		const expected = 1n;
-		expect(decodeR7(swapOrderBox)).toStrictEqual(expected);
+		expect(decodeR7(swapOrderBox),"rate").toStrictEqual(expected);
 	});
-	it('R8(deposit address) can be parsed', () => {
+	it('R8', () => {
 		const expected =
 			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
-		expect(decodeR8(swapOrderBox)).toStrictEqual(expected);
+		expect(decodeR8(swapOrderBox), "deposit address").toStrictEqual(expected);
 	});
+	it.only("box recognized and parsed",()=>{
+		const expected = {
+			contract: ContractType.SWAP,
+			parameters: {
+				userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+				poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
+				unlockHeight: 1250700,
+				sellingTokenId: 'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
+				buyingTokenId: 'd2d0deb3b0b2c511e523fd43ae838ba7b89e4583f165169b90215ff11d942c1f',
+				rate: 1n,
+				sellerMultisigAddress: 't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo'
+			}
+		}
+		const actual = parseBox(swapOrderBox);
+		expect(actual, "sell type and parameters").toStrictEqual(expected);
+	})
 });

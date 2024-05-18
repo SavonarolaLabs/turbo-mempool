@@ -4,6 +4,7 @@ export enum ContractType {
     DEPOSIT,
     BUY,
     SELL,
+    SWAP,
     UNKNOWN
 }
 
@@ -20,9 +21,16 @@ export type BuyParams = DepositParams & {
 }
 
 export type SellParams = DepositParams & {
+    tokenId: string
+    sellRate: bigint
+    sellerMultisigAddress: string
 }
 
 export type SwapParams = DepositParams & {
+    sellingTokenId: string
+    buyingTokenId: string
+    rate: bigint
+    sellerMultisigAddress: string
 }
 
 export type BoxParameters = {

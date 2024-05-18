@@ -5,7 +5,8 @@ import { ErgoAddress, ErgoTree } from '@fleet-sdk/core';
 import {
 	BUY_ORDER_ADDRESS,
 	DEPOSIT_ADDRESS,
-	SELL_ORDER_ADDRESS
+	SELL_ORDER_ADDRESS,
+	SWAP_ORDER_ADDRESS
 } from '../constants/addresses';
 import { parse } from '@fleet-sdk/serializer';
 
@@ -64,6 +65,8 @@ export function contractTypeFromErgoTree(box: Box): ContractType {
 		return ContractType.BUY;
 	} else if (address == SELL_ORDER_ADDRESS) {
 		return ContractType.SELL;
+	} else if (address == SWAP_ORDER_ADDRESS) {
+		return ContractType.SWAP;
 	} else {
 		return ContractType.UNKNOWN;
 	}
@@ -100,6 +103,45 @@ export function parseBox(box: Box): BoxParameters | undefined {
 					tokenId: r6,
 					buyRate: r7,
 					buyerMultisigAddress: r8,
+				}
+			};
+		}
+	} else if (contractType == ContractType.SELL) {
+		const r4 = decodeR4(box);
+		const r5 = decodeR5(box);
+		const r6 = decodeTokenIdFromR6(box);
+		const r7 = decodeR7(box);
+		const r8 = decodeR8(box);
+		if (r4 && r5 && r6 && r7 && r8) {
+			return {
+				contract: ContractType.SELL,
+				parameters: {
+					userPk: r4.userPk,
+					poolPk: r4.poolPk,
+					unlockHeight: r5,
+					tokenId: r6,
+					sellRate: r7,
+					sellerMultisigAddress: r8,
+				}
+			};
+		}
+	} else if (contractType == ContractType.SWAP) {
+		const r4 = decodeR4(box);
+		const r5 = decodeR5(box);
+		const r6 = decodeTokenIdPairFromR6(box);
+		const r7 = decodeR7(box);
+		const r8 = decodeR8(box);
+		if (r4 && r5 && r6 && r7 && r8) {
+			return {
+				contract: ContractType.SWAP,
+				parameters: {
+					userPk: r4.userPk,
+					poolPk: r4.poolPk,
+					unlockHeight: r5,
+					buyingTokenId: r6.buyingTokenId,
+					sellingTokenId: r6.sellingTokenId,
+					rate: r7,
+					sellerMultisigAddress: r8,
 				}
 			};
 		}
