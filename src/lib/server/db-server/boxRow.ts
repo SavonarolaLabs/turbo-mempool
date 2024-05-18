@@ -14,6 +14,9 @@ export type DepositParams = {
 }
 
 export type BuyParams = DepositParams & {
+    tokenId: string
+    buyRate: bigint
+    buyerMultisigAddress: string
 }
 
 export type SellParams = DepositParams & {

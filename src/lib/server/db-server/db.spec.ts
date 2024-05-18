@@ -11,7 +11,7 @@ import {
 } from './db';
 import { ContractType } from './boxRow';
 import { SConstant, parse } from '@fleet-sdk/serializer';
-import { ErgoAddress, SAFE_MIN_BOX_VALUE } from '@fleet-sdk/core';
+import { ErgoAddress, SAFE_MIN_BOX_VALUE, type Box } from '@fleet-sdk/core';
 import { deposit } from '../turbo-mempool/utils/account';
 import {
 	PRINTER_ADDRESS,

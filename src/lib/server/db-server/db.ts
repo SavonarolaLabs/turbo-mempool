@@ -1,9 +1,5 @@
 import { type Box, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
-import {
-	ContractType,
-	type BoxParameters,
-	type BoxRow,
-} from './boxRow';
+import { ContractType, type BoxParameters, type BoxRow } from './boxRow';
 import type { TxRow } from './txRow';
 import { ErgoAddress, ErgoTree } from '@fleet-sdk/core';
 import {
@@ -88,16 +84,22 @@ export function parseBox(box: Box): BoxParameters | undefined {
 				}
 			};
 		}
-	} else if(contractType == ContractType.BUY) {
+	} else if (contractType == ContractType.BUY) {
 		const r4 = decodeR4(box);
 		const r5 = decodeR5(box);
-		if (r4 && r5) {
+		const r6 = decodeTokenIdFromR6(box);
+		const r7 = decodeR7(box);
+		const r8 = decodeR8(box);
+		if (r4 && r5 && r6 && r7 && r8) {
 			return {
 				contract: ContractType.BUY,
 				parameters: {
 					userPk: r4.userPk,
 					poolPk: r4.poolPk,
-					unlockHeight: r5
+					unlockHeight: r5,
+					tokenId: r6,
+					buyRate: r7,
+					buyerMultisigAddress: r8,
 				}
 			};
 		}
