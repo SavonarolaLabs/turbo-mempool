@@ -62,21 +62,21 @@ Scenarios: (userA,userB,userC)
 */
 const deposits = [
 	{
-		userPK: userA.address,
+		userPk: userA.address,
 		tokens: [{
 			tokenId: tokenTest1.tokenId,
 			amount: BigInt(100*10**tokenTest1.decimals)
 		}],
 		nanoErg: BigInt(200_000_000).toString()
 	},{
-		userPK: userB.address,
+		userPk: userB.address,
 		tokens: [{
 			tokenId: tokenTest2.tokenId,
 			amount: BigInt(100*10**tokenTest2.decimals)
 		}],
 		nanoErg: BigInt(200_000_000).toString()
 	},{
-		userPK: userC.address,
+		userPk: userC.address,
 		tokens: [{
 			tokenId: tokenTest2.tokenId,
 			amount: BigInt(100*10**tokenTest2.decimals)

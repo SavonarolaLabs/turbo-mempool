@@ -96,7 +96,7 @@ describe('deposit box registers ', () => {
 	it('R4 can be parsed', () => {
 		const expected = {
 			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
-			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
 		};
 		expect(decodeR4(depositBox), "userPk, poolPk").toStrictEqual(expected);
 	});
@@ -108,7 +108,7 @@ describe('deposit box registers ', () => {
 		const expected = {
 			contract: ContractType.DEPOSIT,
 			parameters: {
-				userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+				userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
 				poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
 				unlockHeight: 1267580
 			}
@@ -162,7 +162,7 @@ describe('buy order box registers', () => {
 	it('R4(userPk poolPk) can be parsed', () => {
 		const expected = {
 			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
-			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
 		};
 		expect(decodeR4(buyOrderBox)).toStrictEqual(expected);
 	});
@@ -231,7 +231,7 @@ describe(`sell order box registers`, () => {
 	it('R4(userPk poolPk) can be parsed', () => {
 		const expected = {
 			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
-			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
 		};
 		expect(decodeR4(sellOrderBox)).toStrictEqual(expected);
 	});
@@ -302,7 +302,7 @@ describe('create new Swap order', async () => {
 	it('R4(userPk poolPk) can be parsed', () => {
 		const expected = {
 			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
-			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
 		};
 		expect(decodeR4(swapOrderBox)).toStrictEqual(expected);
 	});

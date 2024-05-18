@@ -20,7 +20,7 @@ import {
 import { DEPOSIT_ADDRESS, SHADOWPOOL_ADDRESS } from '../../constants/addresses';
 
 type userDeposit = {
-	userPK: string,
+	userPk: string,
 	tokens: OneOrMore<TokenAmount<Amount>>,
 	nanoErg: string | bigint
 }
@@ -37,7 +37,7 @@ export function depositMultiple(
 		.setAdditionalRegisters({
 			R4: SColl(SSigmaProp, [
 				SGroupElement(
-					first(ErgoAddress.fromBase58(d.userPK).getPublicKeys())
+					first(ErgoAddress.fromBase58(d.userPk).getPublicKeys())
 				),
 				SGroupElement(
 					first(
@@ -69,7 +69,7 @@ export function deposit(
 	blockchainHeight: number,
 	inputBoxes: OneOrMore<Box<Amount>>,
 	changeAddress: string,
-	userPK: string,
+	userPk: string,
 	unlockHeight: number,
 	tokens: OneOrMore<TokenAmount<Amount>>,
 	nanoErg: string | bigint = 3n * SAFE_MIN_BOX_VALUE
@@ -78,7 +78,7 @@ export function deposit(
 		.setAdditionalRegisters({
 			R4: SColl(SSigmaProp, [
 				SGroupElement(
-					first(ErgoAddress.fromBase58(userPK).getPublicKeys())
+					first(ErgoAddress.fromBase58(userPk).getPublicKeys())
 				),
 				SGroupElement(
 					first(

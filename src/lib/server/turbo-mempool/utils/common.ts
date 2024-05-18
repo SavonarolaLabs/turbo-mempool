@@ -41,12 +41,12 @@ export async function createDeposit() {
 	const utxosDeposit = utxos[DEPOSIT_ADDRESS];
 
 	const shadowPool = ErgoAddress.fromBase58(SHADOWPOOL_ADDRESS);
-	const userPK = ErgoAddress.fromBase58(BOB_ADDRESS);
+	const userPk = ErgoAddress.fromBase58(BOB_ADDRESS);
 
 	const output = new OutputBuilder('30000000', DEPOSIT_ADDRESS).setAdditionalRegisters({
 		R4: SInt(currentHeight + 10).toHex(),
 		R5: SSigmaProp(SGroupElement(first(shadowPool.getPublicKeys()))).toHex(),
-		R6: SSigmaProp(SGroupElement(first(userPK.getPublicKeys()))).toHex()
+		R6: SSigmaProp(SGroupElement(first(userPk.getPublicKeys()))).toHex()
 	});
 
 	const unsignedMintTransaction = new TransactionBuilder(currentHeight)

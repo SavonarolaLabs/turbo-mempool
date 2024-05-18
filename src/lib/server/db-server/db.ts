@@ -82,7 +82,7 @@ export function parseBox(box: Box): BoxParameters | undefined {
 			return {
 				contract: ContractType.DEPOSIT,
 				parameters: {
-					userPK: r4.userPK,
+					userPk: r4.userPk,
 					poolPk: r4.poolPk,
 					unlockHeight: r5
 				}
@@ -95,7 +95,7 @@ export function parseBox(box: Box): BoxParameters | undefined {
 			return {
 				contract: ContractType.DEPOSIT,
 				parameters: {
-					userPK: r4.userPK,
+					userPk: r4.userPk,
 					poolPk: r4.poolPk,
 					unlockHeight: r5
 				}
@@ -106,13 +106,13 @@ export function parseBox(box: Box): BoxParameters | undefined {
 
 export function decodeR4(
 	box: Box
-): { userPK: string; poolPk: string } | undefined {
+): { userPk: string; poolPk: string } | undefined {
 	const r4 = box.additionalRegisters.R4;
 
 	if (r4) {
 		const parsed = parse<Uint8Array[]>(r4);
 		return {
-			userPK: ErgoAddress.fromPublicKey(parsed[0]).toString(),
+			userPk: ErgoAddress.fromPublicKey(parsed[0]).toString(),
 			poolPk: ErgoAddress.fromPublicKey(parsed[1]).toString()
 		};
 	}
