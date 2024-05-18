@@ -1,19 +1,21 @@
 import { type Box, type EIP12UnsignedTransaction } from "@fleet-sdk/common"
-import type { BoxRow } from "./boxes"
-import type { TxRow } from "./transactions"
+import { ContractType, type BoxRow } from "./boxRow"
+import type { TxRow } from "./txRow"
+import { ErgoTree } from "@fleet-sdk/core"
+import { BUY_ORDER_ADDRESS, DEPOSIT_ADDRESS, SELL_ORDER_ADDRESS } from "../constants/addresses"
 
 interface HasId {
     id: number
 }
 
-type ServerDB = {
-    boxes: BoxRow[]
+export type BoxDB = {
+    boxRows: BoxRow[]
     txes: TxRow[]
 }
 
-export function initDb(): ServerDB {
+export function initDb(): BoxDB {
     return {
-        boxes: [],
+        boxRows: [],
         txes: [],
     }
 }
@@ -23,16 +25,21 @@ function nextId(table: HasId[]){
     return maxId + 1;
 }
 
-export function addBox(db: ServerDB, box: Box){
+export function db_addBox(db: BoxDB, box: Box){
     const newRow: BoxRow = {
-        id: nextId(db.boxes),
+        id: nextId(db.boxRows),
+        contract: contractTypeFromErgoTree(box),
         box,
         unspent: true,
     }
-    db.boxes.push(newRow);
+    db.boxRows.push(newRow);
 }
 
-export function addTx(db: ServerDB, tx: EIP12UnsignedTransaction){
+export function db_addBoxes(db: BoxDB, boxRows: Box[]){
+    boxRows.forEach(box => db_addBox(db, box))
+}
+
+export function db_addTx(db: BoxDB, tx: EIP12UnsignedTransaction){
     const newRow: TxRow = {
         id: nextId(db.txes),
         unsignedTx: tx,
@@ -40,4 +47,17 @@ export function addTx(db: ServerDB, tx: EIP12UnsignedTransaction){
         hintbags: [],
     }
     db.txes.push(newRow);
+}
+
+export function contractTypeFromErgoTree(box: Box): ContractType{
+    const address = new ErgoTree(box.ergoTree).toAddress().toString();
+    if(address == DEPOSIT_ADDRESS){
+        return ContractType.DEPOSIT
+    }else if(address == BUY_ORDER_ADDRESS){
+        return ContractType.BUY
+    }else if(address == SELL_ORDER_ADDRESS){
+        return ContractType.SELL
+    }else{
+        return ContractType.UNKNOWN
+    }
 }

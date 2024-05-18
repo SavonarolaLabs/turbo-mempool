@@ -7,6 +7,10 @@ import type {
 } from '@fleet-sdk/common';
 import { ErgoAddress } from '@fleet-sdk/core';
 
+export function ergoTree(address:string): string{
+	return ErgoAddress.fromBase58(address).ergoTree
+}
+
 export function asBigInt(v: bigint | string) {
 	if (typeof v == 'string') {
 		return BigInt(v);

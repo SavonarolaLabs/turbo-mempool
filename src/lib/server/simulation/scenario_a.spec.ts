@@ -1,11 +1,12 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { initDb } from '../db-server/db';
+import { db_addBoxes, initDb, type BoxDB } from '../db-server/db';
 import { PRINTER_ADDRESS, PRINTER_MNEMONIC, PRINTER_UTXO } from '../turbo-mempool/mock/utxos';
-import { deposit, depositMultiple } from '../turbo-mempool/utils/account';
+import { depositMultiple } from '../turbo-mempool/utils/account';
 import { signTx } from '../multisig/multisig';
 import { boxesAtAddress } from '../turbo-mempool/utils/test-helper';
 import { DEPOSIT_ADDRESS } from '../constants/addresses';
 import type { Box } from '@fleet-sdk/common';
+import { ergoTree } from '../turbo-mempool/utils/helper';
 
 
 const userA = {
@@ -88,9 +89,8 @@ const CHAIN_HEIGHT = 1250600;
 const UNLOCK_DELTA = 200000;
 const BUYER_UNLOCK_HEIGHT = CHAIN_HEIGHT + UNLOCK_DELTA;
 
-let db;
-let depositBoxes: Box[];
-async function initUserBalance(){
+let db: BoxDB;
+async function initUserBalance(): Promise<Box[]>{
 	const depositUTx = depositMultiple(
 		CHAIN_HEIGHT,
 		PRINTER_UTXO,
@@ -99,15 +99,23 @@ async function initUserBalance(){
 		deposits
 	);
 	const depositTx = await signTx(depositUTx, PRINTER_MNEMONIC);
-	depositBoxes = boxesAtAddress(depositTx, DEPOSIT_ADDRESS);
+	return boxesAtAddress(depositTx, DEPOSIT_ADDRESS);
 }
 
-describe('screnario', () => {
-	beforeAll(() => {
+describe('screnario A', () => {
+	beforeAll(async() => {
 		db = initDb();
-		initUserBalance();
+		const boxes = await initUserBalance();
+		db_addBoxes(db, boxes);
 	});
-	it('A', () => {
-		expect(depositBoxes.length,"deposit boxes").toBe(3);
+	it('starts with 3 deposits', () => {
+		expect(db.boxRows.length,"deposit boxes").toBe(3);
 	});
+	it('box tied to userPk', () => {
+		const boxUsers: string[] = db.boxRows.map(row => row.box.additionalRegisters.R4??"");
+		const user1Deposit = boxUsers.find(r4 => r4.includes(ergoTree(userA.address).slice(4)));
+		expect(user1Deposit).toBeDefined();
+		
+		// What is the right place for decoded registers ? 
+	})
 });
