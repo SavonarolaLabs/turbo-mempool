@@ -1,8 +1,9 @@
 import { type Box, type EIP12UnsignedTransaction } from "@fleet-sdk/common"
 import { ContractType, type BoxRow } from "./boxRow"
 import type { TxRow } from "./txRow"
-import { ErgoTree } from "@fleet-sdk/core"
+import { ErgoAddress, ErgoTree } from "@fleet-sdk/core"
 import { BUY_ORDER_ADDRESS, DEPOSIT_ADDRESS, SELL_ORDER_ADDRESS } from "../constants/addresses"
+import { parse } from "@fleet-sdk/serializer"
 
 interface HasId {
     id: number
@@ -59,5 +60,17 @@ export function contractTypeFromErgoTree(box: Box): ContractType{
         return ContractType.SELL
     }else{
         return ContractType.UNKNOWN
+    }
+}
+
+export function decodeR4(box: Box): {userPK: string, poolPk: string}{
+    const r4 = box.additionalRegisters.R4;
+
+    const parsed = parse(r4);
+    const userPK = Buffer.from(parsed[0]).toString('hex')
+    const poolPK = Buffer.from(parsed[1]).toString('hex')
+    return {
+        userPK: ErgoAddress.fromPublicKey(userPK).toString(),
+        poolPk: ErgoAddress.fromPublicKey(poolPK).toString(),
     }
 }

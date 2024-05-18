@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { contractTypeFromErgoTree } from './db';
+import { contractTypeFromErgoTree, decodeR4 } from './db';
 import { ContractType } from './boxRow';
+import { SConstant, parse } from '@fleet-sdk/serializer';
+import { ErgoAddress } from '@fleet-sdk/core';
 
 const depositBox = {
 	boxId: '9721de0f8ec7da47b2b31083856bf24819a1d7d755e0e0e57c42fb6ff7a8eff8',
@@ -40,6 +42,18 @@ const depositBox = {
 
 describe('contractTypeFromErgoTree', () => {
 	it('returns sell contract', () => {
-		expect(contractTypeFromErgoTree(depositBox), "buy box").toBe(ContractType.DEPOSIT)
+		expect(contractTypeFromErgoTree(depositBox), 'buy box').toBe(
+			ContractType.DEPOSIT
+		);
+	});
+});
+
+describe('r4', () => {
+	it('can be parsed', () => {
+		const expected = {
+			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
+			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
+		};
+		expect(decodeR4(depositBox)).toStrictEqual(expected);
 	});
 });
