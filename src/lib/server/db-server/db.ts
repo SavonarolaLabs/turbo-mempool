@@ -67,49 +67,63 @@ export function contractTypeFromErgoTree(box: Box): ContractType {
 	}
 }
 
-export function decodeR4(box: Box): { userPK: string; poolPk: string } {
+export function decodeR4(
+	box: Box
+): { userPK: string; poolPk: string } | undefined {
 	const r4 = box.additionalRegisters.R4;
 
-	const parsed = parse(r4);
-	return {
-		userPK: ErgoAddress.fromPublicKey(parsed[0]).toString(),
-		poolPk: ErgoAddress.fromPublicKey(parsed[1]).toString()
-	};
+	if (r4) {
+		const parsed = parse<Uint8Array[]>(r4);
+		return {
+			userPK: ErgoAddress.fromPublicKey(parsed[0]).toString(),
+			poolPk: ErgoAddress.fromPublicKey(parsed[1]).toString()
+		};
+	}
 }
 
-export function decodeR5(box: Box): number {
+export function decodeR5(box: Box): number | undefined {
 	const r5 = box.additionalRegisters.R5;
-	const parsed = parse(r5);
-	return parsed;
+	if (r5) {
+		const parsed = parse<number>(r5);
+		return parsed;
+	}
 }
 
-export function decodeTokenIdFromR6(box: Box): string {
+export function decodeTokenIdFromR6(box: Box): string | undefined {
 	const r6 = box.additionalRegisters.R6;
-	const parsed = Buffer.from(parse(r6)).toString('hex');
-	return parsed;
+	if (r6) {
+		const parsed = Buffer.from(parse(r6)).toString('hex');
+		return parsed;
+	}
 }
 
-export function decodeR7(box: Box): bigint {
+export function decodeR7(box: Box): bigint | undefined {
 	const r7 = box.additionalRegisters.R7;
-	const parsed = parse(r7);
-	return parsed;
+	if (r7) {
+		const parsed = parse<bigint>(r7);
+		return parsed;
+	}
 }
 
-export function decodeR8(box: Box): string {
+export function decodeR8(box: Box): string | undefined {
 	const r8 = box.additionalRegisters.R8;
-	const hexBuffer = Buffer.from(parse(r8)).toString('hex');
-	const parsed = ErgoAddress.fromErgoTree(hexBuffer).toString();
-	return parsed;
+	if (r8) {
+		const hexBuffer = Buffer.from(parse(r8)).toString('hex');
+		const parsed = ErgoAddress.fromErgoTree(hexBuffer).toString();
+		return parsed;
+	}
 }
 
 export function decodeTokenIdPairFromR6(box: Box): {
 	sellingTokenId: string;
 	buyingTokenId: string;
-} {
+} | undefined {
 	const r6 = box.additionalRegisters.R6;
-	const parsed = parse(r6);
-	return {
-		sellingTokenId: Buffer.from(parsed[0]).toString('hex'),
-		buyingTokenId: Buffer.from(parsed[1]).toString('hex')
-	};
+	if (r6) {
+		const parsed = parse<Uint8Array[]>(r6);
+		return {
+			sellingTokenId: Buffer.from(parsed[0]).toString('hex'),
+			buyingTokenId: Buffer.from(parsed[1]).toString('hex')
+		};
+	}
 }
