@@ -8,21 +8,29 @@ export enum ContractType {
 }
 
 export type DepositParams = {
-    shadowPk: string
     userPk: string
+    poolPk: string
     unlockHeight: number
 }
 
-export type BuyParams = {
-    shadowPk: string
-    userPk: string
-    unlockHeight: number
-} & DepositParams
+export type BuyParams = DepositParams & {
+}
+
+export type SellParams = DepositParams & {
+}
+
+export type SwapParams = DepositParams & {
+}
+
+export type BoxParameters = {
+    contract: ContractType,
+    parameters: DepositParams | BuyParams | SellParams | SwapParams
+}
 
 export type BoxRow  = {
     id: number
     box: Box
     contract: ContractType
-    params: DepositParams | BuyParams
+    parameters: DepositParams | BuyParams
     unspent: Boolean
 }

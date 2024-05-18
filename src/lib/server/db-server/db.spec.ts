@@ -6,7 +6,8 @@ import {
 	decodeTokenIdFromR6,
 	decodeR7,
 	decodeR8,
-	decodeTokenIdPairFromR6
+	decodeTokenIdPairFromR6,
+	parseBox
 } from './db';
 import { ContractType } from './boxRow';
 import { SConstant, parse } from '@fleet-sdk/serializer';
@@ -70,6 +71,19 @@ const depositBox = {
 	mainChain: true
 };
 
+const DEPOSIT_TOKEN = {
+	name: 'TestToken Test2',
+	tokenId: 'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
+	amount: 100_000_000_000n,
+	decimals: 9
+};
+
+const CHAIN_HEIGHT = 1250600;
+const UNLOCK_DELTA = 100;
+const BUYER_UNLOCK_HEIGHT = CHAIN_HEIGHT + UNLOCK_DELTA;
+const BUYER_PK = BOB_ADDRESS;
+const BUYER_MNEMONIC = BOB_MNEMONIC;
+
 describe('contractTypeFromErgoTree', () => {
 	it('returns sell contract', () => {
 		expect(contractTypeFromErgoTree(depositBox), 'buy box').toBe(
@@ -79,31 +93,30 @@ describe('contractTypeFromErgoTree', () => {
 });
 
 describe('deposit box registers ', () => {
-	it('R4(userPk poolPk) can be parsed', () => {
+	it('R4 can be parsed', () => {
 		const expected = {
 			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
 			userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
 		};
-		expect(decodeR4(depositBox)).toStrictEqual(expected);
+		expect(decodeR4(depositBox), "userPk, poolPk").toStrictEqual(expected);
 	});
-	it('R5(unlock height) can be parsed', () => {
+	it('R5 can be parsed', () => {
 		const expected = 1267580;
-		expect(decodeR5(depositBox)).toStrictEqual(expected);
+		expect(decodeR5(depositBox), "unlock height").toStrictEqual(expected);
 	});
+	it.only("box recognized and parsed",()=>{
+		const expected = {
+			contract: ContractType.DEPOSIT,
+			parameters: {
+				userPK: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+				poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
+				unlockHeight: 1267580
+			}
+		}
+		const actual = parseBox(depositBox);
+		expect(actual, "deposit type and parameters").toStrictEqual(expected);
+	})
 });
-
-const CHAIN_HEIGHT = 1250600;
-const UNLOCK_DELTA = 100;
-const BUYER_UNLOCK_HEIGHT = CHAIN_HEIGHT + UNLOCK_DELTA;
-const BUYER_PK = BOB_ADDRESS;
-const BUYER_MNEMONIC = BOB_MNEMONIC;
-
-const DEPOSIT_TOKEN = {
-	name: 'TestToken Test2',
-	tokenId: 'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
-	amount: 100_000_000_000n,
-	decimals: 9
-};
 
 describe('buy order box registers', () => {
 	let buyOrderBox: Box;

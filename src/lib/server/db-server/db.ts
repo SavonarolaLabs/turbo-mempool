@@ -1,5 +1,9 @@
 import { type Box, type EIP12UnsignedTransaction } from '@fleet-sdk/common';
-import { ContractType, type BoxRow } from './boxRow';
+import {
+	ContractType,
+	type BoxParameters,
+	type BoxRow,
+} from './boxRow';
 import type { TxRow } from './txRow';
 import { ErgoAddress, ErgoTree } from '@fleet-sdk/core';
 import {
@@ -54,6 +58,8 @@ export function db_addTx(db: BoxDB, tx: EIP12UnsignedTransaction) {
 	db.txes.push(newRow);
 }
 
+// pasring
+
 export function contractTypeFromErgoTree(box: Box): ContractType {
 	const address = new ErgoTree(box.ergoTree).toAddress().toString();
 	if (address == DEPOSIT_ADDRESS) {
@@ -64,6 +70,37 @@ export function contractTypeFromErgoTree(box: Box): ContractType {
 		return ContractType.SELL;
 	} else {
 		return ContractType.UNKNOWN;
+	}
+}
+
+export function parseBox(box: Box): BoxParameters | undefined {
+	const contractType = contractTypeFromErgoTree(box);
+	if (contractType == ContractType.DEPOSIT) {
+		const r4 = decodeR4(box);
+		const r5 = decodeR5(box);
+		if (r4 && r5) {
+			return {
+				contract: ContractType.DEPOSIT,
+				parameters: {
+					userPK: r4.userPK,
+					poolPk: r4.poolPk,
+					unlockHeight: r5
+				}
+			};
+		}
+	} else if(contractType == ContractType.BUY) {
+		const r4 = decodeR4(box);
+		const r5 = decodeR5(box);
+		if (r4 && r5) {
+			return {
+				contract: ContractType.DEPOSIT,
+				parameters: {
+					userPK: r4.userPK,
+					poolPk: r4.poolPk,
+					unlockHeight: r5
+				}
+			};
+		}
 	}
 }
 
@@ -114,10 +151,12 @@ export function decodeR8(box: Box): string | undefined {
 	}
 }
 
-export function decodeTokenIdPairFromR6(box: Box): {
-	sellingTokenId: string;
-	buyingTokenId: string;
-} | undefined {
+export function decodeTokenIdPairFromR6(box: Box):
+	| {
+			sellingTokenId: string;
+			buyingTokenId: string;
+	  }
+	| undefined {
 	const r6 = box.additionalRegisters.R6;
 	if (r6) {
 		const parsed = parse<Uint8Array[]>(r6);
