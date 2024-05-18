@@ -76,3 +76,28 @@ export function decodeR4(box: Box): { userPK: string; poolPk: string } {
 		poolPk: ErgoAddress.fromPublicKey(parsed[1]).toString()
 	};
 }
+
+export function decodeR5(box: Box): number {
+	const r5 = box.additionalRegisters.R5;
+	const parsed = parse(r5);
+	return parsed;
+}
+
+export function decodeR6(box: Box): string {
+	const r6 = box.additionalRegisters.R6;
+	const parsed = Buffer.from(parse(r6)).toString('hex');
+	return parsed;
+}
+
+export function decodeR7(box: Box): bigint {
+	const r7 = box.additionalRegisters.R7;
+	const parsed = parse(r7);
+	return parsed;
+}
+
+export function decodeR8(box: Box): string {
+	const r8 = box.additionalRegisters.R8;
+	const hexBuffer = Buffer.from(parse(r8)).toString('hex');
+	const parsed = ErgoAddress.fromErgoTree(hexBuffer).toString();
+	return parsed;
+}
