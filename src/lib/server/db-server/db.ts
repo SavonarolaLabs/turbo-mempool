@@ -32,13 +32,19 @@ function nextId(table: HasId[]) {
 }
 
 export function db_addBox(db: BoxDB, box: Box) {
-	const newRow: BoxRow = {
-		id: nextId(db.boxRows),
-		contract: contractTypeFromErgoTree(box),
-		box,
-		unspent: true
-	};
-	db.boxRows.push(newRow);
+	const boxParams = parseBox(box);
+	if(boxParams){
+		const newRow: BoxRow = {
+			id: nextId(db.boxRows),
+			contract: boxParams.contract,
+			parameters: boxParams.parameters,
+			box,
+			unspent: true
+		};
+		db.boxRows.push(newRow);
+	}else{
+		console.error("db_addBox() invalid box: ", JSON.stringify(box))
+	}
 }
 
 export function db_addBoxes(db: BoxDB, boxRows: Box[]) {
