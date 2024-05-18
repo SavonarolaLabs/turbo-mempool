@@ -93,7 +93,7 @@ export function parseBox(box: Box): BoxParameters | undefined {
 		const r5 = decodeR5(box);
 		if (r4 && r5) {
 			return {
-				contract: ContractType.DEPOSIT,
+				contract: ContractType.BUY,
 				parameters: {
 					userPk: r4.userPk,
 					poolPk: r4.poolPk,

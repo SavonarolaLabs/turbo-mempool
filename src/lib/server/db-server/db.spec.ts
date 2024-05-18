@@ -104,7 +104,7 @@ describe('deposit box registers ', () => {
 		const expected = 1267580;
 		expect(decodeR5(depositBox), "unlock height").toStrictEqual(expected);
 	});
-	it.only("box recognized and parsed",()=>{
+	it("box recognized and parsed",()=>{
 		const expected = {
 			contract: ContractType.DEPOSIT,
 			parameters: {
@@ -118,7 +118,7 @@ describe('deposit box registers ', () => {
 	})
 });
 
-describe('buy order box registers', () => {
+describe('buy order box registers can be parsed', () => {
 	let buyOrderBox: Box;
 
 	beforeAll(async () => {
@@ -159,31 +159,46 @@ describe('buy order box registers', () => {
 		);
 		buyOrderBox = boxAtAddress(buyOrderTx, BUY_ORDER_ADDRESS);
 	});
-	it('R4(userPk poolPk) can be parsed', () => {
+	it('R4', () => {
 		const expected = {
 			poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
 			userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU'
 		};
-		expect(decodeR4(buyOrderBox)).toStrictEqual(expected);
+		expect(decodeR4(buyOrderBox), "userPk poolPk").toStrictEqual(expected);
 	});
-	it('R5(unlock height) can be parsed', () => {
+	it('R5', () => {
 		const expected = 1250700;
-		expect(decodeR5(buyOrderBox)).toStrictEqual(expected);
+		expect(decodeR5(buyOrderBox), "unlock height").toStrictEqual(expected);
 	});
-	it('R6 (tokenId) can be parsed', () => {
+	it('R6', () => {
 		const expected =
 			'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab';
-		expect(decodeTokenIdFromR6(buyOrderBox)).toStrictEqual(expected);
+		expect(decodeTokenIdFromR6(buyOrderBox), "tokenId").toStrictEqual(expected);
 	});
-	it('R7( rate) can be parsed', () => {
+	it('R7', () => {
 		const expected = 1n;
-		expect(decodeR7(buyOrderBox)).toStrictEqual(expected);
+		expect(decodeR7(buyOrderBox), "rate").toStrictEqual(expected);
 	});
-	it('R8(deposit address) can be parsed', () => {
+	it('R8', () => {
 		const expected =
 			't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo';
-		expect(decodeR8(buyOrderBox)).toStrictEqual(expected);
+		expect(decodeR8(buyOrderBox), "deposit address").toStrictEqual(expected);
 	});
+	it.only("box recognized and parsed",()=>{
+		const expected = {
+			contract: ContractType.BUY,
+			parameters: {
+				userPk: '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU',
+				poolPk: '9fE4Hk2QXzij6eKt73ki93iWVKboZgRPgV95VZYmazdzqdjPEW8',
+				unlockHeight: 1250700,
+				tokenId: 'b73a806dee528632b8d76f07813a1f1b66b8e11bc32b3ad09f8051265f3664ab',
+				buyRate: 1n,
+				buyerMultisigAddress: 't5UVmPtqprz5zN2M2X5fRTajpYD2CYuamxePkcwNFc2t9Yc3DhNMyB81fLAqoL7t91hzyYacMA8uVzkpTYTRdg4A6gZHFZxVsvLo'
+			}
+		}
+		const actual = parseBox(buyOrderBox);
+		expect(actual, "deposit type and parameters").toStrictEqual(expected);
+	})
 });
 
 describe(`sell order box registers`, () => {
