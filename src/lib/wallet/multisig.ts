@@ -11,7 +11,6 @@ import {
 import { ErgoAddress } from '@fleet-sdk/core';
 import { mnemonicToSeedSync } from 'bip39';
 import * as wasm from 'ergo-lib-wasm-nodejs';
-import { bip32 } from '../garbage/functions';
 import type {
 	EIP12UnsignedInput,
 	EIP12UnsignedTransaction,
@@ -19,6 +18,8 @@ import type {
 } from '@fleet-sdk/common';
 import { SHADOW_MNEMONIC } from '../constants/mnemonics';
 import { SHADOWPOOL_ADDRESS } from '../constants/addresses';
+import BIP32Factory from 'bip32';
+import * as ecc from 'tiny-secp256k1';
 
 export async function signTxMulti(
 	unsignedTx: EIP12UnsignedTransaction,
@@ -29,6 +30,7 @@ export async function signTxMulti(
 		await signMultisig(unsignedTx, userMnemonic, userAddress)
 	).to_js_eip12();
 }
+const bip32 = BIP32Factory(ecc);
 
 type JSONTransactionHintsBag = any;
 

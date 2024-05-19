@@ -46,10 +46,7 @@ describe('contract box R4: multisig', () => {
 			.build()
 			.toEIP12Object();
 
-		const signed = await signTxAllInputs(
-			BOB_MNEMONIC,
-			unsigned
-		);
+		const signed = await signTxAllInputs(BOB_MNEMONIC, unsigned);
 		contractBoxesForMultisig = [signed.outputs[0]];
 
 		const output2 = new OutputBuilder(
@@ -70,10 +67,7 @@ describe('contract box R4: multisig', () => {
 			.build()
 			.toEIP12Object();
 
-		const signed2 = await signTxAllInputs(
-			BOB_MNEMONIC,
-			unsigned2
-		);
+		const signed2 = await signTxAllInputs(BOB_MNEMONIC, unsigned2);
 		contractBoxesForBob = [signed2.outputs[0]];
 	});
 
@@ -88,10 +82,7 @@ describe('contract box R4: multisig', () => {
 			.build()
 			.toEIP12Object();
 
-		const signed = await signTxAllInputs(
-			BOB_MNEMONIC,
-			unsigned
-		);
+		const signed = await signTxAllInputs(BOB_MNEMONIC, unsigned);
 
 		// signed
 		expect(signed.inputs.length).greaterThan(0);
@@ -108,9 +99,7 @@ describe('contract box R4: multisig', () => {
 			.build()
 			.toEIP12Object();
 
-		expect(
-			signTxAllInputs(BOB_MNEMONIC, unsigned)
-		).rejects.toThrowError();
+		expect(signTxAllInputs(BOB_MNEMONIC, unsigned)).rejects.toThrowError();
 	});
 });
 
@@ -134,10 +123,7 @@ describe('contract box R4: BOB_ADDRESS', () => {
 			.build()
 			.toEIP12Object();
 
-		const signed2 = await signTxAllInputs(
-			BOB_MNEMONIC,
-			unsigned2
-		);
+		const signed2 = await signTxAllInputs(BOB_MNEMONIC, unsigned2);
 		contractBoxesForBob = [signed2.outputs[0]];
 	});
 
@@ -152,9 +138,7 @@ describe('contract box R4: BOB_ADDRESS', () => {
 			.build()
 			.toEIP12Object();
 
-		expect(
-			signTxAllInputs(BOB_MNEMONIC, unsigned)
-		).rejects.toThrowError();
+		expect(signTxAllInputs(BOB_MNEMONIC, unsigned)).rejects.toThrowError();
 	});
 
 	it('Bob CANT return to Bob', async () => {
@@ -168,10 +152,7 @@ describe('contract box R4: BOB_ADDRESS', () => {
 			.build()
 			.toEIP12Object();
 
-		const signed = await signTxAllInputs(
-			BOB_MNEMONIC,
-			unsigned
-		);
+		const signed = await signTxAllInputs(BOB_MNEMONIC, unsigned);
 
 		expect(signed.inputs.length).greaterThan(0);
 	});
