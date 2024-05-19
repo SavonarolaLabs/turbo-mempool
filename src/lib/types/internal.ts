@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import type { ErgoBox, UnsignedTx } from '../server/tx-chaining/connector';
+import type { ErgoBox, UnsignedTx } from '../garbage/connector';
 import { LedgerDeviceModelId } from './ledger';
 
 export enum AddressState {
