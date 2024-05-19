@@ -3,6 +3,7 @@ import {
 	SHADOWPOOL_ADDRESS
 } from '$lib/constants/addresses';
 import { utxos } from '$lib/data/utxos';
+import { asBigInt } from '$lib/utils/helper';
 import {
 	first,
 	type Amount,
@@ -73,14 +74,17 @@ export function createSellOrderTx(
 export function canсelSellOrderTx(
 	sellerPK: string,
 	multisigAddress: string,
-	inputBoxes: OneOrMore<Box<Amount>>,
+	inputBoxes: Box[],
 	currentHeight: number,
 	unlockHeight: number
 ): EIP12UnsignedTransaction {
-	let mandatoryBoxes = inputBoxes;
+	let mandatoryBoxes: Box[] = inputBoxes;
 
 	const tokens = mandatoryBoxes.flatMap((box) => box.assets);
-	let value = mandatoryBoxes.reduce((a, e) => +a + +e.value, 0);
+	let value = mandatoryBoxes.reduce(
+		(a: bigint, e: Box) => asBigInt(a) + asBigInt(e.value),
+		0n
+	);
 
 	if (value < SAFE_MIN_BOX_VALUE) {
 		value = SAFE_MIN_BOX_VALUE;
