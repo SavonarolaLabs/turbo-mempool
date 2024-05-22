@@ -4,7 +4,7 @@
 │  assets:[{              │              │  assets:[{              │   
 │   tokenId: rsBTC        │  ────┬────►  │   tokenId: rsBTC        │   
 │   amount:  0.00001      │      │       │   amount:  0.00001      │   
-│  ]}                     │      │       │  ]}                     │   
+│  }]                     │      │       │  }]                     │   
 └─────────────────────────┘      │       │  additionalRegisters:{  │   
                                  │       │   R4: [ALICE,POOL]      │   
                                  │       │   R5: unlockHeight      │   

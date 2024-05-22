@@ -4,7 +4,7 @@
 │  assets:[{              │              │  assets:[{              │   
 │   tokenId: Erdoge       │  ────┬────►  │   tokenId: Erdoge       │   
 │   amount:  1000         │      │       │   amount:  1000         │   
-│  ]}                     │      │       │  ]}                     │   
+│  }]                     │      │       │  }]                     │   
 └─────────────────────────┘      │       │  additionalRegisters:{  │   
                                  │       │   R4: [BOB,POOL]        │   
                                  │       │   R5: unlockHeight      │   
